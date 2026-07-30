@@ -1,0 +1,35 @@
+---
+description: Regras para ORM, queries e modelagem de dados
+globs: ["*.prisma", "*repository*", "*model*", "*entity*", "*.sql"]
+alwaysApply: false
+---
+
+# Database Skill — ORM e Modelagem
+
+## 🗃️ ORM Padrão
+- TypeScript: **Prisma** (schema-first) ou **Drizzle** (type-safe SQL).
+- Python: **SQLAlchemy 2.0** (declarative) ou **Django ORM**.
+- Go: **GORM** ou **sqlx** (para queries complexas).
+
+## 📐 Modelagem
+- Use **snake_case** para nomes de tabelas e colunas no banco.
+- Chaves primárias: `id` UUID v4 (preferencial) ou auto-incremento com justificativa.
+- Timestamps obrigatórios: `created_at`, `updated_at`. `deleted_at` para soft delete.
+- Relacionamentos: defina `onDelete` e `onUpdate` explicitamente.
+
+## 📝 Queries
+- NUNCA use string interpolation em SQL (proteção contra SQL Injection).
+- Use ORM ou prepared statements.
+- Evite `SELECT *` — selecione apenas colunas necessárias.
+- Paginação no banco, nunca em memória.
+
+## 🔄 Migrations
+- Uma migration por feature/PR quando possível.
+- Nomeie migrations descritivamente: `20240728_add_user_roles`.
+- Teste migrations em ambiente de staging antes de produção.
+- Rollback plan: sempre tenha como reverter.
+
+## 📊 Índices
+- Adicione índices para campos usados em `WHERE`, `JOIN`, `ORDER BY`.
+- Índices compostos: ordem importa (campos de igualdade primeiro, depois range).
+- Documente índices no schema ou em comentários.

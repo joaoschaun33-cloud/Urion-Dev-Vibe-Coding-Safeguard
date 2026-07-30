@@ -1,0 +1,32 @@
+name: Security Review
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'src/**'
+      - '.cursor/**'
+      - 'AGENTS.md'
+
+jobs:
+  auth-flow-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for hardcoded credentials
+        run: |
+          if grep -rniE '(password|secret|token|api_key|private_key)\s*=\s*["'][^"']+["']' --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' src/; then
+            echo "❌ Credenciais hardcoded detectadas!"
+            exit 1
+          fi
+          echo "✅ Nenhuma credencial hardcode detectada."
+
+  dependency-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm audit --audit-level=moderate

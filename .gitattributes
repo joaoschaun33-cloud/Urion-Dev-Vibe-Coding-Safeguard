@@ -1,0 +1,13 @@
+# Normaliza fins de linha: LF no repositorio (cross-platform; CI roda em Linux).
+* text=auto eol=lf
+
+# Scripts que DEVEM permanecer LF para executar em Linux/CI.
+*.sh   text eol=lf
+*.mjs  text eol=lf
+
+# Arquivos binarios: nunca normalizar.
+*.png  binary
+*.jpg  binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary

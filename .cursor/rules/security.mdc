@@ -1,0 +1,35 @@
+---
+description: Regras de segurança para código, APIs e dados
+globs: ["*.ts", "*.tsx", "*.js", "*.jsx", "*.py", "*.go", "*.env*"]
+alwaysApply: true
+---
+
+# Security Skill — Segurança em Código
+
+## 🔐 Secrets & Credenciais
+- NUNCA hardcode: API keys, tokens, senhas, connection strings.
+- Use `.env` + validação de schema (ex: `znv` para TS).
+- `.env.example` deve estar no repo (sem valores reais).
+- Gitleaks/TruffleHog roda em todo push.
+
+## 🛡️ Input Validation
+- Sanitize TODA entrada de usuário.
+- XSS: escape output em templates. Use bibliotecas como `DOMPurify`.
+- SQL Injection: use ORM/prepared statements (NUNCA concatene SQL).
+- Path Traversal: valide paths, use allowlists.
+
+## 🔑 Autenticação
+- JWT: algoritmo RS256 (asymmetric) ou HS256 com secret forte.
+- Expiração curta: access token ≤ 15 min, refresh token ≤ 7 dias.
+- Password reset: token de 1 uso, expira em 1 hora.
+- 2FA: TOTP (Google Authenticator) para ações sensíveis.
+
+## 🌐 Headers HTTP
+- Helmet.js (Node) ou equivalente para headers de segurança.
+- CSP (Content Security Policy) configurado.
+- CORS: allowlist explícita, nunca `*` em produção.
+
+## 📋 Compliance
+- LGPD/GDPR: consentimento explícito, direito ao esquecimento.
+- Não logue PII (CPF, email, telefone) em nível `info` ou abaixo.
+- Anonimize dados em logs de debug.

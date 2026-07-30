@@ -1,0 +1,13 @@
+#!/bin/sh
+# Husky pre-commit hook — v9 compatível
+
+echo "🔒 Rodando lint-staged..."
+npx lint-staged
+
+echo "🧪 Rodando smoke tests..."
+npm run test:smoke
+
+echo "🔍 Rodando cursor-doctor..."
+npm run cursor-doctor
+
+echo "✅ Pre-commit passou!"

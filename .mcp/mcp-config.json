@@ -1,0 +1,41 @@
+{
+  "mcpServers": {
+    "database-schema": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-postgres",
+        "postgresql://localhost:5432/mydb"
+      ],
+      "description": "Permite à IA ler o schema do banco de dados PostgreSQL"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "."
+      ],
+      "description": "Permite à IA navegar e ler arquivos do projeto"
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "Permite à IA interagir com issues e PRs do GitHub"
+    },
+    "command-runner": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-commands"
+      ],
+      "description": "Permite à IA executar comandos de terminal de forma segura"
+    }
+  }
+}

@@ -1,0 +1,102 @@
+---
+description: Regras de performance — codigo rapido, leve e escalavel
+globs: ["*.ts", "*.tsx", "*.js", "*.jsx", "*.py", "*.go", "*.sql", "*.prisma"]
+alwaysApply: true
+---
+
+# Performance Skill — Codigo que Escala
+
+> Performance nao e otimizacao prematura. Performance e nao destruir a experiencia do usuario.
+
+---
+
+## 🚀 Principios
+
+1. **Nao otimize prematuramente** — mas NUNCA entregue codigo obviamente lento.
+2. **Meca antes de otimizar** — use benchmarks, nao suposicoes.
+3. **O custo da otimizacao deve ser menor que o ganho** — codigo ilegivel por 2ms nao vale.
+
+---
+
+## 🚫 PROIBICOES DE PERFORMANCE
+
+### P1. Nunca gere queries N+1
+- Um loop que faz query no banco a cada iteracao e INACEITAVEL.
+- Use `JOIN`, `eager loading`, `DataLoader`, ou `SELECT IN`.
+- Todo repositorio com relacionamentos deve ter teste de integracao anti-N+1.
+
+### P2. Nunca carregue tudo em memoria
+- Paginacao e obrigatoria para listas > 50 itens.
+- Streaming para arquivos grandes (> 10MB).
+- Cursor-based pagination para feeds infinitos.
+
+### P3. Nunca bloqueie o event loop
+- Operacoes pesadas (> 50ms) vao para Worker Threads / background jobs.
+- Use `Promise.all` com LIMITE de concorrencia (max 5-10 paralelos).
+- Uploads/downloads grandes: streams, nao buffers.
+
+### P4. Nunca deixe memory leaks
+- Remova listeners de eventos ao desmontar componentes.
+- Feche conexoes de banco, Redis, WebSocket.
+- Use `AbortController` para cancelar fetchs obsoletos.
+
+### P5. Nunca ignore bundle size
+- Importe apenas o que usa (`lodash/debounce`, nao `lodash`).
+- Code-split por rota (Next.js dynamic imports, React.lazy).
+- Analise de bundle: `webpack-bundle-analyzer` ou `@next/bundle-analyzer`.
+
+---
+
+## ✅ OBRIGACOES DE PERFORMANCE
+
+### O1. Cache Estrategico
+- Cache de dados: Redis com TTL explicito (minimo 60s, maximo 24h).
+- Cache de HTTP: `Cache-Control`, `ETag`, `Last-Modified`.
+- Cache de build: CI/CD com cache de `node_modules`, `.next/`, `dist/`.
+
+### O2. Banco de Dados
+- Indices para campos de `WHERE`, `JOIN`, `ORDER BY`.
+- Explain plans para queries complexas.
+- Connection pooling: min 2, max 10-20 por instancia.
+
+### O3. Frontend
+- Lazy loading de imagens (`loading="lazy"` ou biblioteca).
+- Fonts: `font-display: swap`.
+- Imagens: WebP/AVIF, tamanhos responsivos, srcset.
+- Evite re-renders desnecessarios (React.memo, useMemo com criterio).
+
+### O4. APIs
+- Rate limiting: 100 req/min por IP, 1000 req/min por usuario.
+- Timeout: max 30s para endpoints sincronos.
+- Compression: gzip/brotli ativado.
+- Pagination padrao: `limit=20`, max `limit=100`.
+
+### O5. Background Jobs
+- Processamento pesado (envio de email, geracao de PDF, importacao de CSV) vai para fila.
+- Use Bull/Agenda (Node), Celery (Python), ou Sidekiq (Ruby).
+- Jobs devem ser idempotentes (rodar 2x nao causa problema).
+
+---
+
+## 📊 Benchmarks e Metricas
+
+| Metrica | Bom | Atenção | Critico |
+|---------|-----|---------|---------|
+| Time to First Byte (TTFB) | < 200ms | 200-600ms | > 600ms |
+| First Contentful Paint (FCP) | < 1.8s | 1.8-3s | > 3s |
+| Largest Contentful Paint (LCP) | < 2.5s | 2.5-4s | > 4s |
+| API response (p95) | < 200ms | 200-500ms | > 500ms |
+| Bundle size (initial) | < 200KB | 200-500KB | > 500KB |
+| Query time | < 50ms | 50-200ms | > 200ms |
+
+---
+
+## 🧪 Checklist de Performance
+
+Antes de entregar codigo:
+- [ ] Nao ha loops com queries internas?
+- [ ] Listas tem paginacao?
+- [ ] Conexoes externas tem timeout?
+- [ ] Cache foi considerado para dados frequentes?
+- [ ] Imagens/assets estao otimizados?
+- [ ] Nao ha imports desnecessarios aumentando o bundle?

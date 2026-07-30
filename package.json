@@ -1,0 +1,78 @@
+{
+  "name": "vibe-coding-template-repo",
+  "version": "1.0.0",
+  "description": "Repositorio blindado e escalavel para desenvolvimento com IA (vibe coding).",
+  "private": false,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/app/server.ts",
+    "build": "tsc",
+    "start": "node dist/app/server.js",
+    "test": "vitest run",
+    "test:unit": "vitest run src/",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:smoke": "node checks/smoke.test.js",
+    "test:watch": "vitest",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,json,md}\"",
+    "cursor-doctor": "node tools/cursor-doctor.js",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma migrate reset --force",
+    "generate:feature": "bash scripts/generate-feature.sh",
+    "setup": "bash first-time.sh",
+    "postinstall": "prisma generate",
+    "prepare": "husky || exit 0",
+    "test:integration:local": "node scripts/with-embedded-postgres.mjs"
+  },
+  "dependencies": {
+    "express": "^4.19.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "dotenv": "^16.4.0",
+    "zod": "^3.23.0",
+    "prisma": "^5.16.0",
+    "@prisma/client": "^5.16.0",
+    "pino": "^9.2.0",
+    "pino-pretty": "^11.2.0",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/compression": "^1.7.5",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.5.0",
+    "tsx": "^4.16.0",
+    "vitest": "^2.0.0",
+    "@vitest/coverage-v8": "^2.0.0",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
+    "prettier": "^3.3.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "optionalDependencies": {
+    "embedded-postgres": "18.4.0-beta.17"
+  }
+}

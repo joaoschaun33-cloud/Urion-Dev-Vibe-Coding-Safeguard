@@ -1,0 +1,40 @@
+---
+description: Regras para desenvolvimento backend (API, serviços, domínio)
+globs: ["*.ts", "*.js", "*.py", "*.go"]
+alwaysApply: true
+---
+
+# Backend Skill — Regras de API e Domínio
+
+## 🏗️ Arquitetura
+- Siga Clean Architecture: `domain` → `application` → `infrastructure` → `presentation`.
+- Controllers/Handlers devem ter máximo 20 linhas. Deleguem para Use Cases.
+- Use Cases devem ser puros — sem conhecimento de HTTP, banco, ou frameworks.
+
+## 🔌 API Design
+- RESTful por padrão. Use verbos HTTP corretamente.
+- Versionamento: `/api/v1/...`.
+- Paginação: `?page=1&limit=20` com metadados `total`, `pages`, `hasNext`.
+- Filtros: `?status=active&sort=-createdAt`.
+- Rate limiting obrigatório em endpoints públicos.
+
+## 🔐 Autenticação & Autorização
+- JWT com refresh token rotation.
+- Senhas: bcrypt com salt rounds ≥ 12.
+- RBAC: roles (`user`, `admin`, `moderator`) verificadas em middleware.
+- Nunca exponha o `refreshToken` no corpo da resposta — use httpOnly cookie.
+
+## 🗄️ Banco de Dados
+- Veja `database-skill.mdc` para detalhes de ORM e queries.
+- Migrations versionadas (nunca edite migration já aplicada em produção).
+- Índices: adicione para campos de busca frequente, documente no PR.
+
+## 📝 Validação
+- Zod (TS) / Pydantic (Python) / go-playground/validator (Go).
+- Valide no controller (DTO) E no domínio (entidade).
+- Mensagens de erro em português para o usuário final.
+
+## 🔥 Performance
+- Cache: Redis para dados frequentes, TTL explícito.
+- Compressão: gzip/brotli ativado.
+- Connection pooling para banco de dados.

@@ -1,0 +1,41 @@
+---
+description: Regras para desenvolvimento frontend (React/Vue/Next.js)
+globs: ["*.tsx", "*.jsx", "*.vue", "*.css", "*.scss"]
+alwaysApply: true
+---
+
+# Frontend Skill — Regras de UI/UX
+
+## 🎨 Estilização
+- Use **Tailwind CSS** como padrão. Classes customizadas só com `@layer components`.
+- Mobile-first: sempre comece com `sm:` e suba.
+- Variáveis de design token no `src/shared/ui/tokens.ts` ou `tailwind.config.js`.
+- Nunca use `!important` sem justificativa documentada.
+
+## 🧩 Componentes
+- Componentes devem ser **funções** (não classes).
+- Props tipadas com TypeScript (não `any`).
+- Exporte apenas o necessário. Use `export default` só para páginas.
+- Separe lógica de apresentação: hooks customizados em `src/features/<x>/hooks/`.
+
+## 🔄 Estado
+- Estado global: Zustand (leve) ou Redux Toolkit (complexo).
+- Estado local: `useState` / `useReducer`.
+- Nunca armazene secrets no estado global.
+- Persistência de estado: use `zustand/middleware` com cuidado (não persista tokens).
+
+## 🌐 Fetching de Dados
+- Use React Query (TanStack Query) ou SWR.
+- Cache configurado com `staleTime` e `gcTime` explícitos.
+- Tratamento de erro global via `QueryClient` + toast/notificação.
+
+## ♿ Acessibilidade
+- Todo `<button>` deve ter `type` explícito.
+- Todo `<img>` deve ter `alt` significativo (ou `aria-hidden` se decorativa).
+- Formulários: labels associadas via `htmlFor`.
+- Foco visível: nunca remova `outline` sem substituir por outro indicador.
+
+## 🧪 Testes
+- Componentes: React Testing Library + Vitest.
+- Teste comportamento, não implementação.
+- Mock de APIs: MSW (Mock Service Worker).

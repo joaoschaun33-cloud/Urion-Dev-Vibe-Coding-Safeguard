@@ -1,0 +1,88 @@
+---
+description: Regras de documentacao — codigo que se explica e se documenta
+globs: ["*.ts", "*.tsx", "*.js", "*.jsx", "*.py", "*.go", "*.md"]
+alwaysApply: true
+---
+
+# Documentation Skill — Codigo Documentado e Codigo Vivo
+
+> Codigo sem documentacao e codigo legado no dia seguinte.
+> A IA deve documentar o que gera. Nunca deixar para depois.
+
+---
+
+## 🚫 PROIBICOES DE DOCUMENTACAO
+
+### D1. Nunca deixe funcoes publicas sem JSDoc/TSDoc
+- Toda funcao exportada precisa de documentacao.
+- Parametros, retornos, throws, e exemplos de uso.
+
+### D2. Nunca deixe componentes sem Storybook ou exemplos
+- Componentes reutilizaveis: Storybook com variants.
+- Props documentadas: tipo, default, descricao.
+
+### D3. Nunca deixe APIs sem OpenAPI/Swagger
+- Todo endpoint precisa de spec OpenAPI.
+- Exemplos de request/response para cada status code.
+
+### D4. Nunca deixe migrations sem comentario
+- O que a migration faz e POR QUE.
+- Impacto em dados existentes (se houver).
+
+---
+
+## ✅ OBRIGACOES DE DOCUMENTACAO
+
+### O1. Comentarios no Codigo
+- Comentarios explicam o PORQUE, nao o O QUE.
+- Suposicoes: `// SUPOSICAO: [descricao]`.
+- TODOs: `// TODO: [descricao] — criado em [data] por [autor]`.
+- FIXMEs: `// FIXME: [descricao] — bloqueia [issue]`.
+
+### O2. READMEs por Feature
+- Cada feature em `src/features/<x>/` pode ter um `README.md` local.
+- O que faz, como usar, dependencias, e exemplos.
+
+### O3. Changelog
+- Toda alteracao visivel ao usuario vai no `CHANGELOG.md`.
+- Seguir Keep a Changelog (Added, Changed, Deprecated, Removed, Fixed, Security).
+
+### O4. ADRs (Architecture Decision Records)
+- Decisoes arquiteturais em `decisions-log.md`.
+- Contexto, decisao, consequencias, alternativas rejeitadas.
+
+### O5. Onboarding
+- `docs/onboarding.md` — como um novo dev/IA comeca no projeto.
+- Setup, convencoes, fluxo de trabalho, e quem perguntar.
+
+---
+
+## 📝 Templates
+
+### JSDoc para Funcoes
+```typescript
+/**
+ * Calcula o imposto sobre um valor baseado na aliquota.
+ *
+ * @param amount - Valor base em centavos (evita float)
+ * @param rate - Aliquota entre 0 e 1 (ex: 0.18 para 18%)
+ * @returns Valor do imposto em centavos
+ * @throws {ValidationError} Se amount < 0 ou rate fora de [0,1]
+ *
+ * @example
+ * calculateTax(10000, 0.18) // 1800
+ */
+```
+
+### Storybook para Componentes
+```tsx
+/**
+ * @component Button
+ * @description Botao interativo com variants e estados
+ *
+ * @prop {Variant} variant — Estilo visual: 'primary' | 'secondary' | 'danger'
+ * @prop {Size} size — Tamanho: 'sm' | 'md' | 'lg'
+ * @prop {boolean} isLoading — Mostra spinner e desabilita
+ * @prop {() => void} onClick — Handler de clique
+ */
+```

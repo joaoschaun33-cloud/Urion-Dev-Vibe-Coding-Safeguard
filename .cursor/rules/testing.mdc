@@ -1,0 +1,43 @@
+---
+description: Regras para testes unitários, integração e e2e
+globs: ["*.test.*", "*.spec.*", "__tests__/**", "tests/**"]
+alwaysApply: true
+---
+
+# Testing Skill — Estratégia de Testes
+
+## 🎯 Pirâmide de Testes
+```
+    /\
+   /  \     E2E (Playwright/Cypress) — 10%
+  /----\
+ /      \   Integração (Vitest/Jest + DB) — 30%
+/--------\ Unitário (Vitest/Jest) — 60%
+```
+
+## 🧪 Unitários
+- Framework: **Vitest** (preferido) ou **Jest**.
+- Mock de dependências: `vi.fn()` (Vitest) ou `jest.fn()`.
+- Não teste implementação — teste comportamento e contratos.
+- Nome do teste: `deve <comportamento> quando <condição>`.
+
+## 🔗 Integração
+- Teste a camada de aplicação + infraestrutura real (banco em memória ou Docker).
+- Use `testcontainers` (Node/Java) ou SQLite in-memory para velocidade.
+- Reset do banco entre testes (`beforeEach` / `afterEach`).
+
+## 🌐 E2E
+- Playwright (preferido) ou Cypress.
+- Teste fluxos críticos: login, checkout, pagamento, cadastro.
+- Não teste estilos visuais — teste interação e dados.
+- Rode em CI com `headless: true`.
+
+## 📊 Cobertura
+- Mínimo: **80%** linhas para novos arquivos.
+- Relatório: `coverage/` ignorado no git, gerado no CI.
+- Não perseguir 100% — cobertura de qualidade > quantidade.
+
+## 🚫 Anti-padrões
+- Não teste bibliotecas de terceiros.
+- Não use `setTimeout` em testes — use `vi.useFakeTimers()`.
+- Não deixe testes `.skip` ou `.only` no código final.

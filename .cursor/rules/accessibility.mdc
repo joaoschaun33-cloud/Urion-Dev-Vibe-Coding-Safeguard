@@ -1,0 +1,77 @@
+---
+description: Regras de acessibilidade — produto para TODOS os usuarios
+globs: ["*.tsx", "*.jsx", "*.vue", "*.html", "*.css", "*.scss"]
+alwaysApply: true
+---
+
+# Accessibility Skill — A11y nao e Opcional
+
+> Acessibilidade e direito, nao feature. 15% da populacao mundial tem alguma deficiencia.
+> Codigo inacessivel e codigo excludente. E proibido.
+
+---
+
+## 🚫 PROIBICOES DE A11Y
+
+### A1. Nunca remova foco visivel
+- `outline: none` sem substituir por outro indicador e PROIBIDO.
+- Todo elemento interativo deve ter estado `:focus-visible` claro.
+
+### A2. Nunca use cores como unico indicador
+- Erro de validacao: icone + texto + cor (nao apenas borda vermelha).
+- Status: label + cor (nao apenas ponto verde).
+
+### A3. Nunca deixe imagens sem alt
+- Toda `<img>` precisa de `alt` significativo ou `aria-hidden="true"` se decorativa.
+- Icones funcionais: `aria-label` ou texto escondido visualmente.
+
+### A4. Nunca quebre navegacao por teclado
+- Tab order logico e previsivel.
+- Modais: foco preso, `Escape` fecha, foco retorna ao gatilho.
+- Dropdowns: `Enter` abre, `Escape` fecha, setas navegam.
+
+### A5. Nunca ignore leitores de tela
+- Todo componente customizado precisa de roles e estados ARIA.
+- Mensagens de erro associadas ao campo via `aria-describedby`.
+- Mudancas dinamicas: `aria-live` para anunciar ao leitor.
+
+---
+
+## ✅ OBRIGACOES A11Y
+
+### O1. Semantica HTML
+- Use tags semanticas: `<nav>`, `<main>`, `<article>`, `<section>`, `<aside>`.
+- Um `<h1>` por pagina, hierarquia logica de headings.
+- Listas: `<ul>`/`<ol>` para listas, nao `<div>` com CSS.
+
+### O2. Formularios
+- Todo `<input>` precisa de `<label>` associado via `htmlFor`.
+- Campos obrigatorios: `required` + mensagem de erro clara.
+- Agrupamento: `<fieldset>` + `<legend>` para radios/checkboxes.
+
+### O3. Cores e Contraste
+- Contraste minimo: 4.5:1 para texto normal, 3:1 para grande.
+- Nunca use texto em vermelho puro (#FF0000) sobre branco.
+- Teste com ferramentas: axe, Lighthouse, WAVE.
+
+### O4. Animacoes
+- Respeite `prefers-reduced-motion`.
+- Nada que pisque mais de 3 vezes por segundo (risco de epilepsia).
+- Transicoes suaves: max 300ms.
+
+### O5. Testes A11Y
+- axe-core em testes E2E (Playwright/Cypress).
+- Lighthouse CI com threshold de acessibilidade >= 95.
+- Teste manual com leitor de tela (NVDA, VoiceOver, Orca).
+
+---
+
+## 🧪 Checklist A11Y
+
+- [ ] Todos os elementos interativos sao acessiveis por teclado?
+- [ ] Todas as imagens tem `alt` ou `aria-hidden`?
+- [ ] Contraste de cores passa no WCAG 2.1 AA?
+- [ ] Formularios tem labels associadas?
+- [ ] Modais/dialogs gerenciam foco corretamente?
+- [ ] Mensagens de erro sao anunciadas por leitores de tela?
+- [ ] Animacoes respeitam `prefers-reduced-motion`?

@@ -1,0 +1,38 @@
+# Vibe Coding Template Repo — Regras Globais
+
+> Este arquivo (.cursorrules) e lido automaticamente pelo Cursor em TODAS as sessoes.
+> Ele referencia os arquivos .mdc especificos. Nao repita regras aqui — apenas aponte.
+
+## 🛡️ Dogma Zero: Honestidade
+
+A IA NUNCA pode mentir. Se nao souber, admita. Se nao testou, diga. Se houver risco, mencione.
+Leia `.cursor/rules/honesty.mdc` completamente antes de qualquer codigo.
+
+## 📚 Contexto Obrigatorio
+
+Antes de implementar, a IA DEVE ler:
+1. `AGENTS.md` — dogmas arquiteturais
+2. `.cursor/rules/honesty.mdc` — honestidade
+3. `00-context/prd.md` — escopo do produto (se existir)
+4. `sdlc.md` — ciclo de vida de desenvolvimento
+
+## 🏗️ Arquitetura
+
+Siga Feature-Sliced Design (FSD):
+- `src/app/` — inicializacao
+- `src/pages/` — rotas
+- `src/features/<feature>/` — domain, application, infrastructure, presentation
+- `src/shared/` — utilitarios, UI kit, configs
+
+## 🧪 Qualidade
+
+- Todo codigo novo: testes unitarios (>=80%) + testes de integracao
+- Rode `npm run test:smoke` antes de considerar pronto
+- Rode `npm run cursor-doctor` para validar saude do repo
+- Siga `prompts/honesty-check.md` antes de entregar
+
+## 📝 Comunicacao
+
+- Portugues para explicacoes, ingles para codigo
+- Declare nivel de certeza: ALTA / MEDIA / BAIXA / INCERTEZA TOTAL
+- Documente suposicoes: `// SUPOSICAO: [descricao]`
