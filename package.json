@@ -5,8 +5,12 @@
   "private": false,
   "license": "MIT",
   "type": "module",
+  "bin": {
+    "create-vibe-safeguard": "./bin/create-vibe-safeguard.js"
+  },
   "scripts": {
     "dev": "tsx watch src/app/server.ts",
+    "create:app": "node bin/create-vibe-safeguard.js",
     "dev:web": "npm --prefix web run dev",
     "build": "tsc",
     "start": "node dist/app/server.js",
