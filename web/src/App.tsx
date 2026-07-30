@@ -9,8 +9,10 @@ import {
   Layers,
   FileCode2,
   FileText,
-  Activity
+  Activity,
+  ArrowLeft
 } from 'lucide-react';
+import { LandingPage } from './components/LandingPage';
 
 interface HealthMetrics {
   testsPassing: number;
@@ -39,6 +41,7 @@ interface SpecDocument {
 }
 
 export function App() {
+  const [view, setView] = useState<'landing' | 'dashboard'>('landing');
   const [activeTab, setActiveTab] = useState<'health' | 'specs'>('health');
   
   // Health State
@@ -52,8 +55,8 @@ export function App() {
   // Modal Health State
   const [showModal, setShowModal] = useState(false);
   const [projectName, setProjectName] = useState('Meu Projeto Vibe');
-  const [testsPassing, setTestsPassing] = useState(34);
-  const [totalTests, setTotalTests] = useState(34);
+  const [testsPassing, setTestsPassing] = useState(35);
+  const [totalTests, setTotalTests] = useState(35);
   const [mdcRulesActive, setMdcRulesActive] = useState(9);
   const [architectureViolations, setArchitectureViolations] = useState(0);
 
@@ -150,7 +153,7 @@ export function App() {
     projectName: 'Vibe Coding Safeguard Repo',
     score: 100,
     status: 'EXCELLENT',
-    metrics: { testsPassing: 34, totalTests: 34, mdcRulesActive: 9, architectureViolations: 0 },
+    metrics: { testsPassing: 35, totalTests: 35, mdcRulesActive: 9, architectureViolations: 0 },
     createdAt: new Date().toISOString()
   };
 
@@ -172,18 +175,29 @@ export function App() {
     }
   };
 
+  if (view === 'landing') {
+    return <LandingPage onOpenDashboard={() => setView('dashboard')} />;
+  }
+
   return (
     <div className="min-h-screen bg-[#090D16] text-gray-100 flex flex-col font-sans">
       {/* Header */}
       <header className="border-b border-gray-800/60 bg-[#090D16]/80 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
+            <button
+              onClick={() => setView('landing')}
+              className="flex items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors border border-gray-800 px-3 py-1.5 rounded-lg"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Voltar à Landing Page
+            </button>
+
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-400">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h1 className="font-bold text-lg leading-none tracking-tight">Vibe Safeguard</h1>
+                <h1 className="font-bold text-lg leading-none tracking-tight">Vibe Safeguard Dashboard</h1>
                 <p className="text-xs text-gray-400 mt-0.5">Product Owner & Architecture Guard</p>
               </div>
             </div>
@@ -395,7 +409,7 @@ export function App() {
                 <div className="col-span-full py-12 text-center text-gray-400 border border-dashed border-gray-800 rounded-xl">
                   <FileText className="w-8 h-8 text-gray-600 mx-auto mb-2" />
                   <p className="font-medium">Nenhuma especificação cadastrada na API.</p>
-                  <p className="text-xs text-gray-500 mt-1">Clique em "Nova Especificação" para registrar um documento Markdown.</p>
+                  <p className="text-xs text-gray-500 mt-1">Clique em "Escanear Arquivos Markdown" para carregar seus arquivos .md.</p>
                 </div>
               )}
             </div>
