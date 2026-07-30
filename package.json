@@ -20,6 +20,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,md}\"",
     "cursor-doctor": "node tools/cursor-doctor.js",
+    "sync:rules": "node scripts/sync-ide-rules.mjs",
     "doctor:cli": "node tools/dashboard-cli.js",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",

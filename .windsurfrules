@@ -1,0 +1,149 @@
+# .windsurfrules — Regras Nativas para Windsurf Cascade
+
+> Gerado automaticamente via `npm run sync:rules`.
+
+# AGENTS.md — Dogmas Arquiteturais Inquebraveis
+
+> Este arquivo e injetado no contexto de TODAS as IAs que trabalham neste projeto.
+> Quebrar qualquer regra abaixo e considerado um bug critico.
+
+---
+
+## 🛡️ DOGMA ZERO: HONESTIDADE ABSOLUTA
+
+**A IA deve ser 100% honesta com o desenvolvedor. Nunca mentir, nunca inventar, nunca ocultar.**
+
+Este e o principio mais importante deste repositorio. Sem honestidade, nenhuma outra regra tem valor.
+- Se nao souber: ADMITA.
+- Se nao testou: DIGA.
+- Se houver risco: MENCIONE.
+- Se estiver supondo: DOCUMENTE a suposicao.
+- Veja `.cursor/rules/honesty.mdc` para a BIBLIA completa de honestidade.
+
+---
+
+## 🚫 PROIBICOES ABSOLUTAS
+
+### 1. Nunca misture logica de negocio na camada de interface
+- Regras de dominio devem viver em `src/features/<feature>/domain/` ou `src/shared/domain/`.
+- Componentes UI (React/Vue/etc.) devem ser "burros" — recebem dados e disparam eventos.
+- Use cases de aplicacao (Application Layer) orquestram a logica.
+
+### 2. Nunca hardcode credenciais
+- NENHUMA string de conexao, API key, token JWT, senha ou secret pode aparecer em codigo fonte.
+- Use variaveis de ambiente (`process.env.*` / `import.meta.env.*`).
+- Valide via `cursor-doctor` antes de commitar.
+
+### 3. Nunca ignore tratamento de erros
+- Toda funcao async deve ter `try/catch` ou `.catch()` explicito.
+- APIs devem retornar erros no formato **RFC 7807** (Problem Details).
+- Nunca exponha stack traces ou detalhes internos em respostas de erro de producao.
+
+### 4. Nunca crie queries N+1
+- Sempre use `JOIN`, `eager loading` ou `DataLoader` para resolver relacionamentos.
+- Todo repositorio deve ser auditavel por N+1 via teste de integracao.
+
+### 5. Nunca comite codigo sem testes
+- Cobertura minima: **80%** para novos arquivos.
+- Toda feature nova precisa de pelo menos 1 teste unitario + 1 teste de integracao.
+- Smoke tests devem passar antes de qualquer push.
+
+### 6. Nunca finja certeza que nao existe
+- NUNCA invente documentacao, links, versoes ou referencias.
+- NUNCA oculte riscos, trade-offs ou limitacoes do codigo.
+- NUNCA diga "isso funciona" sem testar — diga "NAO testei, valide antes".
+- NUNCA use linguagem de certeza absoluta ("100% garantido", "sem duvida") quando ha incerteza.
+- Sempre declare o nivel de certeza: ALTA / MEDIA / BAIXA / INCERTEZA TOTAL.
+
+---
+
+## ✅ OBRIGACOES
+
+### O1. Clean Architecture / Feature-Sliced Design (FSD)
+```
+src/
+├── app/          # Inicializacao, providers, routing
+├── pages/        # Paginas/rotas (Next.js style) ou telas
+├── features/     # Modulos de negocio isolados
+│   └── <feature>/
+│       ├── domain/       # Entidades, regras, interfaces
+│       ├── application/  # Use cases, DTOs, ports
+│       ├── infrastructure/ # Repositorios, APIs externas
+│       └── presentation/   # Componentes, hooks, controllers
+└── shared/       # Codigo reutilizavel (utils, UI kit, configs)
+```
+- **Regra de dependencia**: `domain` nao importa nada de fora.
+- **Regra de visibilidade**: features nao importam outras features diretamente; use `shared/`.
+
+### O2. RFC 7807 para Erros de API
+Toda resposta de erro HTTP deve seguir:
+```json
+{
+  "type": "https://api.exemplo.com/errors/validation-failed",
+  "title": "Validation Failed",
+  "status": 400,
+  "detail": "O campo 'email' e obrigatorio.",
+  "instance": "/api/v1/users",
+  "errors": [
+    { "field": "email", "message": "Email invalido" }
+  ]
+}
+```
+
+### O3. Validacao de Entrada
+- Todo input de usuario deve ser validado antes de tocar em logica de negocio.
+- Use Zod (TS), Pydantic (Python), ou equivalente estrito.
+- Nunca confie em tipos TypeScript em runtime — valide dados.
+
+### O4. Logs Estruturados
+- Use formato JSON para logs.
+- Inclua sempre: `timestamp`, `level`, `traceId`, `message`.
+- Nunca logue dados sensiveis (senhas, tokens, CPF, cartao).
+
+### O5. Acessibilidade (a11y)
+- Todo componente interativo precisa ser acessivel via teclado.
+- Use atributos ARIA corretamente.
+- Contraste minimo WCAG 2.1 AA.
+
+### O6. Transparencia em Suposicoes
+- Se voce teve que SUPOR algo: DOCUMENTE em comentario ou no chat.
+- Exemplo: "// SUPOSICAO: O campo 'status' aceita 'active'|'inactive'. Verifique no banco."
+- Se o contexto for insuficiente: PECA mais contexto em vez de supor.
+
+---
+
+## 🧠 COMPORTAMENTO ESPERADO DA IA
+
+1. **Antes de implementar**, confirme o entendimento do requisito.
+2. **Sugira alternativas** quando houver trade-offs arquiteturais.
+3. **Documente decisoes** em comentarios ou no `decisions-log.md`.
+4. **Use portugues** para explicacoes, **ingles** para codigo e nomes de variaveis.
+5. **Nao reinvente a roda** — prefira bibliotecas maduras do ecossistema.
+6. **Mantenha arquivos pequenos** — maximo 300 linhas por arquivo. Extraia quando necessario.
+7. **Seja honesta** — veja Dogma Zero e `honesty.mdc`. A confianca e mais importante que a velocidade.
+
+---
+
+## 🧭 FLUXO DE TRABALHO E FERRAMENTAS
+
+Antes de agir em qualquer tarefa, CONSULTE `docs/ai-workflow.md` — o catalogo prescritivo
+"fase -> ferramenta". Nao pesquise do zero o que ja esta mapeado ali.
+
+Cadeia padrao (SDD + Explorar -> Planejar -> Implementar -> Verificar):
+`product-brainstorming` -> `write-spec` (ESPECIFICAR) -> `architecture` (PLANEJAR) ->
+implementacao (`karpathy-guidelines`) -> `code-review` / `security-review` / `codex:review`
+(AUTO-REVISAR) -> testes (Vitest + integracao) -> `deploy-checklist`.
+
+Regra: se a skill/MCP indicada nao estiver disponivel no ambiente, use a ferramenta base
+equivalente (Node / Prisma / Vitest / ESLint / Git) e DECLARE a substituicao (Dogma Zero).
+Nunca invente skills, versoes ou comandos.
+
+---
+
+## 🔗 Referencias
+- [Clean Architecture — Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [Feature-Sliced Design](https://feature-sliced.design/)
+- [RFC 7807 — Problem Details](https://tools.ietf.org/html/rfc7807)
+- [WCAG 2.1](https://www.w3.org/WAI/WCAG21/quickref/)
+- `.cursor/rules/honesty.mdc` — BIBLIA de honestidade da IA
+- `docs/ai-workflow.md` — catalogo de ferramentas/skills por fase (consulte ANTES de agir)
