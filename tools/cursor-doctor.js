@@ -1,12 +1,24 @@
 #!/usr/bin/env node
-const fs = require('fs');
-const path = require('path');
-const ROOT = path.resolve(__dirname, '..');
-let errors = 0, warnings = 0;
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-function error(msg) { console.error(`❌ ERROR: ${msg}`); errors++; }
-function warn(msg) { console.warn(`⚠️  WARN: ${msg}`); warnings++; }
-function ok(msg) { console.log(`✅ ${msg}`); }
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, '..');
+let errors = 0,
+  warnings = 0;
+
+function error(msg) {
+  console.error(`❌ ERROR: ${msg}`);
+  errors++;
+}
+function warn(msg) {
+  console.warn(`⚠️  WARN: ${msg}`);
+  warnings++;
+}
+function ok(msg) {
+  console.log(`✅ ${msg}`);
+}
 
 function checkFileExists(filePath, required = true) {
   const fullPath = path.join(ROOT, filePath);
@@ -21,13 +33,18 @@ function checkFileExists(filePath, required = true) {
 
 function checkMdcFile(filePath) {
   const fullPath = path.join(ROOT, filePath);
-  if (!fs.existsSync(fullPath)) { error(`Arquivo .mdc nao encontrado: ${filePath}`); return; }
+  if (!fs.existsSync(fullPath)) {
+    error(`Arquivo .mdc nao encontrado: ${filePath}`);
+    return;
+  }
   const content = fs.readFileSync(fullPath, 'utf8');
-  if (!content.startsWith('---')) { error(`${filePath}: frontmatter ausente`); }
-  else {
+  if (!content.startsWith('---')) {
+    error(`${filePath}: frontmatter ausente`);
+  } else {
     const endFrontmatter = content.indexOf('---', 3);
-    if (endFrontmatter === -1) { error(`${filePath}: frontmatter malformado`); }
-    else {
+    if (endFrontmatter === -1) {
+      error(`${filePath}: frontmatter malformado`);
+    } else {
       const frontmatter = content.slice(3, endFrontmatter).trim();
       if (!frontmatter.includes('description:')) warn(`${filePath}: sem 'description'`);
       if (!frontmatter.includes('globs:')) warn(`${filePath}: sem 'globs'`);
@@ -96,6 +113,7 @@ checkFileExists('docs/ide-setup.md');
 checkFileExists('docs/vibe-playbook.md');
 checkFileExists('docs/multi-stack.md');
 checkFileExists('docs/metrics.md');
+checkFileExists('docs/ai-workflow.md');
 
 console.log('\n💬 Prompts:');
 checkFileExists('prompts/honesty-check.md');
@@ -133,6 +151,13 @@ checkFileExists('CONTRIBUTING.md');
 
 console.log('\n' + '='.repeat(60));
 console.log(`\n📊 Resumo: ${errors} erro(s), ${warnings} aviso(s)`);
-if (errors > 0) { console.log('❌ Repositorio NAO esta saudavel.'); process.exit(1); }
-else if (warnings > 0) { console.log('⚠️  Funcional com avisos.'); process.exit(0); }
-else { console.log('🎉 100% saudavel! Pronto para vibe coding.'); process.exit(0); }
+if (errors > 0) {
+  console.log('❌ Repositorio NAO esta saudavel.');
+  process.exit(1);
+} else if (warnings > 0) {
+  console.log('⚠️  Funcional com avisos.');
+  process.exit(0);
+} else {
+  console.log('🎉 100% saudavel! Pronto para vibe coding.');
+  process.exit(0);
+}
