@@ -1,6 +1,6 @@
-# 🧠 Vibe Coding Template Repo
+# 🧠 Vibe Coding Safeguard & Product Owner Open Source Template
 
-> **Clone, configure, rode. Em 5 minutos voce tem uma API REST completa com arquitetura FSD, testes, e uma IA que nunca mente.**
+> **Clone, configure, proteja seu projeto. Uma plataforma Open Source completa para desenvolvimento com IA (vibe coding) sem alucinações, débitos técnicos ou colapso arquitetural.**
 
 [![CI](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/ci.yml)
 [![Security](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/security.yml/badge.svg)](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/security.yml)
@@ -8,168 +8,105 @@
 
 ---
 
-## 🚀 O que voce ganha em 5 minutos
+## 🛡️ O que é o Vibe Safeguard?
+
+Uma solução arquitetural e operacional desenhada especialmente para **solopreneurs, criadores não-técnicos e desenvolvedores** que usam assistentes de IA (Cursor, Antigravity/Gemini, Windsurf, Copilot) para construir software.
+
+Ele impõe o **Dogma Zero (Honestidade Absoluta da IA)**, **Feature-Sliced Design (FSD)** e **Spec-Driven Development (SDD)**, garantindo que o seu sonho digital não vire frustração nem colapse por falta de arquitetura.
+
+---
+
+## 🚀 Como Rodar em 1 Minuto
+
+### 1. Iniciar o Backend & Banco de Dados
 
 ```bash
 git clone <repo> meu-app && cd meu-app
 docker-compose up -d
 npm install
-npm run db:migrate
 npm run dev
 ```
 
-Acesse http://localhost:3000/api/v1/health — **funciona**.
+- **API REST**: http://localhost:3000/api/v1/health
 
-Crie um Todo:
+### 2. Iniciar o Dashboard Web (React + Vite)
+
 ```bash
-curl -X POST http://localhost:3000/api/v1/todos \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Hello Vibe Coding", "priority": "HIGH"}'
+npm run dev:web
+```
+
+- **Interface Web**: http://localhost:5173
+
+### 3. Diagnóstico Instantâneo via CLI
+
+```bash
+npm run doctor:cli
 ```
 
 ---
 
-## 🎯 Por que este template e diferente
+## 🎯 Principais Recursos do Repositório
 
-| Outros templates | Este template |
-|-----------------|---------------|
-| So regras, nenhum codigo | **Todo App completo** funcionando com FSD |
-| IA que inventa APIs | **Dogma Zero: Honestidade** — a IA admite quando nao sabe |
-| Sem testes | **Testes unitarios + integracao** com 80% cobertura |
-| Sem banco | **PostgreSQL + Redis** via Docker Compose |
-| Sem CI/CD | **GitHub Actions** com SAST, secret scan, lint |
-| Sem TypeScript | **TSConfig, ESLint, Prettier** configurados |
-| Sem exemplos | **Templates de feature, componente, endpoint** prontos |
+| Recursos                                  | Como ajuda o Vibe Coder                                                                                    |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| 🎨 **Dashboard Web React (v1.0)**         | Painel Dark Mode para acompanhar o score de saúde do projeto e especificações SDD em tempo real.           |
+| 🖥️ **CLI Doctor Interativo**              | Comando `npm run doctor:cli` que calcula o score do projeto (0-100) direto no terminal em 1 segundo.       |
+| 🛡️ **Dogma Zero: Honestidade**            | Regra estrita que impede a IA de inventar APIs, omitir erros ou mentir sobre testes.                       |
+| 🏗️ **Arquitetura FSD & Clean Arch**       | Módulos isolados (`domain`, `application`, `infrastructure`, `presentation`) para evitar código espaguete. |
+| ⚡ **Gerador CLI de Features**            | Crie novas funcionalidades isoladas em 1 segundo: `npm run generate:feature <nome>`.                       |
+| 📝 **Especificações SDD (`00-context/`)** | Documentos Markdown vivos (`vision.md`, `prd.md`, `user-stories.md`) como a fonte única de verdade.        |
 
 ---
 
-## 📁 Estrutura
+## 📁 Estrutura de Pastas
 
 ```
 vibe-coding-template-repo/
 │
-├── 📄 .cursorrules              ← Cursor le automaticamente
-├── 📄 AGENTS.md                 ← Dogmas (Honestidade = #0)
+├── 🎨 web/                      ← Dashboard Web (React + Vite + TailwindCSS)
 │
-├── 🧠 .cursor/rules/            ← BIBLIA da IA
-│   ├── honesty.mdc              ← ⭐ A IA nunca mente
-│   ├── frontend.mdc, backend.mdc, testing.mdc
-│   ├── security.mdc, performance.mdc, accessibility.mdc
-│   └── documentation.mdc, database-skill.mdc
+├── 🧠 .cursor/rules/            ← BIBLIA da IA (Regras Heurísticas MDC)
+│   ├── honesty.mdc              ← ⭐ Dogma Zero: A IA nunca mente
+│   └── architecture.mdc, testing.mdc, security.mdc...
 │
-├── 🏗️ src/                      ← Codigo que RODA
-│   ├── app/                     ← Servidor Express + rotas + middleware
-│   │   ├── server.ts            ← 🚀 API REST na porta 3000
-│   │   ├── routes.ts            ← Wiring de features
-│   │   └── middleware/
+├── 🏗️ src/                      ← Backend API (TypeScript / Express)
+│   ├── app/                     ← Routing & Middlewares
 │   ├── features/
-│   │   └── todo/                ← ⭐ EXEMPLO COMPLETO (FSD)
-│   │       ├── domain/          ← Entidade, repositorio, erros
-│   │       ├── application/     ← Use cases, DTOs
-│   │       ├── infrastructure/  ← Prisma repository
-│   │       ├── presentation/    ← Controller
-│   │       └── tests/unit/      ← Testes com Vitest
-│   └── shared/                  ← Utilitarios reais
-│       ├── errors/              ← DomainError base
-│       ├── http/                ← RFC 7807 ProblemDetails
-│       ├── infrastructure/      ← Logger (Pino), Database (Prisma)
-│       └── utils/               ← cn() para Tailwind
+│   │   ├── project-health/      ← 📊 Feature de Auditoria de Saúde
+│   │   ├── spec-manager/        ← 📝 Feature de Gestão de Especificações SDD
+│   │   └── todo/                ← ⭐ Exemplo de Referência (FSD)
+│   └── shared/                  ← Respostas RFC 7807, Logger (Pino), Prisma
 │
-├── 🐳 docker-compose.yml        ← PostgreSQL 16 + Redis 7
-├── 📦 prisma/schema.prisma      ← Schema do Todo App
+├── 🔧 tools/
+│   ├── dashboard-cli.js         ← 🖥️ Dashboard Interativo CLI
+│   └── cursor-doctor.js         ← 🩺 Diagnóstico Estático do Repositório
 │
-├── ⚙️ tsconfig.json             ← Paths @/* configurados
-├── 🔍 eslint.config.js          ← Regras rigorosas
-├── ✨ prettier.config.js        ← Formatacao padronizada
-├── 🧪 vitest.config.ts          ← Cobertura >= 80%
-│
-├── 📚 00-context/               ← Contexto de produto
-├── 👥 01-product/               ← Personas e user stories
-├── 📝 docs/                     ← Onboarding, arquitetura, anti-patterns
-├── 💬 prompts/                  ← 8 templates para a IA
-├── 📐 templates/                ← Blueprints de feature, componente, endpoint
-│
-├── 🧪 checks/smoke.test.js      ← Valida em ~1s
-├── 🔧 tools/cursor-doctor.js    ← Diagnostico de saude
-├── 🚀 first-time.sh             ← Setup automatico
-├── ⚙️ Makefile                  ← Comandos padronizados
-│
-├── 🔒 .github/workflows/        ← CI + SAST + Security
-├── 🐛 .github/ISSUE_TEMPLATE/   ← Bug, AI Hallucination, Feature
-├── 📋 PULL_REQUEST_TEMPLATE.md  ← Checklist completo
-│
-└── 📄 QUICKSTART.md             ← Seus primeiros 5 minutos
+├── 📚 00-context/               ← Visão e PRD do Produto
+├── 👥 01-product/               ← Personas e User Stories
+├── ⚙️ Makefile                  ← Comandos unificados (`make check`, `make doctor`)
+└── 📄 AGENTS.md                 ← Manifesto Universal de IA
 ```
 
 ---
 
-## 🛠️ Stack
+## 📦 Comandos Principais
 
-| Camada | Tecnologia |
-|--------|-----------|
-| Runtime | Node.js 20+ + TypeScript 5.5 |
-| Framework | Express 4 |
-| ORM | Prisma 5 + PostgreSQL 16 |
-| Cache | Redis 7 |
-| Validacao | Zod |
-| Logs | Pino (JSON estruturado) |
-| Testes | Vitest + Playwright |
-| Lint | ESLint + Prettier |
-| CI/CD | GitHub Actions |
+| Comando                    | Descrição                                      |
+| -------------------------- | ---------------------------------------------- |
+| `npm run dev`              | Inicia o servidor backend na porta 3000        |
+| `npm run dev:web`          | Inicia o Dashboard Web React na porta 5173     |
+| `npm run doctor:cli`       | Exibe o gráfico de saúde no terminal           |
+| `npm run cursor-doctor`    | Valida 100% da integridade de arquivos do repo |
+| `npm run generate:feature` | Gera o esqueleto de uma nova feature isolada   |
+| `npm test`                 | Executa todos os testes unitários via Vitest   |
 
 ---
 
-## 🧠 Como usar com IA
+## 📜 Licença
 
-### 1. Mencione o contexto obrigatorio
-```
-@AGENTS.md
-@.cursor/rules/honesty.mdc
-@00-context/prd.md
-```
-
-### 2. A IA segue o SDLC
-```
-Especificar → Planejar → Implementar → Auto-Revisar → PR
-```
-
-### 3. Valide continuamente
-```bash
-make check        # lint + smoke + doctor
-make test-smoke   # ~1 segundo
-make doctor       # diagnostico completo
-```
-
-### 4. Adicione features rapidamente
-```bash
-bash scripts/generate-feature.sh payments
-# Gera toda a estrutura FSD pronta para preencher
-```
-
----
-
-## 📦 Comandos (Makefile)
-
-| Comando | Descricao |
-|---------|-----------|
-| `make dev` | API na porta 3000 com hot reload |
-| `make test` | Testes unitarios + cobertura |
-| `make test-smoke` | Validacao rapida (~1s) |
-| `make lint` | ESLint em todo src/ |
-| `make format` | Prettier em todo src/ |
-| `make doctor` | Diagnostico de saude do repo |
-| `make setup` | Setup inicial completo |
-| `make check` | Full check: lint + test + doctor |
-
----
-
-## 📜 Licenca
-
-[MIT](LICENSE) © 2026 Vibe Coding Template Repo Contributors
-
----
+[MIT](LICENSE) © 2026 Vibe Coding Safeguard Contributors
 
 <p align="center">
   <b>Feito com 💜 pela comunidade de vibe coding</b><br>
-  <i>"Clone, vibe, deploy."</i>
+  <i>"Clone, crie com IA, proteja seu projeto."</i>
 </p>
