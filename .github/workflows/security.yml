@@ -9,11 +9,12 @@ on:
       - '.cursor/**'
       - 'AGENTS.md'
 
+# Actions pinadas em SHA (supply-chain). Dependabot mantem os SHAs atualizados.
 jobs:
   hardcoded-secrets:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Check for hardcoded credentials
         run: |
           if grep -rniE "(password|secret|token|api_key|private_key)[[:space:]]*=[[:space:]]*['\"][^'\"]+['\"]" \
@@ -26,8 +27,8 @@ jobs:
   dependency-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '20'
       # Auditoria escopada a PRODUCAO: vulnerabilidades de ferramentas de dev
