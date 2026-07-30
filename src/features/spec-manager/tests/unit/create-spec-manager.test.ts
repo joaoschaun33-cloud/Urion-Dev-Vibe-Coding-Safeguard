@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { SpecDocument } from '../../domain/spec-manager.js';
 import { CreateSpecDocumentUseCase } from '../../application/create-spec-manager.js';
 import { InMemorySpecManagerRepository } from '../../infrastructure/spec-manager-repository.memory.js';
+import { scanProjectSpecs } from '../../infrastructure/markdown-spec-scanner.js';
 
 describe('SpecManager Feature Domain & Use Case', () => {
   it('deve criar uma especificação em status DRAFT', () => {
@@ -27,19 +28,18 @@ describe('SpecManager Feature Domain & Use Case', () => {
     expect(approved.status).toBe('APPROVED');
   });
 
-  it('deve salvar e retornar DTO via CreateSpecDocumentUseCase', async () => {
+  it('deve escanear os arquivos markdown reais do repositório', () => {
+    const scanned = scanProjectSpecs();
+    expect(scanned.length).toBeGreaterThan(0);
+    const visionSpec = scanned.find((s) => s.filePath.includes('vision.md'));
+    expect(visionSpec).toBeDefined();
+  });
+
+  it('deve sincronizar especificações escaneadas via UseCase', async () => {
     const repo = new InMemorySpecManagerRepository();
     const useCase = new CreateSpecDocumentUseCase(repo);
 
-    const result = await useCase.execute({
-      title: 'User Stories MVP',
-      filePath: '01-product/user-stories.md',
-      acceptanceCriteriaCount: 5,
-    });
-
-    expect(result.id).toBeDefined();
-    expect(result.title).toBe('User Stories MVP');
-    expect(result.status).toBe('DRAFT');
-    expect(result.isValidated).toBe(true);
+    const scanned = await useCase.scanAndSync();
+    expect(scanned.length).toBeGreaterThan(0);
   });
 });

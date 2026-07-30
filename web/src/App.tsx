@@ -357,12 +357,17 @@ export function App() {
                 <p className="text-xs text-gray-400 mt-0.5">Documentos Markdown versionados em 00-context/ e 01-product/</p>
               </div>
 
-              <button 
-                onClick={fetchSpecs} 
-                className="p-2 text-gray-400 hover:text-white rounded-lg border border-gray-800 hover:border-gray-700 transition-all"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={async () => {
+                    await fetch('http://localhost:3000/api/v1/specs/scan');
+                    fetchSpecs();
+                  }}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-violet-600/20 text-violet-400 border border-violet-500/30 text-xs font-semibold hover:bg-violet-600/30 transition-all"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Escanear Arquivos Markdown (.md)
+                </button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

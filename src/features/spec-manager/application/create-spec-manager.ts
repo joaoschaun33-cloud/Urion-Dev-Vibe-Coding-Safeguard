@@ -1,5 +1,6 @@
 import type { ISpecManagerRepository } from '../domain/spec-manager-repository.interface.js';
 import { SpecDocument } from '../domain/spec-manager.js';
+import { scanProjectSpecs } from '../infrastructure/markdown-spec-scanner.js';
 import type { CreateSpecDocumentDTO } from './dto/create-spec-manager.dto.js';
 import {
   toSpecDocumentResponseDTO,
@@ -18,5 +19,17 @@ export class CreateSpecDocumentUseCase {
 
     const saved = await this.repository.save(spec);
     return toSpecDocumentResponseDTO(saved);
+  }
+
+  async scanAndSync(): Promise<SpecDocumentResponseDTO[]> {
+    const scannedDocs = scanProjectSpecs();
+    const savedDocs: SpecDocumentResponseDTO[] = [];
+
+    for (const doc of scannedDocs) {
+      const saved = await this.repository.save(doc);
+      savedDocs.push(toSpecDocumentResponseDTO(saved));
+    }
+
+    return savedDocs;
   }
 }

@@ -20,4 +20,9 @@ export class SpecManagerController {
     const list = await this.repository.findAll();
     res.json(list.map(toSpecDocumentResponseDTO));
   }
+
+  async scan(_req: Request, res: Response): Promise<void> {
+    const scanned = await this.createUseCase.scanAndSync();
+    res.json(scanned);
+  }
 }

@@ -70,6 +70,10 @@ router.get(
   '/specs',
   asyncHandler((req, res) => specController.list(req, res))
 );
+router.get(
+  '/specs/scan',
+  asyncHandler((req, res) => specController.scan(req, res))
+);
 
 // === Health Check ===
 router.get(
