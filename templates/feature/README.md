@@ -1,30 +1,40 @@
-# Template: Nova Feature
+# Template de Feature (FSD)
 
-Copie esta pasta para `src/features/<nome-da-feature>/` e adapte.
+Use o gerador em vez de copiar manualmente:
 
-## Estrutura
+```
+npm run generate:feature -- <nome-em-kebab-case>
+# ex.: npm run generate:feature -- user-profile
+```
+
+O gerador substitui os tokens (`__Name__`, `__name__`, `__slug__`, `__NAME__`) e cria,
+em `src/features/<nome>/`, uma feature que **ja nasce compilando e testavel**, com um
+repositorio EM MEMORIA como padrao (sem depender de banco).
+
+## Estrutura gerada
+
 ```
 src/features/<feature>/
 ├── domain/
-│   ├── entity.ts
-│   ├── repository.interface.ts
+│   ├── <feature>.ts                       # entidade + schema Zod
+│   ├── <feature>-repository.interface.ts  # port
 │   └── errors.ts
 ├── application/
-│   ├── use-case.ts
-│   ├── dto/
-│   │   ├── input.dto.ts
-│   │   └── output.dto.ts
-│   └── mapper.ts
+│   ├── create-<feature>.ts                # use case
+│   └── dto/
+│       ├── create-<feature>.dto.ts        # entrada (Zod)
+│       └── <feature>-response.dto.ts      # saida + mapper
 ├── infrastructure/
-│   ├── repository.impl.ts
-│   └── external-service.client.ts
-├── presentation/
-│   ├── controller.ts
-│   ├── component.tsx
-│   └── hook.ts
+│   └── <feature>-repository.memory.ts     # adapter em memoria (troque por Prisma depois)
 └── tests/
-    ├── unit/
-    │   └── use-case.test.ts
-    └── integration/
-        └── repository.test.ts
+    └── unit/
+        └── create-<feature>.test.ts
 ```
+
+## Proximos passos apos gerar
+
+1. Ajuste os campos reais em `domain/<feature>.ts` e no DTO.
+2. Registre a rota em `src/app/routes.ts` (use `asyncHandler`).
+3. Para persistir em banco: crie o modelo no `prisma/schema.prisma` e troque o repo
+   em memoria por uma implementacao Prisma (referencia: feature `todo`).
+4. Rode: `npm run build && npm run lint && npm test`.

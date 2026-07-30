@@ -1,15 +1,12 @@
-// src/features/<feature>/application/dto/create-entity.dto.ts
+// src/features/__slug__/application/dto/create-__slug__.dto.ts
 
 import { z } from 'zod';
 
-/**
- * DTO de entrada: valida e tipa os dados que chegam ao use case.
- */
-
-export const CreateEntitySchema = z.object({
-  // Adicione seus campos validados aqui
-  name: z.string().min(1).max(255),
-  email: z.string().email(),
+export const Create__Name__Schema = z.object({
+  name: z.string().min(1).max(255), // TODO: campos de entrada da feature
 });
 
-export type CreateEntityDTO = z.infer<typeof CreateEntitySchema>;
+/** Entrada (antes do parse). */
+export type Create__Name__Input = z.input<typeof Create__Name__Schema>;
+/** Saida (apos o parse). */
+export type Create__Name__DTO = z.infer<typeof Create__Name__Schema>;

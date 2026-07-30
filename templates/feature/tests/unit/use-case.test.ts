@@ -1,43 +1,26 @@
-// src/features/<feature>/tests/unit/create-entity.test.ts
+// src/features/__slug__/tests/unit/create-__slug__.test.ts
 
-import { describe, it, expect, vi } from 'vitest';
-import { CreateEntityUseCase } from '../../application/create-entity';
-import { IEntityRepository } from '../../domain/entity-repository.interface';
-import { EntityAlreadyExistsError } from '../../domain/errors';
+import { describe, it, expect } from 'vitest';
+import { Create__Name__UseCase } from '../../application/create-__slug__';
+import { InMemory__Name__Repository } from '../../infrastructure/__slug__-repository.memory';
 
-describe('CreateEntityUseCase', () => {
-  const mockRepo: IEntityRepository = {
-    findById: vi.fn(),
-    findAll: vi.fn(),
-    save: vi.fn(),
-    delete: vi.fn(),
-    findByUniqueField: vi.fn(),
-  };
+describe('Create__Name__UseCase', () => {
+  it('cria e persiste com dados validos', async () => {
+    const repo = new InMemory__Name__Repository();
+    const useCase = new Create__Name__UseCase(repo);
 
-  const useCase = new CreateEntityUseCase(mockRepo);
-
-  it('deve criar entidade quando dados sao validos', async () => {
-    vi.mocked(mockRepo.findByUniqueField).mockResolvedValue(null);
-    vi.mocked(mockRepo.save).mockResolvedValue(undefined);
-
-    const result = await useCase.execute({
-      name: 'Teste',
-      email: 'teste@exemplo.com',
-    });
+    const result = await useCase.execute({ name: 'Exemplo' });
 
     expect(result).toHaveProperty('id');
-    expect(result.name).toBe('Teste');
-    expect(mockRepo.save).toHaveBeenCalledTimes(1);
+    expect(result.name).toBe('Exemplo');
+    expect(await repo.count()).toBe(1);
   });
 
-  it('deve lancar erro quando entidade ja existe', async () => {
-    vi.mocked(mockRepo.findByUniqueField).mockResolvedValue({
-      id: 'existing-id',
-    } as any);
+  it('rejeita entrada invalida (name vazio)', async () => {
+    const repo = new InMemory__Name__Repository();
+    const useCase = new Create__Name__UseCase(repo);
 
-    await expect(useCase.execute({
-      name: 'Teste',
-      email: 'teste@exemplo.com',
-    })).rejects.toThrow(EntityAlreadyExistsError);
+    await expect(useCase.execute({ name: '' })).rejects.toThrow();
+    expect(await repo.count()).toBe(0);
   });
 });

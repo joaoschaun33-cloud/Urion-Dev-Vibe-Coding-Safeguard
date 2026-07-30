@@ -1,40 +1,39 @@
-// src/features/<feature>/infrastructure/entity-repository.impl.ts
+// src/features/__slug__/infrastructure/__slug__-repository.memory.ts
 
-import { IEntityRepository } from '../domain/entity-repository.interface';
-import { Entity, EntityProps } from '../domain/entity';
-import { PrismaClient } from '@prisma/client';
+import { I__Name__Repository } from '../domain/__slug__-repository.interface';
+import { __Name__ } from '../domain/__slug__';
 
 /**
- * Implementacao do repositorio (Adapter).
- * Conhece detalhes de banco de dados.
+ * Repositorio EM MEMORIA (adapter padrao para comecar SEM banco).
+ * A feature ja nasce compilando e testavel. Quando criar o modelo no
+ * prisma/schema.prisma, troque por uma implementacao Prisma
+ * (referencia: src/features/todo/infrastructure/todo-repository.prisma.ts).
  */
+export class InMemory__Name__Repository implements I__Name__Repository {
+  private readonly store = new Map<string, __Name__>();
 
-export class PrismaEntityRepository implements IEntityRepository {
-  constructor(private readonly prisma: PrismaClient) {}
-
-  async findById(id: string): Promise<Entity | null> {
-    const raw = await this.prisma.entity.findUnique({ where: { id } });
-    return raw ? Entity.reconstitute(raw as EntityProps) : null;
+  findById(id: string): Promise<__Name__ | null> {
+    return Promise.resolve(this.store.get(id) ?? null);
   }
 
-  async findAll({ page, limit }: { page: number; limit: number }): Promise<Entity[]> {
-    const raw = await this.prisma.entity.findMany({
-      skip: (page - 1) * limit,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-    });
-    return raw.map(r => Entity.reconstitute(r as EntityProps));
+  findAll({ page, limit }: { page: number; limit: number }): Promise<__Name__[]> {
+    const all = [...this.store.values()].sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    );
+    return Promise.resolve(all.slice((page - 1) * limit, (page - 1) * limit + limit));
   }
 
-  async save(entity: Entity): Promise<void> {
-    await this.prisma.entity.upsert({
-      where: { id: entity.id },
-      update: { /* campos */ },
-      create: { /* campos */ },
-    });
+  save(entity: __Name__): Promise<void> {
+    this.store.set(entity.id, entity);
+    return Promise.resolve();
   }
 
-  async delete(id: string): Promise<void> {
-    await this.prisma.entity.delete({ where: { id } });
+  delete(id: string): Promise<void> {
+    this.store.delete(id);
+    return Promise.resolve();
+  }
+
+  count(): Promise<number> {
+    return Promise.resolve(this.store.size);
   }
 }

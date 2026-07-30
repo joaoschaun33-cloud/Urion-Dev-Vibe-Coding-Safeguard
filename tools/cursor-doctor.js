@@ -134,7 +134,7 @@ checkFileExists('tests/setup.ts');
 checkFileExists('src/features/todo/tests/unit/create-todo.test.ts');
 
 console.log('\n🔧 Scripts:');
-checkFileExists('scripts/generate-feature.sh');
+checkFileExists('scripts/generate-feature.mjs');
 checkFileExists('scripts/bootstrap.js');
 
 console.log('\n🐛 GitHub Templates:');

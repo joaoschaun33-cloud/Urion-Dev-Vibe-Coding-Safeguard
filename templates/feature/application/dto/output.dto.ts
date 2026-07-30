@@ -1,28 +1,24 @@
-// src/features/<feature>/application/dto/entity-response.dto.ts
+// src/features/__slug__/application/dto/__slug__-response.dto.ts
 
-import { Entity } from '../../domain/entity';
+import { __Name__ } from '../../domain/__slug__';
 
-/**
- * DTO de saida: transforma entidade de dominio em resposta segura.
- * Nunca exponha a entidade diretamente.
- */
-
-export interface EntityResponseDTO {
+export interface __Name__ResponseDTO {
   id: string;
   name: string;
-  email: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export const EntityResponseDTO = {
-  fromDomain(entity: Entity): EntityResponseDTO {
+export const __Name__ResponseMapper = {
+  fromDomain(entity: __Name__): __Name__ResponseDTO {
     return {
       id: entity.id,
       name: entity.name,
-      email: entity.email,
       createdAt: entity.createdAt.toISOString(),
       updatedAt: entity.updatedAt.toISOString(),
     };
+  },
+  fromDomainList(items: __Name__[]): __Name__ResponseDTO[] {
+    return items.map((e) => __Name__ResponseMapper.fromDomain(e));
   },
 };

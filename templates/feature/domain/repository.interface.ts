@@ -1,15 +1,12 @@
-// src/features/<feature>/domain/<entity>-repository.interface.ts
+// src/features/__slug__/domain/__slug__-repository.interface.ts
 
-import { Entity } from './entity';
+import { __Name__ } from './__slug__';
 
-/**
- * Port (interface) do repositorio.
- * Define o contrato que a camada de infraestrutura deve implementar.
- */
-
-export interface IEntityRepository {
-  findById(id: string): Promise<Entity | null>;
-  findAll(options: { page: number; limit: number }): Promise<Entity[]>;
-  save(entity: Entity): Promise<void>;
+/** Port do repositorio: contrato que a infraestrutura implementa. */
+export interface I__Name__Repository {
+  findById(id: string): Promise<__Name__ | null>;
+  findAll(options: { page: number; limit: number }): Promise<__Name__[]>;
+  save(entity: __Name__): Promise<void>;
   delete(id: string): Promise<void>;
+  count(): Promise<number>;
 }

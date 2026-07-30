@@ -1,26 +1,9 @@
-// src/features/<feature>/domain/errors.ts
+// src/features/__slug__/domain/errors.ts
 
-import { DomainError } from '@/shared/errors/domain-error';
+import { DomainError } from '@/shared/errors';
 
-/**
- * Erros especificos do dominio.
- * Cada erro deve ter um codigo unico e mensagem clara.
- */
-
-export class EntityNotFoundError extends DomainError {
-  constructor(entityId: string) {
-    super('ENTITY_NOT_FOUND', `Entidade com ID "${entityId}" nao encontrada.`);
-  }
-}
-
-export class EntityAlreadyExistsError extends DomainError {
-  constructor(identifier: string) {
-    super('ENTITY_ALREADY_EXISTS', `Entidade "${identifier}" ja existe.`);
-  }
-}
-
-export class InvalidEntityStateError extends DomainError {
-  constructor(reason: string) {
-    super('INVALID_ENTITY_STATE', `Estado invalido: ${reason}`);
+export class __Name__NotFoundError extends DomainError {
+  constructor(id: string) {
+    super('__NAME___NOT_FOUND', `__Name__ com ID "${id}" nao encontrado.`, 404);
   }
 }

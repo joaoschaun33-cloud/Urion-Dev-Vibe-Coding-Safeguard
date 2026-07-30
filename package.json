@@ -24,7 +24,7 @@
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force",
-    "generate:feature": "bash scripts/generate-feature.sh",
+    "generate:feature": "node scripts/generate-feature.mjs",
     "setup": "bash first-time.sh",
     "postinstall": "prisma generate",
     "prepare": "husky || exit 0",
@@ -60,11 +60,11 @@
     "lint-staged": "^15.0.0"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --fix",
+    "*.{json,md,yml,yaml}": [
       "prettier --write"
     ],
-    "*.{json,md,yml,yaml}": [
+    "src/**/*.{ts,tsx}": [
+      "eslint --fix",
       "prettier --write"
     ]
   },
