@@ -7,6 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/app/server.ts",
+    "dev:web": "npm --prefix web run dev",
     "build": "tsc",
     "start": "node dist/app/server.js",
     "test": "vitest run",
@@ -19,6 +20,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,json,md}\"",
     "cursor-doctor": "node tools/cursor-doctor.js",
+    "doctor:cli": "node tools/dashboard-cli.js",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",

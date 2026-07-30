@@ -1,0 +1,45 @@
+import { describe, expect, it } from 'vitest';
+import { SpecDocument } from '../../domain/spec-manager.js';
+import { CreateSpecDocumentUseCase } from '../../application/create-spec-manager.js';
+import { InMemorySpecManagerRepository } from '../../infrastructure/spec-manager-repository.memory.js';
+
+describe('SpecManager Feature Domain & Use Case', () => {
+  it('deve criar uma especificação em status DRAFT', () => {
+    const spec = SpecDocument.create({
+      title: 'PRD Sistema de Autenticação',
+      filePath: '00-context/prd-auth.md',
+      acceptanceCriteriaCount: 4,
+    });
+
+    expect(spec.id).toBeDefined();
+    expect(spec.status).toBe('DRAFT');
+    expect(spec.isValidated).toBe(true);
+  });
+
+  it('deve aprovar uma especificação alterando seu status para APPROVED', () => {
+    const spec = SpecDocument.create({
+      title: 'Visao Geral do Produto',
+      filePath: '00-context/vision.md',
+      acceptanceCriteriaCount: 2,
+    });
+
+    const approved = spec.approve();
+    expect(approved.status).toBe('APPROVED');
+  });
+
+  it('deve salvar e retornar DTO via CreateSpecDocumentUseCase', async () => {
+    const repo = new InMemorySpecManagerRepository();
+    const useCase = new CreateSpecDocumentUseCase(repo);
+
+    const result = await useCase.execute({
+      title: 'User Stories MVP',
+      filePath: '01-product/user-stories.md',
+      acceptanceCriteriaCount: 5,
+    });
+
+    expect(result.id).toBeDefined();
+    expect(result.title).toBe('User Stories MVP');
+    expect(result.status).toBe('DRAFT');
+    expect(result.isValidated).toBe(true);
+  });
+});
