@@ -1,4 +1,4 @@
-name: CI / SAST / Security Scan
+name: CI
 
 on:
   push:
@@ -7,37 +7,67 @@ on:
     branches: [main, develop]
 
 jobs:
-  lint-and-test:
+  build-lint-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
       - run: npm ci
+      - run: npm run build
       - run: npm run lint
+      - run: npm run test:coverage
       - run: npm run test:smoke
 
+  integration:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: vibeuser
+          POSTGRES_PASSWORD: vibepass
+          POSTGRES_DB: vibedb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vibeuser -d vibedb"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://vibeuser:vibepass@localhost:5432/vibedb
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      # globalSetup aplica o schema (prisma db push) antes da suite.
+      - run: npm run test:integration
+
   secret-scan:
+    # Trufflehog em modo diff so faz sentido em PR (base != head).
+    # Em push para main, base==head causa falha — por isso restringimos a PR.
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Secret Detection
         uses: trufflesecurity/trufflehog@main
         with:
-          path: ./
-          base: main
-          head: HEAD
-          extra_args: --debug --only-verified
+          extra_args: --only-verified
 
   sast:
     runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
     steps:
       - uses: actions/checkout@v4
       - name: Run Semgrep SAST
-        uses: returntocorp/semgrep-action@v1
-        with:
-          config: >-
-            p/security-audit
-            p/owasp-top-ten
-            p/cwe-top-25
+        run: semgrep scan --config p/security-audit --config p/owasp-top-ten --config p/cwe-top-25 --error

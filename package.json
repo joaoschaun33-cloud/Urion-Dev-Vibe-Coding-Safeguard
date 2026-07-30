@@ -28,7 +28,8 @@
     "setup": "bash first-time.sh",
     "postinstall": "prisma generate",
     "prepare": "husky || exit 0",
-    "test:integration:local": "node scripts/with-embedded-postgres.mjs"
+    "test:integration:local": "node scripts/with-embedded-postgres.mjs",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "express": "^4.19.0",
@@ -40,15 +41,13 @@
     "prisma": "^5.16.0",
     "@prisma/client": "^5.16.0",
     "pino": "^9.2.0",
-    "pino-pretty": "^11.2.0",
-    "uuid": "^10.0.0"
+    "pino-pretty": "^11.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
     "@types/express": "^4.17.21",
     "@types/cors": "^2.8.17",
     "@types/compression": "^1.7.5",
-    "@types/uuid": "^10.0.0",
     "typescript": "^5.5.0",
     "tsx": "^4.16.0",
     "vitest": "^2.0.0",
