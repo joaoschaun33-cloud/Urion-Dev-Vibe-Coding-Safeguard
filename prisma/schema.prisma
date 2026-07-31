@@ -28,3 +28,29 @@ enum Priority {
   HIGH
   URGENT
 }
+
+model ProjectHealthReport {
+  id                     String   @id @default(uuid())
+  projectName            String   @map("project_name")
+  score                  Int
+  status                 String
+  testsPassing           Int      @map("tests_passing")
+  totalTests             Int      @map("total_tests")
+  mdcRulesActive         Int      @map("mdc_rules_active")
+  architectureViolations Int      @map("architecture_violations")
+  createdAt              DateTime @default(now()) @map("created_at")
+
+  @@map("project_health_reports")
+}
+
+model SpecDocument {
+  id                      String   @id @default(uuid())
+  title                   String
+  filePath                String   @map("file_path")
+  status                  String
+  acceptanceCriteriaCount Int      @map("acceptance_criteria_count")
+  isValidated             Boolean  @default(false) @map("is_validated")
+  createdAt               DateTime @default(now()) @map("created_at")
+
+  @@map("spec_documents")
+}
