@@ -1,4 +1,5 @@
 import pino from 'pino';
+import { getRequestId } from './async-context';
 
 /**
  * Logger estruturado em JSON.
@@ -17,12 +18,16 @@ export const logger = pino({
       'creditCard',
       'req.headers.authorization',
       'req.body.password',
-      'req.body.cpf'
+      'req.body.cpf',
     ],
-    censor: '[REDACTED_PII]'
+    censor: '[REDACTED_PII]',
   },
   formatters: {
     level: (label: string) => ({ level: label.toUpperCase() }),
+  },
+  mixin() {
+    const reqId = getRequestId();
+    return reqId ? { reqId } : {};
   },
   base: {
     service: process.env.APP_NAME ?? 'vibe-app',

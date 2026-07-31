@@ -64,18 +64,12 @@ router.get(
   asyncHandler((req, res) => securityAuditController.list(req, res))
 );
 
-import { deepHealthCheck } from '@/shared/http/health-check';
+import { livenessCheck, readinessCheck, deepHealthCheck } from '@/shared/http/health-check';
 
-// Endpoint de Healthcheck Simples
-router.get('/health', (_req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    diContainer: 'awilix',
-  });
-});
-
-// Endpoint de Healthcheck Aprofundado (PostgreSQL + Redis)
+// Endpoints de Healthcheck (Kubernetes Standards)
+router.get('/health', livenessCheck);
+router.get('/health/live', livenessCheck);
+router.get('/health/ready', asyncHandler(readinessCheck));
 router.get('/health/deep', asyncHandler(deepHealthCheck));
 
 export default router;

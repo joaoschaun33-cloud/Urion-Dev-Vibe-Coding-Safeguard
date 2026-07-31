@@ -1,12 +1,12 @@
 import Redis from 'ioredis';
 import { logger } from './logger';
 
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
 
 export const redis = new Redis(redisUrl, {
   lazyConnect: true,
   maxRetriesPerRequest: 3,
-  retryStrategy(times) {
+  retryStrategy(times: number): number {
     const delay = Math.min(times * 100, 3000);
     logger.warn({ event: 'REDIS_RETRYING_CONNECTION', times, delay });
     return delay;

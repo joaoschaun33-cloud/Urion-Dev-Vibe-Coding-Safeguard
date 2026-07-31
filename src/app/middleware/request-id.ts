@@ -8,10 +8,15 @@ export interface RequestWithId extends Request {
   log?: Logger;
 }
 
+import { requestContext } from '@/shared/infrastructure/async-context';
+
 export function requestIdMiddleware(req: RequestWithId, res: Response, next: NextFunction): void {
-  const reqId = (req.headers['x-request-id'] as string) || randomUUID();
+  const reqId = (req.headers['x-request-id'] as string | undefined) ?? randomUUID();
   req.id = reqId;
   req.log = logger.child({ reqId });
   res.setHeader('X-Request-ID', reqId);
-  next();
+
+  requestContext.run({ requestId: reqId }, () => {
+    next();
+  });
 }
