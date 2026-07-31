@@ -13,23 +13,38 @@ export function InteractivePlayground() {
   } | null>(null);
 
   const runSimulation = () => {
+    if (!prompt.trim()) return;
     setIsSimulating(true);
     setSimulationResult(null);
 
+    const hasNoZod = /sem zod|sem valida/i.test(prompt);
+    const hasEnvSecret = /\.env|senha|secret|credenci/i.test(prompt);
+
     setTimeout(() => {
       setIsSimulating(false);
+      const logs: string[] = [
+        `🔍 Lendo prompt de entrada: "${prompt.slice(0, 55)}..."`,
+        '⚙️ Cruzando com Regras Dogma Zero & AST Scanner...',
+      ];
+
+      if (hasNoZod || hasEnvSecret) {
+        if (hasNoZod) logs.push('⚠️ VIOLAÇÃO DETECTADA: Tentativa de bypass de validação Zod no controller.');
+        if (hasEnvSecret) logs.push('🚨 ALERTA CRÍTICO: Risco de vazamento de credenciais no arquivo de ambiente.');
+        logs.push('🛡️ BLOQUEADO: Prompt recusado pelo Urion Safeguard Engine.');
+        logs.push('✅ REMEDIAÇÃO AUTOMÁTICA: Aplicado Zod Schema rigoroso e Pino PII Redact.');
+        logs.push('URION AUDIT STATUS: 100/100 🟢 CÓDIGO CORRIGIDO E PROTEGIDO');
+      } else {
+        logs.push('✅ Nenhuma alucinação ou padrão inseguro detectado.');
+        logs.push('✅ Invariantes de domínio e regras FSD em conformidade.');
+        logs.push('URION AUDIT STATUS: 100/100 🟢 APROVADO PARA COMMIT');
+      }
+
       setSimulationResult({
         score: 100,
-        status: 'blocked',
-        logs: [
-          '🔍 Inspecting prompt against Dogma Zero & AGENTS.md rules...',
-          '⚠️ ALERT: High-risk code pattern detected! Missing Zod validation.',
-          '🛡️ REJECTED: Prompt attempt blocked by Urion Safeguard rules.',
-          '✅ AUTO-REMEDIATED: Inserted Zod schema validator and Pino PII redaction.',
-          'URION STATUS: 100/100 🟢 SECURE & COMPLIANT',
-        ],
+        status: hasNoZod || hasEnvSecret ? 'blocked' : 'passed',
+        logs,
       });
-    }, 1500);
+    }, 1200);
   };
 
   return (
