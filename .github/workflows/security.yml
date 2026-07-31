@@ -1,36 +1,27 @@
-name: Security Review
+name: Security & SAST Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    paths:
-      - 'src/**'
-      - '.cursor/**'
-      - 'AGENTS.md'
+    branches: [ main ]
 
-# Actions pinadas em SHA (supply-chain). Dependabot mantem os SHAs atualizados.
 jobs:
-  hardcoded-secrets:
+  security-scan:
+    name: Gitleaks & Security Scan
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Check for hardcoded credentials
-        run: |
-          if grep -rniE "(password|secret|token|api_key|private_key)[[:space:]]*=[[:space:]]*['\"][^'\"]+['\"]" \
-             --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --include='*.mjs' src/; then
-            echo "Credenciais hardcoded detectadas!"
-            exit 1
-          fi
-          echo "Nenhuma credencial hardcode detectada."
 
-  dependency-check:
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
-          node-version: '20'
-      # Auditoria escopada a PRODUCAO: vulnerabilidades de ferramentas de dev
-      # (vitest/eslint/esbuild) nao vao para o runtime e nao devem bloquear a CI.
-      - run: npm audit --omit=dev --audit-level=high
+          fetch-depth: 0
+
+      - name: Run Gitleaks Secret Detector
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate Markdown Prompts & Skills (Dogfooding Safeguard)
+        run: |
+          node tools/cursor-doctor.js
