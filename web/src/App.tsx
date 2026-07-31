@@ -176,7 +176,7 @@ export function App() {
   };
 
   if (view === 'landing') {
-    return <LandingPage onOpenDashboard={() => setView('dashboard')} />;
+    return <LandingPage onOpenDashboard={() => setView('dashboard')} latestReport={latestReport} specs={specs} />;
   }
 
   return (

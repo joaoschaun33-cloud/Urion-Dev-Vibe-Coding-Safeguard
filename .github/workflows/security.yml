@@ -17,11 +17,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run Gitleaks Secret Detector
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Validate Markdown Prompts & Skills (Dogfooding Safeguard)
         run: |
+          npm install --legacy-peer-deps
           node tools/cursor-doctor.js

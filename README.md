@@ -1,112 +1,145 @@
-# 🧠 Vibe Coding Safeguard & Product Owner Open Source Template
+<!-- PROJECT SHIELDS & BADGES -->
+<div align="center">
 
-> **Clone, configure, proteja seu projeto. Uma plataforma Open Source completa para desenvolvimento com IA (vibe coding) sem alucinações, débitos técnicos ou colapso arquitetural.**
+  <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard">
+    <img src="https://raw.githubusercontent.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/main/docs/assets/logo.png" alt="Logo Urion Safeguard" width="120" height="120" onError="this.style.display='none'">
+  </a>
 
-[![CI](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/ci.yml)
-[![Security](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/security.yml/badge.svg)](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/security.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  <h1 align="center">🛡️ Urion Dev Vibe Coding Safeguard</h1>
+
+  <p align="center">
+    <strong>Desenvolva com IA sem alucinações, débitos técnicos ou colapso arquitetural.</strong>
+    <br />
+    <a href="https://urion.ia.br"><strong>Explorar a Plataforma Online »</strong></a>
+    <br />
+    <br />
+    <a href="#-quick-start-em-30-segundos">Início Rápido</a>
+    ·
+    <a href="#-exemplos-práticos">Exemplos Práticos</a>
+    ·
+    <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/issues">Reportar Bug</a>
+  </p>
+
+  <!-- README TYPING SVG AUTOMATION -->
+  <p align="center">
+    <a href="https://readme-typing-svg.demolab.com">
+      <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=18&pause=1000&color=8B5CF6&center=true&vCenter=true&width=600&lines=Dogma+Zero%3A+A+IA+nunca+mente+sobre+testes.;Feature-Sliced+Design+(FSD)+imposto+em+tempo+real.;Spec-Driven+Development%3A+PRD+vira+c%C3%B3digo+rastre%C3%A1vel.;Prote%C3%A7%C3%A3o+contra+Prompt+Injection+e+vazamento+de+secrets." alt="Readme Typing SVG" />
+    </a>
+  </p>
+
+  <!-- BADGES -->
+  <p align="center">
+    <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/ci.yml">
+      <img src="https://img.shields.io/github/actions/workflow/status/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/ci.yml?branch=main&style=for-the-badge&logo=github&label=CI%20Pipeline&color=8B5CF6" alt="CI Status" />
+    </a>
+    <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/security.yml">
+      <img src="https://img.shields.io/github/actions/workflow/status/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/security.yml?branch=main&style=for-the-badge&logo=shield&label=Security%20Audit&color=10B981" alt="Security Status" />
+    </a>
+    <a href="https://opensource.org/licenses/MIT">
+      <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge&logo=open-source-initiative&color=F59E0B" alt="License MIT" />
+    </a>
+    <a href="https://nodejs.org">
+      <img src="https://img.shields.io/badge/Node.js-20%2B-green?style=for-the-badge&logo=node.js&color=339933" alt="Node Version" />
+    </a>
+    <a href="https://react.dev">
+      <img src="https://img.shields.io/badge/React-18%2B-blue?style=for-the-badge&logo=react&color=61DAFB" alt="React Version" />
+    </a>
+  </p>
+</div>
 
 ---
 
-## 🛡️ O que é o Vibe Safeguard?
+<!-- SHOW, DON'T TELL (VISUAL PREVIEW) -->
+## 📺 Mostre, Não Conte (Show, Don't Tell)
 
-Uma solução arquitetural e operacional desenhada especialmente para **solopreneurs, criadores não-técnicos e desenvolvedores** que usam assistentes de IA (Cursor, Antigravity/Gemini, Windsurf, Copilot) para construir software.
+> **O problema:** 85% dos projetos criados apenas com prompts de IA (Cursor, Antigravity, Windsurf, Copilot) colapsam no 2º mês por falta de arquitetura e segredos expostos.
 
-Ele impõe o **Dogma Zero (Honestidade Absoluta da IA)**, **Feature-Sliced Design (FSD)** e **Spec-Driven Development (SDD)**, garantindo que o seu sonho digital não vire frustração nem colapse por falta de arquitetura.
+<div align="center">
+  <img src="https://raw.githubusercontent.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/main/docs/assets/dashboard-preview.png" alt="Urion Safeguard Dashboard & Doctor CLI Preview" width="100%" onError="this.src='https://urion.ia.br/assets/index-BatzhZQ1.css'">
+</div>
 
 ---
 
-## 🚀 Como Rodar em 1 Minuto
+## ⚡ Quick Start em 30 Segundos
 
-### 1. Iniciar o Backend & Banco de Dados
+Inicialize um novo projeto 100% blindado com um único comando:
 
 ```bash
-git clone <repo> meu-app && cd meu-app
-docker-compose up -d
-npm install
-npm run dev
+npx create-vibe-safeguard meu-novo-app
 ```
 
-- **API REST**: http://localhost:3000/api/v1/health
-
-### 2. Iniciar o Dashboard Web (React + Vite)
+Ou rode o repositório localmente em 3 passos simples:
 
 ```bash
+# 1. Clonar o repositório oficial
+git clone https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard.git && cd Urion-Dev-Vibe-Coding-Safeguard
+
+# 2. Iniciar banco de dados e dependências
+docker-compose up -d && npm install
+
+# 3. Executar o Doctor CLI e o Dashboard Web
+npm run doctor:cli
 npm run dev:web
 ```
 
-- **Interface Web**: http://localhost:5173
+- 🌐 **Dashboard Web**: http://localhost:5173
+- 🔌 **API REST Backend**: http://localhost:3000/api/v1/health
 
-### 3. Diagnóstico Instantâneo via CLI
+---
+
+## 🧪 Exemplos Práticos (Básico ao Avançado)
+
+### 1. Nível Básico: Gerar uma Nova Feature Isolada (FSD)
+Em vez de deixar a IA misturar rotas com banco de dados, use o scaffold CLI:
 
 ```bash
-npm run doctor:cli
+npm run generate:feature checkout
+```
+*Gera automaticamente as camadas isoladas: `domain`, `application`, `infrastructure` e `presentation`.*
+
+### 2. Nível Intermediário: Auditoria AST Estática Instantânea
+Detecte vazamentos de segredos e `console.log` residuais em 1 segundo:
+
+```bash
+npm run cursor-doctor
+```
+
+### 3. Nível Avançado: Garantia do Dogma Zero na CI/CD
+Impeça que a IA envie código com testes falsos ou sem evidências no GitHub:
+
+```bash
+git add .
+git commit -m "feat(auth): implementar autenticação FSD"
+# A CI/CD bloqueia o PR automaticamente se a prova do Vitest não for gerada em .urion/
 ```
 
 ---
 
-## 🎯 Principais Recursos do Repositório
+## 🛡️ Os 3 Pilares do Urion Safeguard
 
-| Recursos                                  | Como ajuda o Vibe Coder                                                                                    |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| 🎨 **Dashboard Web React (v1.0)**         | Painel Dark Mode para acompanhar o score de saúde do projeto e especificações SDD em tempo real.           |
-| 🖥️ **CLI Doctor Interativo**              | Comando `npm run doctor:cli` que calcula o score do projeto (0-100) direto no terminal em 1 segundo.       |
-| 🛡️ **Dogma Zero: Honestidade**            | Regra estrita que impede a IA de inventar APIs, omitir erros ou mentir sobre testes.                       |
-| 🏗️ **Arquitetura FSD & Clean Arch**       | Módulos isolados (`domain`, `application`, `infrastructure`, `presentation`) para evitar código espaguete. |
-| ⚡ **Gerador CLI de Features**            | Crie novas funcionalidades isoladas em 1 segundo: `npm run generate:feature <nome>`.                       |
-| 📝 **Especificações SDD (`00-context/`)** | Documentos Markdown vivos (`vision.md`, `prd.md`, `user-stories.md`) como a fonte única de verdade.        |
+| Pilar | Como Protege Seu Projeto |
+| :--- | :--- |
+| **1. Dogma Zero (`AGENTS.md`)** | Obriga a IA a ser 100% honesta. Bloqueia PRs se a IA alegar que "os testes passaram" sem gerar provas. |
+| **2. Feature-Sliced Design (FSD)** | Impede importações cruzadas entre funcionalidades. `features/auth` nunca importa `features/payment`. |
+| **3. Spec-Driven Development (SDD)** | Conecta especificações em `00-context/prd.md` ao código via tags `@implements US-*`. |
 
 ---
 
-## 📁 Estrutura de Pastas
+## 🤝 Como Contribuir
 
-```
-vibe-coding-template-repo/
-│
-├── 🎨 web/                      ← Dashboard Web (React + Vite + TailwindCSS)
-│
-├── 🧠 .cursor/rules/            ← BIBLIA da IA (Regras Heurísticas MDC)
-│   ├── honesty.mdc              ← ⭐ Dogma Zero: A IA nunca mente
-│   └── architecture.mdc, testing.mdc, security.mdc...
-│
-├── 🏗️ src/                      ← Backend API (TypeScript / Express)
-│   ├── app/                     ← Routing & Middlewares
-│   ├── features/
-│   │   ├── project-health/      ← 📊 Feature de Auditoria de Saúde
-│   │   ├── spec-manager/        ← 📝 Feature de Gestão de Especificações SDD
-│   │   └── todo/                ← ⭐ Exemplo de Referência (FSD)
-│   └── shared/                  ← Respostas RFC 7807, Logger (Pino), Prisma
-│
-├── 🔧 tools/
-│   ├── dashboard-cli.js         ← 🖥️ Dashboard Interativo CLI
-│   └── cursor-doctor.js         ← 🩺 Diagnóstico Estático do Repositório
-│
-├── 📚 00-context/               ← Visão e PRD do Produto
-├── 👥 01-product/               ← Personas e User Stories
-├── ⚙️ Makefile                  ← Comandos unificados (`make check`, `make doctor`)
-└── 📄 AGENTS.md                 ← Manifesto Universal de IA
-```
+Contribuições são o que tornam a comunidade open source um lugar incrível! 
+
+1. Faça um Fork do projeto (`git checkout -b feature/IncrivelFeature`)
+2. Commit suas alterações (`git commit -m 'feat: adicionar IncrivelFeature'`)
+3. Push para a branch (`git push origin feature/IncrivelFeature`)
+4. Abra um **Pull Request**
 
 ---
 
-## 📦 Comandos Principais
+## 📄 Licença e Autor
 
-| Comando                    | Descrição                                      |
-| -------------------------- | ---------------------------------------------- |
-| `npm run dev`              | Inicia o servidor backend na porta 3000        |
-| `npm run dev:web`          | Inicia o Dashboard Web React na porta 5173     |
-| `npm run doctor:cli`       | Exibe o gráfico de saúde no terminal           |
-| `npm run cursor-doctor`    | Valida 100% da integridade de arquivos do repo |
-| `npm run generate:feature` | Gera o esqueleto de uma nova feature isolada   |
-| `npm test`                 | Executa todos os testes unitários via Vitest   |
+Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
 
----
-
-## 📜 Licença
-
-[MIT](LICENSE) © 2026 Vibe Coding Safeguard Contributors
-
-<p align="center">
-  <b>Feito com 💜 pela comunidade de vibe coding</b><br>
-  <i>"Clone, crie com IA, proteja seu projeto."</i>
-</p>
+Criado e Mantido por **[João Schaun](https://github.com/joaoschaun33-cloud)**. 
+- 🌐 Site Oficial: **[urion.ia.br](https://urion.ia.br)**
+- 📧 Contato: `joaoschaun@gmail.com`
