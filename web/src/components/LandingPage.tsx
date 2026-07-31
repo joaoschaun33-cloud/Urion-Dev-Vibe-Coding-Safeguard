@@ -14,6 +14,7 @@ import {
   Layers,
   Terminal as TerminalIcon
 } from 'lucide-react';
+import { InteractivePlayground } from './InteractivePlayground';
 
 interface ProjectHealthReport {
   projectName: string;
@@ -715,10 +716,14 @@ enforcement: BLOCK_PR
                 </div>
                 <div className="mt-4 rounded-[12px] bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 p-3 mono text-[11px] text-[#C4B5FD]">
                   💡 <b>Dados Reais:</b> Repositório oficial validado com 100% de integridade técnica.
-                </div>
               </div>
             </div>
           </div>
+        </div>
+
+        {/* INTERACTIVE PLAYGROUND DEMO */}
+        <div className="mt-12">
+          <InteractivePlayground />
         </div>
       </section>
 
