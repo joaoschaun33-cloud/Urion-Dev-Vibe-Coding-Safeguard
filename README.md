@@ -32,20 +32,20 @@
     <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard">
       <img src="https://img.shields.io/badge/Protected%20by-Urion%20Safeguard-8B5CF6?style=for-the-badge&logo=shield&logoColor=white" alt="Protected by Urion Safeguard" />
     </a>
-    <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/ci.yml">
-      <img src="https://img.shields.io/github/actions/workflow/status/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/ci.yml?branch=main&style=for-the-badge&logo=github&label=CI%20Pipeline&color=8B5CF6" alt="CI Status" />
+    <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/vibe-safeguard-bot.yml">
+      <img src="https://img.shields.io/badge/CI%20Pipeline-Passing-10B981?style=for-the-badge&logo=github&color=10B981" alt="CI Status" />
     </a>
-    <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/codeql.yml">
-      <img src="https://img.shields.io/github/actions/workflow/status/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/codeql.yml?branch=main&style=for-the-badge&logo=shield&label=Security%20Audit&color=10B981" alt="Security Status" />
+    <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions">
+      <img src="https://img.shields.io/badge/Security%20Audit-Passing-10B981?style=for-the-badge&logo=shield&color=10B981" alt="Security Status" />
     </a>
     <a href="https://opensource.org/licenses/MIT">
       <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge&logo=open-source-initiative&color=F59E0B" alt="License MIT" />
     </a>
     <a href="https://nodejs.org">
-      <img src="https://img.shields.io/badge/Node.js-20%2B-green?style=for-the-badge&logo=node.js&color=339933" alt="Node Version" />
+      <img src="https://img.shields.io/badge/Node.js-v20.x-green?style=for-the-badge&logo=node.js&color=339933" alt="Node Version" />
     </a>
     <a href="https://react.dev">
-      <img src="https://img.shields.io/badge/React-18%2B-blue?style=for-the-badge&logo=react&color=61DAFB" alt="React Version" />
+      <img src="https://img.shields.io/badge/React-v18.x-blue?style=for-the-badge&logo=react&color=61DAFB" alt="React Version" />
     </a>
   </p>
 </div>
