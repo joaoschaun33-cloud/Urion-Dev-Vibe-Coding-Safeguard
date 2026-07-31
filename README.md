@@ -23,7 +23,7 @@
   <!-- README TYPING ANIMATED SVG HEADER -->
   <p align="center">
     <a href="https://urion.ia.br">
-      <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=22&pause=1200&color=8B5CF6&center=true&vCenter=true&width=700&lines=🛡️+Urion+Dev+Vibe+Coding+Safeguard;⚡+Dogma+Zero%3A+A+IA+nunca+mente+sobre+testes.;🏗️+Feature-Sliced+Design+(FSD)+imposto+em+tempo+real.;📋+Spec-Driven+Development%3A+PRD+vira+c%C3%B3digo+rastre%C3%A1vel.;🔒+Prote%C3%A7%C3%A3o+contra+Prompt+Injection+e+secrets." alt="Urion Animated Header" />
+      <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&pause=1000&color=8B5CF6&center=true&vCenter=true&width=600&lines=Dogma+Zero%3A+A+IA+nunca+mente+sobre+testes.;Feature-Sliced+Design+(FSD)+imposto+em+tempo+real.;Spec-Driven+Development%3A+PRD+vira+c%C3%B3digo+rastre%C3%A1vel.;Prote%C3%A7%C3%A3o+contra+Prompt+Injection+e+secrets." alt="Readme Typing SVG" />
     </a>
   </p>
 
