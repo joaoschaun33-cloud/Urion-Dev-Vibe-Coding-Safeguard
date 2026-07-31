@@ -14,8 +14,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
+import { rateLimiter } from './middleware/rate-limiter';
+import { redis } from '@/shared/infrastructure/redis';
+
 // Middlewares globais
 app.use(helmet());
+app.use(rateLimiter);
 
 const isProduction = process.env.NODE_ENV === 'production';
 const allowedOrigin = process.env.CORS_ORIGIN;
@@ -68,7 +72,8 @@ const shutdown = async (signal: string) => {
     try {
       const { prisma } = await import('@/shared/infrastructure/database');
       await prisma.$disconnect();
-      logger.info({ event: 'PRISMA_DISCONNECTED_CLEANLY' });
+      await redis.quit();
+      logger.info({ event: 'INFRASTRUCTURE_DISCONNECTED_CLEANLY' });
     } catch (err) {
       logger.error({ event: 'SHUTDOWN_ERROR', error: err });
     } finally {
