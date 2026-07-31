@@ -1,8 +1,8 @@
 <!-- PROJECT SHIELDS & BADGES -->
 <div align="center">
 
-  <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard">
-    <img src="docs/assets/banner.png" alt="Urion Dev Vibe Coding Safeguard Banner" width="100%" style="border-radius: 16px; margin-bottom: 20px;">
+  <a href="https://urion.ia.br">
+    <img src="docs/assets/banner.png" alt="Urion Dev Vibe Coding Safeguard Banner" width="100%" max-width="800px" style="border-radius: 12px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
   </a>
 
   <h1 align="center">🛡️ Urion Dev Vibe Coding Safeguard</h1>
@@ -10,7 +10,7 @@
   <p align="center">
     <strong>Desenvolva com IA sem alucinações, débitos técnicos ou colapso arquitetural.</strong>
     <br />
-    <a href="https://urion.ia.br"><strong>Explorar a Plataforma Online »</strong></a>
+    <a href="https://urion.ia.br"><strong>🚀 Acessar Plataforma & Dashboard Ao Vivo »</strong></a>
     <br />
     <br />
     <a href="#-quick-start-em-30-segundos">Início Rápido</a>
@@ -20,10 +20,10 @@
     <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/issues">Reportar Bug</a>
   </p>
 
-  <!-- README TYPING SVG AUTOMATION -->
+  <!-- README TYPING ANIMATED SVG HEADER -->
   <p align="center">
-    <a href="https://readme-typing-svg.demolab.com">
-      <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&pause=1000&color=8B5CF6&center=true&vCenter=true&width=650&lines=Dogma+Zero%3A+A+IA+nunca+mente+sobre+testes.;Feature-Sliced+Design+(FSD)+imposto+em+tempo+real.;Spec-Driven+Development%3A+PRD+vira+c%C3%B3digo+rastre%C3%A1vel.;Prote%C3%A7%C3%A3o+contra+Prompt+Injection+e+vazamento+de+secrets." alt="Readme Typing SVG" />
+    <a href="https://urion.ia.br">
+      <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=22&pause=1200&color=8B5CF6&center=true&vCenter=true&width=700&lines=🛡️+Urion+Dev+Vibe+Coding+Safeguard;⚡+Dogma+Zero%3A+A+IA+nunca+mente+sobre+testes.;🏗️+Feature-Sliced+Design+(FSD)+imposto+em+tempo+real.;📋+Spec-Driven+Development%3A+PRD+vira+c%C3%B3digo+rastre%C3%A1vel.;🔒+Prote%C3%A7%C3%A3o+contra+Prompt+Injection+e+secrets." alt="Urion Animated Header" />
     </a>
   </p>
 
@@ -51,12 +51,17 @@
 
 <!-- SHOW, DON'T TELL (VISUAL PREVIEW) -->
 
-## 📺 Mostre, Não Conte (Show, Don't Tell)
+## 📺 Mostre, Não Conte (Dashboard & Doctor CLI Preview)
 
 > **O problema:** 85% dos projetos criados apenas com prompts de IA (Cursor, Antigravity, Windsurf, Copilot) colapsam no 2º mês por falta de arquitetura e segredos expostos.
 
 <div align="center">
-  <img src="docs/assets/dashboard-preview.png" alt="Urion Safeguard Dashboard & Doctor CLI Preview" width="100%" style="border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+  <a href="https://urion.ia.br">
+    <img src="docs/assets/dashboard-preview.png" alt="Urion Safeguard Dashboard & Doctor CLI Preview" width="100%" style="max-width: 900px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+  </a>
+  <p align="center" style="margin-top: 8px;">
+    <sub>💡 <i>Acesse a plataforma em <a href="https://urion.ia.br">urion.ia.br</a> para interagir com o Dashboard e o Live Audit Playground em tempo real no browser.</i></sub>
+  </p>
 </div>
 
 ---
