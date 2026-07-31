@@ -1,5 +1,5 @@
-import type { IProjectHealthRepository } from '../domain/project-health-repository.interface.js';
-import type { ProjectHealth } from '../domain/project-health.js';
+import type { IProjectHealthRepository } from '../domain/project-health-repository.interface';
+import type { ProjectHealth } from '../domain/project-health';
 
 export class InMemoryProjectHealthRepository implements IProjectHealthRepository {
   private items: Map<string, ProjectHealth> = new Map();

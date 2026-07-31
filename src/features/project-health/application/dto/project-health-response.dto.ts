@@ -1,4 +1,4 @@
-import type { HealthMetrics, HealthStatus, ProjectHealth } from '../../domain/project-health.js';
+import type { HealthMetrics, HealthStatus, ProjectHealth } from '../../domain/project-health';
 
 export interface ProjectHealthResponseDTO {
   id: string;

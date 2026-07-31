@@ -51,6 +51,9 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
+      - name: Run ESLint Quality Check
+        run: npm run lint
+
       - name: Run Unit Tests & Coverage Gate
         run: npm run test
 

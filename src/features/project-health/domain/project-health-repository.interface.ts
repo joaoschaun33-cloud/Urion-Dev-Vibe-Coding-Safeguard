@@ -1,4 +1,4 @@
-import type { ProjectHealth } from './project-health.js';
+import type { ProjectHealth } from './project-health';
 
 export interface IProjectHealthRepository {
   save(health: ProjectHealth): Promise<ProjectHealth>;

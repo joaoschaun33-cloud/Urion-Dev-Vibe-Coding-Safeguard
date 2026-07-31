@@ -1,4 +1,4 @@
-import type { SpecDocument, SpecStatus } from '../../domain/spec-manager.js';
+import type { SpecDocument, SpecStatus } from '../../domain/spec-manager';
 
 export interface SpecDocumentResponseDTO {
   id: string;

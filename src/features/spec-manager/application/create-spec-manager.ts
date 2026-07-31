@@ -1,11 +1,11 @@
-import type { ISpecManagerRepository } from '../domain/spec-manager-repository.interface.js';
-import { SpecDocument } from '../domain/spec-manager.js';
-import { scanProjectSpecs } from '../infrastructure/markdown-spec-scanner.js';
-import type { CreateSpecDocumentDTO } from './dto/create-spec-manager.dto.js';
+import type { ISpecManagerRepository } from '../domain/spec-manager-repository.interface';
+import { SpecDocument } from '../domain/spec-manager';
+import { scanProjectSpecs } from '../infrastructure/markdown-spec-scanner';
+import type { CreateSpecDocumentDTO } from './dto/create-spec-manager.dto';
 import {
   toSpecDocumentResponseDTO,
   type SpecDocumentResponseDTO,
-} from './dto/spec-manager-response.dto.js';
+} from './dto/spec-manager-response.dto';
 
 export class CreateSpecDocumentUseCase {
   constructor(private readonly repository: ISpecManagerRepository) {}

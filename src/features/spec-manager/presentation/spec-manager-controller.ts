@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
-import type { CreateSpecDocumentUseCase } from '../application/create-spec-manager.js';
-import { createSpecDocumentSchema } from '../application/dto/create-spec-manager.dto.js';
-import type { ISpecManagerRepository } from '../domain/spec-manager-repository.interface.js';
-import { toSpecDocumentResponseDTO } from '../application/dto/spec-manager-response.dto.js';
+import type { CreateSpecDocumentUseCase } from '../application/create-spec-manager';
+import { createSpecDocumentSchema } from '../application/dto/create-spec-manager.dto';
+import type { ISpecManagerRepository } from '../domain/spec-manager-repository.interface';
+import { toSpecDocumentResponseDTO } from '../application/dto/spec-manager-response.dto';
 
 export class SpecManagerController {
   constructor(

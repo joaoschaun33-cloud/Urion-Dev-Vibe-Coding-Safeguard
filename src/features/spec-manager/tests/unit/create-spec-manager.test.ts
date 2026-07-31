@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { SpecDocument } from '../../domain/spec-manager.js';
-import { CreateSpecDocumentUseCase } from '../../application/create-spec-manager.js';
-import { InMemorySpecManagerRepository } from '../../infrastructure/spec-manager-repository.memory.js';
-import { scanProjectSpecs } from '../../infrastructure/markdown-spec-scanner.js';
+import { SpecDocument } from '../../domain/spec-manager';
+import { CreateSpecDocumentUseCase } from '../../application/create-spec-manager';
+import { InMemorySpecManagerRepository } from '../../infrastructure/spec-manager-repository.memory';
+import { scanProjectSpecs } from '../../infrastructure/markdown-spec-scanner';
 
 describe('SpecManager Feature Domain & Use Case', () => {
   it('deve criar uma especificação em status DRAFT', () => {

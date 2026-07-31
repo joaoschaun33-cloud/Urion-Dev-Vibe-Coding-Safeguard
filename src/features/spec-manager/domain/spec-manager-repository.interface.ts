@@ -1,4 +1,4 @@
-import type { SpecDocument } from './spec-manager.js';
+import type { SpecDocument } from './spec-manager';
 
 export interface ISpecManagerRepository {
   save(spec: SpecDocument): Promise<SpecDocument>;

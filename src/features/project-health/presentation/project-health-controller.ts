@@ -1,8 +1,8 @@
 import type { Request, Response } from 'express';
-import type { CreateProjectHealthUseCase } from '../application/create-project-health.js';
-import { createProjectHealthSchema } from '../application/dto/create-project-health.dto.js';
-import type { IProjectHealthRepository } from '../domain/project-health-repository.interface.js';
-import { toProjectHealthResponseDTO } from '../application/dto/project-health-response.dto.js';
+import type { CreateProjectHealthUseCase } from '../application/create-project-health';
+import { createProjectHealthSchema } from '../application/dto/create-project-health.dto';
+import type { IProjectHealthRepository } from '../domain/project-health-repository.interface';
+import { toProjectHealthResponseDTO } from '../application/dto/project-health-response.dto';
 
 export class ProjectHealthController {
   constructor(

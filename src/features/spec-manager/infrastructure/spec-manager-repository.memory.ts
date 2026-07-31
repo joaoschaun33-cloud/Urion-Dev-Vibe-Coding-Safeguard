@@ -1,5 +1,5 @@
-import type { ISpecManagerRepository } from '../domain/spec-manager-repository.interface.js';
-import type { SpecDocument } from '../domain/spec-manager.js';
+import type { ISpecManagerRepository } from '../domain/spec-manager-repository.interface';
+import type { SpecDocument } from '../domain/spec-manager';
 
 export class InMemorySpecManagerRepository implements ISpecManagerRepository {
   private items: Map<string, SpecDocument> = new Map();

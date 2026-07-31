@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { SpecDocument } from '../domain/spec-manager.js';
+import { SpecDocument } from '../domain/spec-manager';
 
 export interface ScannedSpecResult {
   title: string;

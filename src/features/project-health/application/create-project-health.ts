@@ -1,10 +1,10 @@
-import type { IProjectHealthRepository } from '../domain/project-health-repository.interface.js';
-import { ProjectHealth } from '../domain/project-health.js';
-import type { CreateProjectHealthDTO } from './dto/create-project-health.dto.js';
+import type { IProjectHealthRepository } from '../domain/project-health-repository.interface';
+import { ProjectHealth } from '../domain/project-health';
+import type { CreateProjectHealthDTO } from './dto/create-project-health.dto';
 import {
   toProjectHealthResponseDTO,
   type ProjectHealthResponseDTO,
-} from './dto/project-health-response.dto.js';
+} from './dto/project-health-response.dto';
 
 export class CreateProjectHealthUseCase {
   constructor(private readonly repository: IProjectHealthRepository) {}

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { ProjectHealth } from '../../domain/project-health.js';
-import { CreateProjectHealthUseCase } from '../../application/create-project-health.js';
-import { InMemoryProjectHealthRepository } from '../../infrastructure/project-health-repository.memory.js';
+import { ProjectHealth } from '../../domain/project-health';
+import { CreateProjectHealthUseCase } from '../../application/create-project-health';
+import { InMemoryProjectHealthRepository } from '../../infrastructure/project-health-repository.memory';
 
 describe('ProjectHealth Domain & Application', () => {
   it('deve calcular score EXCELLENT para metricas perfeitas', () => {
