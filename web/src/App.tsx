@@ -69,7 +69,7 @@ export function App() {
   const fetchHealth = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/api/v1/project-health');
+      const res = await fetch('/api/v1/project-health');
       if (res.ok) {
         const data = await res.json();
         setReports(data);
@@ -86,7 +86,7 @@ export function App() {
 
   const fetchSpecs = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/v1/specs');
+      const res = await fetch('/api/v1/specs');
       if (res.ok) {
         const data = await res.json();
         setSpecs(data);
@@ -104,7 +104,7 @@ export function App() {
   const handleCreateAudit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:3000/api/v1/project-health', {
+      const res = await fetch('/api/v1/project-health', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -130,7 +130,7 @@ export function App() {
   const handleCreateSpec = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:3000/api/v1/specs', {
+      const res = await fetch('/api/v1/specs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
