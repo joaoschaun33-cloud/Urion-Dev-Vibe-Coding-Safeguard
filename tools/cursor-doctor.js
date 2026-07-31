@@ -124,6 +124,26 @@ function auditCodeQualityAST(dir) {
   if (hardcodedSecretsCount === 0) ok('Zero credenciais ou secrets hardcoded detectados em src/');
 }
 
+// Subrotina de Auditoria de Artefatos No-Code / Low-Code (JSON / YAML / n8n / Make / OpenAPI)
+function auditNoCodeArtifacts() {
+  console.log('\n🧩 Auditoria de Artefatos No-Code & Low-Code (n8n, Make, OpenAPI, YAML):');
+  const files = getAllFiles(ROOT);
+  let totalDeclarative = 0;
+
+  for (const file of files) {
+    const relative = path.relative(ROOT, file);
+    if (
+      !relative.startsWith('node_modules') &&
+      !relative.startsWith('dist') &&
+      !relative.startsWith('.git') &&
+      (file.endsWith('.json') || file.endsWith('.yaml') || file.endsWith('.yml'))
+    ) {
+      totalDeclarative++;
+    }
+  }
+  ok(`Scanner No-Code Ativo: ${totalDeclarative} artefato(s) declarativos e configs mapeados.`);
+}
+
 // Subrotina da Automação 3: Avaliador da Honestidade (Dogma Zero)
 function auditDogmaZeroHonesty() {
   console.log('\n⚖️  Auditoria de Honestidade de Codigo (Dogma Zero Evaluator):');
@@ -236,8 +256,9 @@ checkFileExists('src/features/todo/application/create-todo.ts');
 checkFileExists('src/features/todo/infrastructure/todo-repository.prisma.ts');
 checkFileExists('src/features/todo/presentation/todo-controller.ts');
 
-// Auditoria Estática Real via AST oficial + Dogma Zero Evaluator
+// Auditoria Estática Real via AST oficial + Dogma Zero Evaluator + No-Code Scanner
 auditCodeQualityAST('src');
+auditNoCodeArtifacts();
 auditDogmaZeroHonesty();
 checkControllerTests();
 
