@@ -54,3 +54,15 @@ model SpecDocument {
 
   @@map("spec_documents")
 }
+
+model SecurityAuditLog {
+  id           String   @id @default(uuid())
+  targetSystem String   @map("target_system")
+  severity     String
+  findings     Int
+  status       String
+  auditedBy    String   @map("audited_by")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("security_audit_logs")
+}

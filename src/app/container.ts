@@ -19,6 +19,11 @@ import { InMemorySpecManagerRepository } from '@/features/spec-manager/infrastru
 import { CreateSpecDocumentUseCase } from '@/features/spec-manager/application/create-spec-manager';
 import { SpecManagerController } from '@/features/spec-manager/presentation/spec-manager-controller';
 
+// Security Audit Feature Imports
+import { PrismaSecurityAuditRepository } from '@/features/security-audit/infrastructure/security-audit-repository.prisma';
+import { CreateSecurityAuditUseCase } from '@/features/security-audit/application/create-security-audit';
+import { SecurityAuditController } from '@/features/security-audit/presentation/security-audit-controller';
+
 export const container = createContainer({
   injectionMode: InjectionMode.CLASSIC,
 });
@@ -44,4 +49,9 @@ container.register({
   specManagerRepository: asClass(InMemorySpecManagerRepository).singleton(),
   createSpecDocumentUseCase: asClass(CreateSpecDocumentUseCase).singleton(),
   specManagerController: asClass(SpecManagerController).singleton(),
+
+  // Security Audit Feature Dependencies
+  securityAuditRepository: asClass(PrismaSecurityAuditRepository).singleton(),
+  createSecurityAuditUseCase: asClass(CreateSecurityAuditUseCase).singleton(),
+  securityAuditController: asClass(SecurityAuditController).singleton(),
 });

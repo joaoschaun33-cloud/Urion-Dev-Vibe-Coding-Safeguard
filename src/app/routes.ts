@@ -15,6 +15,7 @@ const router = Router();
 const todoController = container.resolve('todoController');
 const projectHealthController = container.resolve('projectHealthController');
 const specManagerController = container.resolve('specManagerController');
+const securityAuditController = container.resolve('securityAuditController');
 
 // === Todo Feature ===
 router.post(
@@ -44,6 +45,16 @@ router.post(
 router.get(
   '/specs',
   asyncHandler((req, res) => specManagerController.list(req, res))
+);
+
+// === Security Audit Feature (Complex Feature with Transactions & BullMQ) ===
+router.post(
+  '/security-audits',
+  asyncHandler((req, res) => securityAuditController.create(req, res))
+);
+router.get(
+  '/security-audits',
+  asyncHandler((req, res) => securityAuditController.list(req, res))
 );
 
 import { deepHealthCheck } from '@/shared/http/health-check';
