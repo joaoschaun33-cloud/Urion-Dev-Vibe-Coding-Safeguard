@@ -52,7 +52,7 @@ app.use((_req, res) => {
 // Error handler (DEVE ser o ultimo middleware)
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   logger.info({
     event: 'SERVER_STARTED',
     port: PORT,
@@ -60,5 +60,24 @@ app.listen(PORT, () => {
     url: `http://localhost:${String(PORT)}`,
   });
 });
+
+// Graceful Shutdown Handler (Garantia de Produção)
+const shutdown = async (signal: string) => {
+  logger.info({ event: 'SERVER_SHUTTING_DOWN', signal });
+  server.close(async () => {
+    try {
+      const { prisma } = await import('@/shared/infrastructure/database');
+      await prisma.$disconnect();
+      logger.info({ event: 'PRISMA_DISCONNECTED_CLEANLY' });
+    } catch (err) {
+      logger.error({ event: 'SHUTDOWN_ERROR', error: err });
+    } finally {
+      process.exit(0);
+    }
+  });
+};
+
+process.on('SIGTERM', () => void shutdown('SIGTERM'));
+process.on('SIGINT', () => void shutdown('SIGINT'));
 
 export default app;
