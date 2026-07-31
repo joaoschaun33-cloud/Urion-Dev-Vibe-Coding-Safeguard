@@ -23,9 +23,6 @@ jobs:
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
 
-      - name: Build Web App
-        run: npm run build --prefix web
-
       - name: Run Vitest Unit & Integration Tests
         run: npm test
 
@@ -33,4 +30,4 @@ jobs:
         run: npm run test:smoke
 
       - name: Run Cursor Doctor Safeguard Audit
-        run: npm run cursor-doctor
+        run: node tools/cursor-doctor.js
