@@ -2,7 +2,7 @@
 <div align="center">
 
   <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard">
-    <img src="docs/assets/logo.png" alt="Logo Urion Safeguard" width="120" height="120">
+    <img src="docs/assets/banner.png" alt="Urion Dev Vibe Coding Safeguard Banner" width="100%" style="border-radius: 16px; margin-bottom: 20px;">
   </a>
 
   <h1 align="center">🛡️ Urion Dev Vibe Coding Safeguard</h1>
@@ -23,7 +23,7 @@
   <!-- README TYPING SVG AUTOMATION -->
   <p align="center">
     <a href="https://readme-typing-svg.demolab.com">
-      <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=18&pause=1000&color=8B5CF6&center=true&vCenter=true&width=600&lines=Dogma+Zero%3A+A+IA+nunca+mente+sobre+testes.;Feature-Sliced+Design+(FSD)+imposto+em+tempo+real.;Spec-Driven+Development%3A+PRD+vira+c%C3%B3digo+rastre%C3%A1vel.;Prote%C3%A7%C3%A3o+contra+Prompt+Injection+e+vazamento+de+secrets." alt="Readme Typing SVG" />
+      <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&pause=1000&color=8B5CF6&center=true&vCenter=true&width=650&lines=Dogma+Zero%3A+A+IA+nunca+mente+sobre+testes.;Feature-Sliced+Design+(FSD)+imposto+em+tempo+real.;Spec-Driven+Development%3A+PRD+vira+c%C3%B3digo+rastre%C3%A1vel.;Prote%C3%A7%C3%A3o+contra+Prompt+Injection+e+vazamento+de+secrets." alt="Readme Typing SVG" />
     </a>
   </p>
 
@@ -32,8 +32,8 @@
     <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/ci.yml">
       <img src="https://img.shields.io/github/actions/workflow/status/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/ci.yml?branch=main&style=for-the-badge&logo=github&label=CI%20Pipeline&color=8B5CF6" alt="CI Status" />
     </a>
-    <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/security.yml">
-      <img src="https://img.shields.io/github/actions/workflow/status/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/security.yml?branch=main&style=for-the-badge&logo=shield&label=Security%20Audit&color=10B981" alt="Security Status" />
+    <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/codeql.yml">
+      <img src="https://img.shields.io/github/actions/workflow/status/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/codeql.yml?branch=main&style=for-the-badge&logo=shield&label=Security%20Audit&color=10B981" alt="Security Status" />
     </a>
     <a href="https://opensource.org/licenses/MIT">
       <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge&logo=open-source-initiative&color=F59E0B" alt="License MIT" />
@@ -50,12 +50,13 @@
 ---
 
 <!-- SHOW, DON'T TELL (VISUAL PREVIEW) -->
+
 ## 📺 Mostre, Não Conte (Show, Don't Tell)
 
 > **O problema:** 85% dos projetos criados apenas com prompts de IA (Cursor, Antigravity, Windsurf, Copilot) colapsam no 2º mês por falta de arquitetura e segredos expostos.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/main/docs/assets/dashboard-preview.png" alt="Urion Safeguard Dashboard & Doctor CLI Preview" width="100%" onError="this.src='https://urion.ia.br/assets/index-BatzhZQ1.css'">
+  <img src="docs/assets/dashboard-preview.png" alt="Urion Safeguard Dashboard & Doctor CLI Preview" width="100%" style="border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
 </div>
 
 ---
@@ -90,14 +91,17 @@ npm run dev:web
 ## 🧪 Exemplos Práticos (Básico ao Avançado)
 
 ### 1. Nível Básico: Gerar uma Nova Feature Isolada (FSD)
+
 Em vez de deixar a IA misturar rotas com banco de dados, use o scaffold CLI:
 
 ```bash
 npm run generate:feature checkout
 ```
-*Gera automaticamente as camadas isoladas: `domain`, `application`, `infrastructure` e `presentation`.*
+
+_Gera automaticamente as camadas isoladas: `domain`, `application`, `infrastructure` e `presentation`._
 
 ### 2. Nível Intermediário: Auditoria AST Estática Instantânea
+
 Detecte vazamentos de segredos e `console.log` residuais em 1 segundo:
 
 ```bash
@@ -105,6 +109,7 @@ npm run cursor-doctor
 ```
 
 ### 3. Nível Avançado: Garantia do Dogma Zero na CI/CD
+
 Impeça que a IA envie código com testes falsos ou sem evidências no GitHub:
 
 ```bash
@@ -117,17 +122,17 @@ git commit -m "feat(auth): implementar autenticação FSD"
 
 ## 🛡️ Os 3 Pilares do Urion Safeguard
 
-| Pilar | Como Protege Seu Projeto |
-| :--- | :--- |
-| **1. Dogma Zero (`AGENTS.md`)** | Obriga a IA a ser 100% honesta. Bloqueia PRs se a IA alegar que "os testes passaram" sem gerar provas. |
-| **2. Feature-Sliced Design (FSD)** | Impede importações cruzadas entre funcionalidades. `features/auth` nunca importa `features/payment`. |
-| **3. Spec-Driven Development (SDD)** | Conecta especificações em `00-context/prd.md` ao código via tags `@implements US-*`. |
+| Pilar                                | Como Protege Seu Projeto                                                                               |
+| :----------------------------------- | :----------------------------------------------------------------------------------------------------- |
+| **1. Dogma Zero (`AGENTS.md`)**      | Obriga a IA a ser 100% honesta. Bloqueia PRs se a IA alegar que "os testes passaram" sem gerar provas. |
+| **2. Feature-Sliced Design (FSD)**   | Impede importações cruzadas entre funcionalidades. `features/auth` nunca importa `features/payment`.   |
+| **3. Spec-Driven Development (SDD)** | Conecta especificações em `00-context/prd.md` ao código via tags `@implements US-*`.                   |
 
 ---
 
 ## 🤝 Como Contribuir
 
-Contribuições são o que tornam a comunidade open source um lugar incrível! 
+Contribuições são o que tornam a comunidade open source um lugar incrível!
 
 1. Faça um Fork do projeto (`git checkout -b feature/IncrivelFeature`)
 2. Commit suas alterações (`git commit -m 'feat: adicionar IncrivelFeature'`)
@@ -140,6 +145,7 @@ Contribuições são o que tornam a comunidade open source um lugar incrível!
 
 Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
 
-Criado e Mantido por **[João Schaun](https://github.com/joaoschaun33-cloud)**. 
+Criado e Mantido por **[João Schaun](https://github.com/joaoschaun33-cloud)**.
+
 - 🌐 Site Oficial: **[urion.ia.br](https://urion.ia.br)**
 - 📧 Contato: `joaoschaun@gmail.com`
