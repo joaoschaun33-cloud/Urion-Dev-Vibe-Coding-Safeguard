@@ -19,10 +19,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
+
+      - name: Build Web App
+        run: npm run build --prefix web
 
       - name: Run Vitest Unit & Integration Tests
         run: npm test
