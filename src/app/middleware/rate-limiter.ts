@@ -1,5 +1,17 @@
+/**
+ * Rate Limiter — Proteção contra abuso de requisições
+ *
+ * Usa RedisStore para rate limiting stateful, permitindo
+ * horizontal scaling com múltiplas instâncias da aplicação.
+ *
+ * Nota: O adapter de sendCommand faz um cast de tipos porque
+ * ioredis retorna Promise<unknown> enquanto rate-limit-redis espera
+ * Promise<RedisReply>. Os valores reais retornados pelo Redis
+ * (string | number | null) são sempre compatíveis em runtime.
+ */
+
 import rateLimit from 'express-rate-limit';
-import { RedisStore } from 'rate-limit-redis';
+import { RedisStore, type RedisReply } from 'rate-limit-redis';
 import { redis } from '@/shared/infrastructure/redis';
 
 export const rateLimiter = rateLimit({
@@ -14,7 +26,7 @@ export const rateLimiter = rateLimit({
     detail: 'Você excedeu o limite de requisições. Tente novamente em 15 minutos.',
   },
   store: new RedisStore({
-    // @ts-expect-error ioredis compatible sendCommand
-    sendCommand: (...args: string[]) => redis.call(...args),
+    sendCommand: (...args: string[]): Promise<RedisReply> =>
+      redis.call(args[0], ...args.slice(1)) as Promise<RedisReply>,
   }),
 });

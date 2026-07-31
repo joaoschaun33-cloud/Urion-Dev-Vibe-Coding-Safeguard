@@ -20,13 +20,45 @@ const PORT = Number(env.PORT);
 import { rateLimiter } from './middleware/rate-limiter';
 import { redis } from '@/shared/infrastructure/redis';
 
-// Middlewares globais
-app.use(requestIdMiddleware);
-app.use(helmet());
-app.use(rateLimiter);
-
 const isProduction = env.NODE_ENV === 'production';
 const allowedOrigin = env.CORS_ORIGIN;
+
+// Middlewares globais
+app.use(requestIdMiddleware);
+
+// Helmet — Hardening de segurança HTTP
+app.use(
+  helmet({
+    contentSecurityPolicy: isProduction
+      ? {
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", 'data:', 'https:'],
+            connectSrc: ["'self'"],
+            fontSrc: ["'self'"],
+            objectSrc: ["'none'"],
+            frameAncestors: ["'none'"],
+            baseUri: ["'self'"],
+            formAction: ["'self'"],
+            upgradeInsecureRequests: [],
+          },
+        }
+      : false, // Desabilita CSP em dev para Vite HMR
+    hsts: {
+      maxAge: 63072000, // 2 anos
+      includeSubDomains: true,
+      preload: true,
+    },
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    crossOriginEmbedderPolicy: isProduction,
+    crossOriginOpenerPolicy: { policy: 'same-origin' },
+    crossOriginResourcePolicy: { policy: 'same-origin' },
+  })
+);
+
+app.use(rateLimiter);
 
 if (isProduction && !allowedOrigin) {
   logger.error(

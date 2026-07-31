@@ -1,6 +1,5 @@
 import { ISecurityAuditRepository, SecurityAudit } from '../domain/security-audit';
-import { domainEventBus } from '@/shared/domain/domain-event-bus';
-import { auditQueue } from '@/shared/infrastructure/queue';
+import { PrismaClient } from '@prisma/client';
 
 export interface CreateSecurityAuditInput {
   targetSystem: string;
@@ -10,31 +9,43 @@ export interface CreateSecurityAuditInput {
   auditedBy: string;
 }
 
+/**
+ * Use Case: Criar Auditoria de Segurança
+ *
+ * Implementa Transactional Outbox Pattern:
+ * O evento de domínio é gravado na tabela `outbox_events` dentro da
+ * mesma transação Prisma que cria o registro. O OutboxPoller consome
+ * os eventos e despacha para BullMQ/DomainEventBus de forma segura.
+ *
+ * Isso garante atomicidade: se o DB commit falhar, o evento nunca é
+ * publicado. Se o commit passar, o evento é garantido para ser processado.
+ */
 export class CreateSecurityAuditUseCase {
-  constructor(private readonly securityAuditRepository: ISecurityAuditRepository) {}
+  constructor(
+    private readonly securityAuditRepository: ISecurityAuditRepository,
+    private readonly prisma: PrismaClient
+  ) {}
 
   async execute(input: CreateSecurityAuditInput): Promise<SecurityAudit> {
-    // Executa persistência em transação Prisma
-    const audit = await this.securityAuditRepository.createWithTransaction(input);
+    // Transação atômica: cria audit + grava evento no outbox
+    const audit = await this.prisma.$transaction(async (tx) => {
+      // 1. Persiste a entidade de auditoria
+      const created = await this.securityAuditRepository.createInTransaction(tx, input);
 
-    // Dispara Evento de Domínio Assíncrono
-    await domainEventBus.publish({
-      eventName: 'SecurityAuditCreated',
-      occurredOn: new Date(),
-      payload: { auditId: audit.id, targetSystem: audit.targetSystem },
+      // 2. Grava evento no Outbox (mesma transação!)
+      await tx.outboxEvent.create({
+        data: {
+          eventName: 'SecurityAuditCreated',
+          payload: {
+            auditId: created.id,
+            targetSystem: created.targetSystem,
+            severity: created.severity,
+          },
+        },
+      });
+
+      return created;
     });
-
-    // Enfileira processamento pesado no Redis via BullMQ Worker
-    if (process.env.NODE_ENV !== 'test') {
-      try {
-        await auditQueue.add('process-audit-report', {
-          auditId: audit.id,
-          severity: audit.severity,
-        });
-      } catch {
-        // Ignora erro de enfileiramento caso Redis não esteja ativo no ambiente local
-      }
-    }
 
     return audit;
   }

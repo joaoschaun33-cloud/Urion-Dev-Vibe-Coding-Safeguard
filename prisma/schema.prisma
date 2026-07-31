@@ -72,3 +72,15 @@ model SecurityAuditLog {
   @@index([status])
   @@map("security_audit_logs")
 }
+
+model OutboxEvent {
+  id          String    @id @default(uuid())
+  eventName   String    @map("event_name")
+  payload     Json
+  processedAt DateTime? @map("processed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([processedAt])
+  @@index([createdAt])
+  @@map("outbox_events")
+}
