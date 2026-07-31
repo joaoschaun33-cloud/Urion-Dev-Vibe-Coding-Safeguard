@@ -1,6 +1,6 @@
 # GitHub Copilot Custom Instructions
 
-> Gerado automaticamente via `npm run sync:rules`.
+> Hash Fonte: 501a6ccd | Gerado automaticamente via npm run sync:rules.
 
 # AGENTS.md — Dogmas Arquiteturais Inquebraveis
 

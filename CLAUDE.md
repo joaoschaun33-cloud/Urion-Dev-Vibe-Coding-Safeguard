@@ -1,6 +1,6 @@
-# CLAUDE.md — Diretrizes de Desenvolvimento para Claude Code
+# CLAUDE.md — Diretrizes para Claude Code
 
-> Gerado automaticamente via `npm run sync:rules`. A fonte unica de verdade e o `AGENTS.md`.
+> Hash Fonte: 501a6ccd | Gerado automaticamente via npm run sync:rules.
 
 # AGENTS.md — Dogmas Arquiteturais Inquebraveis
 

@@ -30,10 +30,10 @@ export default defineConfig({
         'src/**/infrastructure/**', // adapters Prisma/DB -> testes de integracao
       ],
       thresholds: {
-        lines: 80,
-        functions: 80,
-        branches: 70,
-        statements: 80,
+        lines: 85,
+        functions: 85,
+        branches: 80,
+        statements: 85,
       },
     },
     setupFiles: ['./tests/setup.ts'],
