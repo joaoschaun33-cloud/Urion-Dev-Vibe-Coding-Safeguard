@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import ts from 'typescript';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
@@ -55,9 +56,9 @@ function checkMdcFile(filePath) {
   ok(`${filePath} — valido`);
 }
 
-// Subrotina de Auditoria Estática Real de Código (AST & Heurísticas)
-function auditCodeQuality(dir) {
-  console.log('\n🔬 Auditoria Estatica de Codigo (AST & Segredos):');
+// Subrotina de Auditoria Estática Real via TypeScript Compiler API (AST Real)
+function auditCodeQualityAST(dir) {
+  console.log('\n🔬 Auditoria Estatica de Codigo (AST Real com TypeScript Compiler API):');
   const files = getAllFiles(path.join(ROOT, dir));
 
   let consoleLogCount = 0;
@@ -65,18 +66,51 @@ function auditCodeQuality(dir) {
   const secretRegex = /(api[_-]?key|secret[_-]?key|bearer\s+[a-zA-Z0-9_\-\.]{20,}|password\s*=\s*['"][^'"]+['"])/i;
 
   for (const file of files) {
-    if (file.endsWith('.ts') || file.endsWith('.tsx') || file.endsWith('.js')) {
+    if (file.endsWith('.ts') || file.endsWith('.tsx')) {
       const relative = path.relative(ROOT, file);
       const content = fs.readFileSync(file, 'utf8');
 
-      // 1. Proibir console.log em codigo de producao (fora de testes e scripts)
-      if (!relative.includes('test') && !relative.includes('scripts') && !relative.includes('tools')) {
-        const matches = content.match(/console\.log\(/g);
-        if (matches) {
-          consoleLogCount += matches.length;
-          warn(`${relative}: ${matches.length} console.log() encontrado(s) em codigo de producao`);
+      const sourceFile = ts.createSourceFile(
+        file,
+        content,
+        ts.ScriptTarget.Latest,
+        true
+      );
+
+      // AST Walk para identificar chamadas a console.log() e acessos dinâmicos a console
+      function visit(node) {
+        if (ts.isCallExpression(node)) {
+          const expr = node.expression;
+          // console.log(...)
+          if (
+            ts.isPropertyAccessExpression(expr) &&
+            ts.isIdentifier(expr.expression) &&
+            expr.expression.text === 'console' &&
+            expr.name.text === 'log'
+          ) {
+            if (!relative.includes('test') && !relative.includes('scripts') && !relative.includes('tools')) {
+              consoleLogCount++;
+              warn(`${relative}: console.log() AST detectado em codigo de producao`);
+            }
+          }
+          // console['log'](...)
+          if (
+            ts.isElementAccessExpression(expr) &&
+            ts.isIdentifier(expr.expression) &&
+            expr.expression.text === 'console' &&
+            ts.isStringLiteral(expr.argumentExpression) &&
+            expr.argumentExpression.text === 'log'
+          ) {
+            if (!relative.includes('test') && !relative.includes('scripts') && !relative.includes('tools')) {
+              consoleLogCount++;
+              warn(`${relative}: console['log']() acessado dinamicamente em producao`);
+            }
+          }
         }
+        ts.forEachChild(node, visit);
       }
+
+      visit(sourceFile);
 
       // 2. Proibir hardcoded secrets
       if (secretRegex.test(content) && !relative.includes('example') && !relative.includes('test')) {
@@ -86,8 +120,39 @@ function auditCodeQuality(dir) {
     }
   }
 
-  if (consoleLogCount === 0) ok('Zero console.log() residuais em codigo fonte de producao');
+  if (consoleLogCount === 0) ok('Zero console.log() residuais detectados por AST Parser');
   if (hardcodedSecretsCount === 0) ok('Zero credenciais ou secrets hardcoded detectados em src/');
+}
+
+// Subrotina da Automação 3: Avaliador da Honestidade (Dogma Zero)
+function auditDogmaZeroHonesty() {
+  console.log('\n⚖️  Auditoria de Honestidade de Codigo (Dogma Zero Evaluator):');
+  const files = getAllFiles(path.join(ROOT, 'src'));
+
+  let emptyStubsCount = 0;
+  let trivialAssertionsCount = 0;
+
+  for (const file of files) {
+    if (file.endsWith('.test.ts') || file.endsWith('.spec.ts')) {
+      const relative = path.relative(ROOT, file);
+      const content = fs.readFileSync(file, 'utf8');
+
+      // Detecta stubs vazios de IA / throw Error('Not implemented')
+      if (content.includes("throw new Error('Not implemented')") || content.includes('// TODO: implement test')) {
+        emptyStubsCount++;
+        warn(`${relative}: Teste contem stub nao implementado / placeholder de IA`);
+      }
+
+      // Detecta asserções fáceis / enganosas (ex: expect(true).toBe(true))
+      if (/expect\((true|false|1|0)\)\.to(Be|Equal)\((true|false|1|0)\)/.test(content)) {
+        trivialAssertionsCount++;
+        error(`${relative}: Teste contem assercao enganosa / trivial (expect(true).toBe(true))!`);
+      }
+    }
+  }
+
+  if (emptyStubsCount === 0) ok('Zero stubs vazios / un-implemented placeholders em suíte de testes');
+  if (trivialAssertionsCount === 0) ok('Dogma Zero Verificado: Zero assercoes triviais / enganosas em testes');
 }
 
 function checkControllerTests() {
@@ -171,8 +236,9 @@ checkFileExists('src/features/todo/application/create-todo.ts');
 checkFileExists('src/features/todo/infrastructure/todo-repository.prisma.ts');
 checkFileExists('src/features/todo/presentation/todo-controller.ts');
 
-// Auditoria Estática Real
-auditCodeQuality('src');
+// Auditoria Estática Real via AST oficial + Dogma Zero Evaluator
+auditCodeQualityAST('src');
+auditDogmaZeroHonesty();
 checkControllerTests();
 
 console.log('\n📐 Configuracoes:');

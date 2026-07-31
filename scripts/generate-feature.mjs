@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Gera uma nova feature FSD a partir de templates/feature, com substituicao de tokens.
+// Gera uma nova feature FSD a partir de templates/feature, com substituicao de tokens e AUTO-WIRING.
 // Uso: npm run generate:feature -- <nome-em-kebab-case>
 
 import fs from 'node:fs';
@@ -37,6 +37,7 @@ const files = [
   ['infrastructure/repository.impl.ts', `infrastructure/${slug}-repository.memory.ts`],
   ['presentation/controller.ts', `presentation/${slug}-controller.ts`],
   ['tests/unit/use-case.test.ts', `tests/unit/create-${slug}.test.ts`],
+  ['module.ts', `${slug}.module.ts`],
 ];
 
 const subst = (s) =>
@@ -54,9 +55,70 @@ for (const [src, out] of files) {
   console.log('  criado', path.relative(ROOT, outPath));
 }
 
-console.log(`\nFeature '${slug}' criada. Proximos passos:`);
-console.log(`  1. Ajuste os campos reais em src/features/${slug}/domain/${slug}.ts e no DTO.`);
-console.log(`  2. Registre a rota em src/app/routes.ts (use asyncHandler).`);
-console.log(`  3. Persistencia: crie o modelo no prisma/schema.prisma e troque o repo`);
-console.log(`     em memoria por Prisma (referencia: feature 'todo').`);
-console.log(`  4. Rode: npm run build && npm run lint && npm test`);
+// ==========================================
+// AUTO-WIRING 1: Injeção de Dependência no container.ts
+// ==========================================
+const containerPath = path.join(ROOT, 'src', 'app', 'container.ts');
+let containerContent = fs.readFileSync(containerPath, 'utf8');
+
+const containerImportLine = `import { register${pascal}Module } from '@/features/${slug}/${slug}.module';\n`;
+const containerRegisterLine = `register${pascal}Module(container);\n`;
+
+if (!containerContent.includes(containerImportLine)) {
+  // Inserir import após a última linha de import de módulo ou após logger
+  const lastImportIndex = containerContent.lastIndexOf("import { register");
+  if (lastImportIndex !== -1) {
+    const endOfLine = containerContent.indexOf('\n', lastImportIndex) + 1;
+    containerContent = containerContent.slice(0, endOfLine) + containerImportLine + containerContent.slice(endOfLine);
+  } else {
+    containerContent = containerImportLine + containerContent;
+  }
+}
+
+if (!containerContent.includes(containerRegisterLine)) {
+  containerContent += containerRegisterLine;
+  fs.writeFileSync(containerPath, containerContent, 'utf8');
+  console.log(`  ⚡ Auto-wired DI Container em ${path.relative(ROOT, containerPath)}`);
+}
+
+// ==========================================
+// AUTO-WIRING 2: Registro de Rotas no routes.ts
+// ==========================================
+const routesPath = path.join(ROOT, 'src', 'app', 'routes.ts');
+let routesContent = fs.readFileSync(routesPath, 'utf8');
+
+const controllerClass = `${pascal}Controller`;
+const controllerVar = `${camel}Controller`;
+const routesImportLine = `import { ${controllerClass} } from '@/features/${slug}/presentation/${slug}-controller';\n`;
+const routesResolveLine = `const ${controllerVar} = container.resolve<${controllerClass}>('${controllerVar}');\n`;
+const routeEndpointBlock = `\n// === ${pascal} Feature ===\nrouter.post(\n  '/${slug}s',\n  asyncHandler((req, res) => ${controllerVar}.create(req, res))\n);\n`;
+
+if (!routesContent.includes(routesImportLine)) {
+  const routerLineIndex = routesContent.indexOf('const router = Router();');
+  if (routerLineIndex !== -1) {
+    routesContent = routesContent.slice(0, routerLineIndex) + routesImportLine + routesContent.slice(routerLineIndex);
+  }
+}
+
+if (!routesContent.includes(routesResolveLine)) {
+  const postRouterIndex = routesContent.indexOf('const router = Router();');
+  if (postRouterIndex !== -1) {
+    const endOfLine = routesContent.indexOf('\n', postRouterIndex) + 1;
+    routesContent = routesContent.slice(0, endOfLine) + routesResolveLine + routesContent.slice(endOfLine);
+  }
+}
+
+if (!routesContent.includes(`/${slug}s`)) {
+  const healthCheckIndex = routesContent.indexOf("import { livenessCheck");
+  if (healthCheckIndex !== -1) {
+    routesContent = routesContent.slice(0, healthCheckIndex) + routeEndpointBlock + '\n' + routesContent.slice(healthCheckIndex);
+  } else {
+    routesContent += routeEndpointBlock;
+  }
+  fs.writeFileSync(routesPath, routesContent, 'utf8');
+  console.log(`  ⚡ Auto-wired Rotas HTTP em ${path.relative(ROOT, routesPath)}`);
+}
+
+console.log(`\n🎉 Feature '${slug}' criada e conectada automaticamente (100% Auto-Wired)!`);
+console.log(`  1. Teste executando: npm test`);
+console.log(`  2. Para adicionar campos no banco: edite prisma/schema.prisma e troque repo memory por Prisma.`);
