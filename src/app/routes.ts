@@ -65,6 +65,10 @@ router.get(
 );
 
 import { livenessCheck, readinessCheck, deepHealthCheck } from '@/shared/http/health-check';
+import { handleDeployQualityGateWebhook } from '@/shared/http/deploy-webhook';
+
+// Endpoint de Quality Gate Webhook (Vercel / Netlify / Railway Pre-Deploy Gate)
+router.post('/webhooks/deploy-quality-gate', asyncHandler(handleDeployQualityGateWebhook));
 
 // Endpoints de Healthcheck (Kubernetes Standards)
 router.get('/health', livenessCheck);
