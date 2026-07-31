@@ -71,6 +71,8 @@ const shutdown = async (signal: string) => {
   server.close(async () => {
     try {
       const { prisma } = await import('@/shared/infrastructure/database');
+      const { auditWorker } = await import('@/shared/infrastructure/queue');
+      await auditWorker.close();
       await prisma.$disconnect();
       await redis.quit();
       logger.info({ event: 'INFRASTRUCTURE_DISCONNECTED_CLEANLY' });
