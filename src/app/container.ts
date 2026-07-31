@@ -10,12 +10,12 @@ import { ListTodosUseCase } from '@/features/todo/application/list-todos';
 import { TodoController } from '@/features/todo/presentation/todo-controller';
 
 // Project Health Feature Imports
-import { InMemoryProjectHealthRepository } from '@/features/project-health/infrastructure/project-health-repository.memory';
+import { PrismaProjectHealthRepository } from '@/features/project-health/infrastructure/project-health-repository.prisma';
 import { CreateProjectHealthUseCase } from '@/features/project-health/application/create-project-health';
 import { ProjectHealthController } from '@/features/project-health/presentation/project-health-controller';
 
 // Spec Manager Feature Imports
-import { InMemorySpecManagerRepository } from '@/features/spec-manager/infrastructure/spec-manager-repository.memory';
+import { PrismaSpecManagerRepository } from '@/features/spec-manager/infrastructure/spec-manager-repository.prisma';
 import { CreateSpecDocumentUseCase } from '@/features/spec-manager/application/create-spec-manager';
 import { SpecManagerController } from '@/features/spec-manager/presentation/spec-manager-controller';
 
@@ -41,12 +41,12 @@ container.register({
   todoController: asClass(TodoController).singleton(),
 
   // Project Health Feature Dependencies
-  projectHealthRepository: asClass(InMemoryProjectHealthRepository).singleton(),
+  projectHealthRepository: asClass(PrismaProjectHealthRepository).singleton(),
   createProjectHealthUseCase: asClass(CreateProjectHealthUseCase).singleton(),
   projectHealthController: asClass(ProjectHealthController).singleton(),
 
   // Spec Manager Feature Dependencies
-  specManagerRepository: asClass(InMemorySpecManagerRepository).singleton(),
+  specManagerRepository: asClass(PrismaSpecManagerRepository).singleton(),
   createSpecDocumentUseCase: asClass(CreateSpecDocumentUseCase).singleton(),
   specManagerController: asClass(SpecManagerController).singleton(),
 
