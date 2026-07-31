@@ -2,36 +2,36 @@
 
 ## Nosso Compromisso
 
-No interesse de promover um ambiente aberto e acolhedor, nos, como contribuintes e mantenedores, nos comprometemos a tornar a participacao em nosso projeto e nossa comunidade uma experiencia livre de assedio para todos, independentemente de idade, tamanho corporal, deficiencia, etnia, caracteristicas sexuais, identidade e expressao de genero, nivel de experiencia, educacao, status socioeconomico, nacionalidade, aparencia pessoal, raca, religiao ou identidade e orientacao sexual.
+No interesse de promover um ambiente aberto e acolhedor, nós, como contribuintes e mantenedores, nos comprometemos a tornar a participarão em nosso projeto e nossa comunidade uma experiencia livre de assedio para todos, independentemente de idade, tamanho corporal, deficiência, etnia, caracteristicas sexuais, identidade e expressão de genero, nivel de experiência, educacao, status socioeconômico, nacionalidade, aparência pessoal, raça, religião ou identidade e orientação sexual.
 
 ## Nossos Padroes
 
 Exemplos de comportamento que contribuem para criar um ambiente positivo:
 - Usar linguagem acolhedora e inclusiva
-- Respeitar pontos de vista e experiencias diferentes
-- Aceitar criticas construtivas com graca
+- Respeitar pontos de vista e experiências diferentes
+- Aceitar críticas construtivas com graça 
 - Focar no que e melhor para a comunidade
 - Mostrar empatia com outros membros da comunidade
 
 Exemplos de comportamento inaceitavel:
 - Uso de linguagem ou imagens sexualizadas
-- Trolling, insultos, comentarios depreciativos, ataques pessoais ou politicos
-- Assedio publico ou privado
-- Publicar informacoes privadas de terceiros sem permissao
+- Trolling, insultos, comentarios depreciativos, ataques pessoais ou políticos 
+- Assédio público ou privado
+- Publicar informações privadas de terceiros sem permissão 
 - Outra conduta que poderia ser razoavelmente considerada inapropriada
 
 ## Nossas Responsabilidades
 
-Os mantenedores do projeto sao responsaveis por esclarecer os padroes de comportamento aceitavel e devem tomar acoes corretivas apropriadas e justas em resposta a quaisquer instancias de comportamento inaceitavel.
+Os mantenedores do projeto são responsáveis por esclarecer os padrões de comportamento aceitavel e devem tomar ações corretivas apropriadas e justas em resposta a quaisquer instâncias de comportamento inaceitável.
 
 ## Escopo
 
-Este Codigo de Conduta se aplica tanto dentro dos espacos do projeto quanto em espacos publicos quando um individuo representa o projeto ou sua comunidade.
+Este Código de Conduta se aplica tanto dentro dos espacos do projeto quanto em espaços públicos quando um indivíduo representa o projeto ou sua comunidade.
 
-## Aplicacao
+## Aplicação 
 
-Instancias de comportamento abusivo, assediante ou de outra forma inaceitavel podem ser relatadas aos mantenedores do projeto. Todas as reclamacoes serao revisadas e investigadas e resultarao em uma resposta considerada necessaria e apropriada as circunstancias.
+Instâncias de comportamento abusivo, assediante ou de outra forma inaceitável podem ser relatadas aos mantenedores do projeto. Todas as reclamações serão revisadas e investigadas e resultarão em uma resposta considerada necessária e apropriada as circunstâncias.
 
-## Atribuicao
+## Atribuição 
 
 Este Codigo de Conduta e adaptado do [Contributor Covenant](https://www.contributor-covenant.org), versao 2.1.
