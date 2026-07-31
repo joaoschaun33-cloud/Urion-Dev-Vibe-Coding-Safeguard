@@ -5,17 +5,22 @@
     <img src="docs/assets/banner.svg" alt="Urion Dev Vibe Coding Safeguard Banner" width="100%" max-width="800px" style="border-radius: 12px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
   </a>
 
-  <h1 align="center">🛡️ Urion Dev Vibe Coding Safeguard</h1>
+  <h1 align="center">🛡️ Urion Trust & Safety for Creators</h1>
 
   <p align="center">
-    <strong>Desenvolva com IA sem alucinações, débitos técnicos ou colapso arquitetural.</strong>
+    <strong>A Camada de Confiança Definitiva para Software Gerado por IA, Vibe Coding, No-Code e Low-Code.</strong>
+    <br />
+    <em>Publique com a certeza de um engenheiro sênior, mesmo sem ser um.</em>
+    <br />
     <br />
     <a href="https://urion.ia.br"><strong>🚀 Acessar Plataforma & Dashboard Ao Vivo »</strong></a>
     <br />
     <br />
     <a href="#-quick-start-em-30-segundos">Início Rápido</a>
     ·
-    <a href="#-exemplos-práticos">Exemplos Práticos</a>
+    <a href="#-recursos-principais--cobertura">Recursos & No-Code</a>
+    ·
+    <a href="#-quality-gate-webhook-vercel--netlify">Quality Gate Webhook</a>
     ·
     <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/issues">Reportar Bug</a>
   </p>
@@ -23,7 +28,7 @@
   <!-- README TYPING ANIMATED SVG HEADER -->
   <p align="center">
     <a href="https://urion.ia.br">
-      <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&pause=1000&color=8B5CF6&center=true&vCenter=true&width=600&lines=Dogma+Zero%3A+A+IA+nunca+mente+sobre+testes.;Feature-Sliced+Design+(FSD)+imposto+em+tempo+real.;Spec-Driven+Development%3A+PRD+vira+c%C3%B3digo+rastre%C3%A1vel.;Prote%C3%A7%C3%A3o+contra+Prompt+Injection+e+secrets." alt="Readme Typing SVG" />
+      <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&pause=1000&color=8B5CF6&center=true&vCenter=true&width=650&lines=Dogma+Zero%3A+A+IA+nunca+mente+sobre+testes.;Selo+P%C3%BAblico+Urion+Verified+para+No-Code+e+Vibe+Coding.;Quality+Gate+Webhook+para+Vercel%2C+Netlify+e+Railway.;Auditoria+de+Workflows+n8n%2C+Make.com+e+OpenAPI." alt="Readme Typing SVG" />
     </a>
   </p>
 
@@ -55,18 +60,16 @@
 
 ---
 
-<!-- SHOW, DON'T TELL (VISUAL PREVIEW) -->
+## 📺 Dashboard & Selo Público Urion Verified
 
-## 📺 Mostre, Não Conte (Dashboard & Doctor CLI Preview)
-
-> **O problema:** 85% dos projetos criados apenas com prompts de IA (Cursor, Antigravity, Windsurf, Copilot) colapsam no 2º mês por falta de arquitetura e segredos expostos.
+> **O problema:** 85% dos projetos criados apenas com prompts de IA (Cursor, Antigravity, Windsurf) colapsam no 2º mês por falta de arquitetura e segredos expostos, gerando descredibilização de mercado para makers e solopreneurs.
 
 <div align="center">
   <a href="https://urion.ia.br">
-    <img src="docs/assets/dashboard-preview.png" alt="Urion Safeguard Dashboard & Doctor CLI Preview" width="100%" style="max-width: 900px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+    <img src="docs/assets/dashboard-preview.png" alt="Urion Safeguard Dashboard & Selo Urion Verified Preview" width="100%" style="max-width: 900px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
   </a>
   <p align="center" style="margin-top: 8px;">
-    <sub>💡 <i>Acesse a plataforma em <a href="https://urion.ia.br">urion.ia.br</a> para interagir com o Dashboard e o Live Audit Playground em tempo real no browser.</i></sub>
+    <sub>💡 <i>Exiba a badge pública auditável <strong>Urion Verified</strong> no rodapé do seu app para comprovar a qualidade do projeto a clientes e investidores.</i></sub>
   </p>
 </div>
 
@@ -74,7 +77,7 @@
 
 ## ⚡ Quick Start em 30 Segundos
 
-Inicialize um novo projeto 100% blindado com um único comando:
+Inicialize um novo projeto 100% blindado com a nossa CLI interativa:
 
 ```bash
 npx create-vibe-safeguard meu-novo-app
@@ -90,7 +93,7 @@ git clone https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard.
 docker-compose up -d && npm install
 
 # 3. Executar o Doctor CLI e o Dashboard Web
-npm run doctor:cli
+npm run cursor-doctor
 npm run dev:web
 ```
 
@@ -99,9 +102,33 @@ npm run dev:web
 
 ---
 
-## 🧪 Exemplos Práticos (Básico ao Avançado)
+## 🧩 Recursos Principais & Cobertura
 
-### 1. Nível Básico: Gerar uma Nova Feature Isolada (FSD)
+### 1. Suporte a Artefatos No-Code & Low-Code (`NoCodeArtifactScanner`)
+
+O Urion varre não apenas código tradicional (JS/TS, Python), mas também estruturas declarativas e automações visuais:
+
+- ⚡ **Workflows do n8n:** Detecta chaves de API e segredos hardcoded em nós de automação.
+- 🔄 **Blueprints do Make.com:** Identifica tokens de autenticação expostos no fluxo.
+- 📜 **OpenAPI / Swagger Specs:** Valida se os endpoints possuem autenticação global (`security`) configurada.
+- 📦 **YAML / JSON Configs:** Varre arquivos de implantação Docker-Compose e CI/CD.
+
+### 2. Quality Gate Webhook (Vercel / Netlify / Railway)
+
+Intercepta o deploy em plataformas de hospedagem e aplica o **Quality Gate**:
+
+- Endpoint: `POST /webhooks/deploy-quality-gate`
+- Retorna **`HTTP 200 (APPROVED)`** para deploys limpos ou **`HTTP 422 (REJECTED)`** para barrar implantações inseguras em produção.
+
+### 3. GitHub Action Bot (PR Feedback Empático)
+
+Robô integrado ao GitHub (`.github/workflows/vibe-safeguard-bot.yml`) que analisa Pull Requests e comenta relatórios didáticos com tom amigável para vibe coders.
+
+---
+
+## 🧪 Exemplos Práticos
+
+### 1. Gerar uma Nova Feature Isolada (FSD Auto-Wired)
 
 Em vez de deixar a IA misturar rotas com banco de dados, use o scaffold CLI:
 
@@ -109,9 +136,9 @@ Em vez de deixar a IA misturar rotas com banco de dados, use o scaffold CLI:
 npm run generate:feature checkout
 ```
 
-_Gera automaticamente as camadas isoladas: `domain`, `application`, `infrastructure` e `presentation`._
+_Gera as camadas `domain`, `application`, `infrastructure`, `presentation` e registra automaticamente no DI Container e Express Routes._
 
-### 2. Nível Intermediário: Auditoria AST Estática Instantânea
+### 2. Auditoria AST Estática & No-Code Instantânea
 
 Detecte vazamentos de segredos e `console.log` residuais em 1 segundo:
 
@@ -119,25 +146,16 @@ Detecte vazamentos de segredos e `console.log` residuais em 1 segundo:
 npm run cursor-doctor
 ```
 
-### 3. Nível Avançado: Garantia do Dogma Zero na CI/CD
-
-Impeça que a IA envie código com testes falsos ou sem evidências no GitHub:
-
-```bash
-git add .
-git commit -m "feat(auth): implementar autenticação FSD"
-# A CI/CD bloqueia o PR automaticamente se a prova do Vitest não for gerada em .urion/
-```
-
 ---
 
-## 🛡️ Os 3 Pilares do Urion Safeguard
+## 🛡️ Os 4 Pilares do Urion Safeguard
 
 | Pilar                                | Como Protege Seu Projeto                                                                               |
 | :----------------------------------- | :----------------------------------------------------------------------------------------------------- |
 | **1. Dogma Zero (`AGENTS.md`)**      | Obriga a IA a ser 100% honesta. Bloqueia PRs se a IA alegar que "os testes passaram" sem gerar provas. |
 | **2. Feature-Sliced Design (FSD)**   | Impede importações cruzadas entre funcionalidades. `features/auth` nunca importa `features/payment`.   |
-| **3. Spec-Driven Development (SDD)** | Conecta especificações em `00-context/prd.md` ao código via tags `@implements US-*`.                   |
+| **3. Spec-Driven Development (SDD)** | Conecta especificações em `docs/00-context/prd.md` ao código via tags `@implements US-*`.              |
+| **4. No-Code Trust Layer**           | Audita automações n8n, Make e OpenAPI, gerando o selo público de garantia **Urion Verified**.          |
 
 ---
 
@@ -157,6 +175,3 @@ Contribuições são o que tornam a comunidade open source um lugar incrível!
 Distribuído sob a Licença MIT. Veja `LICENSE` para mais informações.
 
 Criado e Mantido por **[João Schaun](https://github.com/joaoschaun33-cloud)**.
-
-- 🌐 Site Oficial: **[urion.ia.br](https://urion.ia.br)**
-- 📧 Contato: `joaoschaun@gmail.com`
