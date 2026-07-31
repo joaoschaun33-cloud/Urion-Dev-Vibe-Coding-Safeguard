@@ -214,7 +214,8 @@ Checking specs coverage...
       <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#0A0A0B]/80 backdrop-blur-xl">
         <div className="mx-auto max-w-[1280px] px-5 lg:px-8 h-[64px] flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
+              <img src="/logo.png" alt="Urion Safeguard Logo" className="h-8 w-auto object-contain" />
               <span className="text-[20px] font-bold tracking-tight space-font">URION.OS</span>
               <span className="h-2 w-2 rounded-full bg-[#8B5CF6] shadow-[0_0_12px_#8B5CF6]" />
             </div>
