@@ -1,0 +1,36 @@
+name: Urion Safeguard PR Feedback Bot
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  safeguard-feedback:
+    name: Run Urion Safeguard & Post PR Feedback
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run Urion Safeguard Feedback Generator
+        run: node scripts/pr-feedback-bot.mjs
+
+      - name: Post Comment on PR
+        uses: mshick/fast-gh-pr-comment@v3
+        with:
+          file: pr-comment.md
+          comment_tag: urion-safeguard-feedback
+          mode: recreate
