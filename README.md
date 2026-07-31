@@ -2,7 +2,7 @@
 <div align="center">
 
   <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard">
-    <img src="https://raw.githubusercontent.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/main/docs/assets/logo.png" alt="Logo Urion Safeguard" width="120" height="120" onError="this.style.display='none'">
+    <img src="docs/assets/logo.png" alt="Logo Urion Safeguard" width="120" height="120">
   </a>
 
   <h1 align="center">🛡️ Urion Dev Vibe Coding Safeguard</h1>
