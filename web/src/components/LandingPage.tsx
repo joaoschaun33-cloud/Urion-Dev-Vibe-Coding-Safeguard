@@ -13,7 +13,6 @@ import {
   Layers,
   Terminal as TerminalIcon
 } from 'lucide-react';
-import { InteractivePlayground } from './InteractivePlayground';
 
 interface ProjectHealthReport {
   projectName: string;
@@ -684,11 +683,6 @@ enforcement: BLOCK_PR
               </div>
             </div>
           </div>
-        </div>
-
-        {/* INTERACTIVE PLAYGROUND DEMO */}
-        <div className="mt-12">
-          <InteractivePlayground />
         </div>
       </section>
 
