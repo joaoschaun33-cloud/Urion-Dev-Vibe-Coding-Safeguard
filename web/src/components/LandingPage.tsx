@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { UrionBadge } from './UrionBadge';
 import { 
   ShieldCheck, 
   Copy, 
@@ -197,6 +198,7 @@ Checking specs coverage...
               <a href="#ciclo" className="hover:text-white transition">Ciclo de Frustração</a>
               <a href="#pilares" className="hover:text-white transition">3 Pilares</a>
               <a href="#dashboard-real" className="hover:text-white transition">Dashboard Real</a>
+              <a href="#badge" className="hover:text-white transition flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Selo Urion</a>
               <a href="#comunidade" className="hover:text-white transition">Comunidade</a>
             </div>
           </div>
@@ -708,6 +710,21 @@ enforcement: BLOCK_PR
             <span className="mono text-[12px] text-zinc-400">$ urion cli v1.0.0</span>
           </div>
           <pre className="p-5 mono text-[12px] leading-5 text-zinc-300 overflow-x-auto whitespace-pre-wrap min-h-[200px]">{cliOutputs[activeCliTab]}</pre>
+        </div>
+      </section>
+
+      {/* SELO DE CONFIANÇA & BADGE GENERATOR */}
+      <section id="badge" className="border-t border-white/[0.06] bg-[#090D16] py-16">
+        <div className="mx-auto max-w-[1280px] px-5 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-[28px] lg:text-[42px] font-bold tracking-tight space-font text-white">
+              Selo Público <span className="bg-gradient-to-r from-violet-400 via-purple-300 to-indigo-400 bg-clip-text text-transparent">Urion Verified</span>
+            </h2>
+            <p className="mt-3 text-sm text-zinc-400 max-w-xl mx-auto">
+              Mostre aos seus clientes e investidores que seu projeto No-Code ou Vibe Coded atinge os mais altos padrões de segurança e arquitetura Big Tech.
+            </p>
+          </div>
+          <UrionBadge score={realScore} projectName="Vibe Safeguard Project" />
         </div>
       </section>
 
