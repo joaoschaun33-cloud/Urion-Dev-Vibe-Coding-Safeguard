@@ -7,6 +7,20 @@ import pino from 'pino';
 
 export const logger = pino({
   level: process.env.LOG_LEVEL ?? 'info',
+  redact: {
+    paths: [
+      'password',
+      'secret',
+      'token',
+      'authorization',
+      'cpf',
+      'creditCard',
+      'req.headers.authorization',
+      'req.body.password',
+      'req.body.cpf'
+    ],
+    censor: '[REDACTED_PII]'
+  },
   formatters: {
     level: (label: string) => ({ level: label.toUpperCase() }),
   },
