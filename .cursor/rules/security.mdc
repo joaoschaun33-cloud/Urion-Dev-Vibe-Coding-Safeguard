@@ -24,12 +24,20 @@ alwaysApply: true
 - Password reset: token de 1 uso, expira em 1 hora.
 - 2FA: TOTP (Google Authenticator) para ações sensíveis.
 
-## 🌐 Headers HTTP
+## 🌐 Headers HTTP & CSP
 - Helmet.js (Node) ou equivalente para headers de segurança.
-- CSP (Content Security Policy) configurado.
+- CSP (Content Security Policy): `default-src 'self'; script-src 'self' 'nonce-{random}'; object-src 'none';`. NUNCA use `'unsafe-inline'` em produção.
 - CORS: allowlist explícita, nunca `*` em produção.
+
+## 🗄️ SQL & Data Access
+- Prepared Statements: NUNCA concatene variáveis em queries SQL (ex: `SELECT * FROM users WHERE id = ${id}`). Use placeholders (`SELECT * FROM users WHERE id = ?`) ou ORM tipado (Prisma/TypeORM).
+
+## 🚨 OWASP A09: Security Logging & Failures
+- Logue TODAS as falhas de autenticação, acessos negados, alterações de permissão e tentativas de bypass de segurança.
+- Os logs de segurança devem ser emitidos com o Pino Logger estruturado em formato JSON contendo Correlation ID (`X-Request-ID`), IP mascarado e timestamp ISO-8601.
+- Audit trail de segurança persistido para rastreabilidade de eventos críticos.
 
 ## 📋 Compliance
 - LGPD/GDPR: consentimento explícito, direito ao esquecimento.
-- Não logue PII (CPF, email, telefone) em nível `info` ou abaixo.
+- Não logue PII (CPF, email, telefone) em texto claro. Utilize PII Redact ativado no logger Pino.
 - Anonimize dados em logs de debug.
