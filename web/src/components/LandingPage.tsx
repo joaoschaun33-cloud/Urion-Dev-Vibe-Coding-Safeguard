@@ -43,8 +43,6 @@ interface LandingPageProps {
 }
 
 export function LandingPage({ onOpenDashboard: _onOpenDashboard, latestReport, specs = [] }: LandingPageProps) {
-  const [heroTyped, setHeroTyped] = useState('');
-  const [heroPhase, setHeroPhase] = useState(0);
   const [termLines, setTermLines] = useState<string[]>([]);
   const [score, setScore] = useState(0);
   const [dashScore, setDashScore] = useState(0);
@@ -59,30 +57,6 @@ export function LandingPage({ onOpenDashboard: _onOpenDashboard, latestReport, s
   const realTotalTests = latestReport?.metrics?.totalTests ?? 35;
   const realMdcRules = latestReport?.metrics?.mdcRulesActive ?? 9;
   const realViolations = latestReport?.metrics?.architectureViolations ?? 0;
-
-  const fullHeadlines = [
-    "A IA MENTIU.\nSEU PROJETO\nCOLAPSOU.",
-    "O URION\nNÃO DEIXA."
-  ];
-
-  // 1. Hero typing effect
-  useEffect(() => {
-    let idx = 0;
-    const target = fullHeadlines[heroPhase];
-    setHeroTyped('');
-    const interval = setInterval(() => {
-      if (idx <= target.length) {
-        setHeroTyped(target.slice(0, idx));
-        idx++;
-      } else {
-        clearInterval(interval);
-        if (heroPhase === 0) {
-          setTimeout(() => setHeroPhase(1), 1200);
-        }
-      }
-    }, 32);
-    return () => clearInterval(interval);
-  }, [heroPhase]);
 
   // 2. Terminal lines animation (PRINT 1 - Restoring animated typing inside Hero terminal)
   useEffect(() => {
@@ -253,16 +227,13 @@ Checking specs coverage...
               ALERTA: 85% dos projetos vibe-coded colapsam no Mês 2
             </div>
 
-            <h1 className="text-[36px] md:text-[56px] lg:text-[64px] font-bold leading-[0.9] tracking-[-0.04em] min-h-[190px] md:min-h-[260px] whitespace-pre-line space-font">
-              <span className={heroPhase === 0 ? "text-white" : "text-zinc-500 line-through decoration-[#EF4444]/60 decoration-4"}>
-                {heroPhase === 0 ? heroTyped : fullHeadlines[0]}
+            <h1 className="text-[36px] md:text-[56px] lg:text-[64px] font-bold leading-[0.95] tracking-[-0.04em] space-font">
+              <span className="text-zinc-500 line-through decoration-[#EF4444] decoration-4">
+                A IA MENTIU.<br/>SEU PROJETO COLAPSOU.
               </span>
-              {heroPhase === 1 && (
-                <span className="block mt-2 text-white">
-                  <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">{heroTyped}</span>
-                  <span className="ml-1 inline-block h-[0.9em] w-[10px] -mb-1 bg-[#8B5CF6] animate-pulse" />
-                </span>
-              )}
+              <span className="block mt-3 bg-gradient-to-r from-[#8B5CF6] via-[#A855F7] to-[#EC4899] bg-clip-text text-transparent">
+                O URION NÃO DEIXA.
+              </span>
             </h1>
 
             <p className="mt-6 max-w-[520px] text-[16px] leading-relaxed text-zinc-400">
