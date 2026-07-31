@@ -2,7 +2,7 @@
 <div align="center">
 
   <a href="https://urion.ia.br">
-    <img src="docs/assets/banner.png" alt="Urion Dev Vibe Coding Safeguard Banner" width="100%" max-width="800px" style="border-radius: 12px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+    <img src="docs/assets/banner.svg" alt="Urion Dev Vibe Coding Safeguard Banner" width="100%" max-width="800px" style="border-radius: 12px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
   </a>
 
   <h1 align="center">🛡️ Urion Dev Vibe Coding Safeguard</h1>
