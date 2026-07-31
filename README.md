@@ -28,7 +28,7 @@
   </p>
 
   <!-- BADGES -->
-
+  <p align="center">
     <a href="https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard">
       <img src="https://img.shields.io/badge/Protected%20by-Urion%20Safeguard-8B5CF6?style=for-the-badge&logo=shield&logoColor=white" alt="Protected by Urion Safeguard" />
     </a>
@@ -47,7 +47,6 @@
     <a href="https://react.dev">
       <img src="https://img.shields.io/badge/React-18%2B-blue?style=for-the-badge&logo=react&color=61DAFB" alt="React Version" />
     </a>
-
   </p>
 </div>
 
