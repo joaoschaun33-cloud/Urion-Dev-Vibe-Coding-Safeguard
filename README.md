@@ -1,27 +1,37 @@
-# 🧠 Vibe Coding Safeguard & Product Owner Open Source Template
+# 🧠 Urion Dev Vibe Coding Safeguard & Product Owner Open Source Template
 
 > **Clone, configure, proteja seu projeto. Uma plataforma Open Source completa para desenvolvimento com IA (vibe coding) sem alucinações, débitos técnicos ou colapso arquitetural.**
 
-[![CI](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/ci.yml/badge.svg)](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/ci.yml)
-[![Security](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/security.yml/badge.svg)](https://github.com/seu-usuario/vibe-coding-template-repo/actions/workflows/security.yml)
+[![CI](https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/ci.yml/badge.svg)](https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/ci.yml)
+[![Security](https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/security.yml/badge.svg)](https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard/actions/workflows/security.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
-## 🛡️ O que é o Vibe Safeguard?
+## 🚀 Como Criar um Projeto Novo em 1 Segundo
 
-Uma solução arquitetural e operacional desenhada especialmente para **solopreneurs, criadores não-técnicos e desenvolvedores** que usam assistentes de IA (Cursor, Antigravity/Gemini, Windsurf, Copilot) para construir software.
+Você pode inicializar um novo projeto blindado rodando apenas um comando via **NPX**:
 
-Ele impõe o **Dogma Zero (Honestidade Absoluta da IA)**, **Feature-Sliced Design (FSD)** e **Spec-Driven Development (SDD)**, garantindo que o seu sonho digital não vire frustração nem colapse por falta de arquitetura.
+```bash
+npx create-vibe-safeguard meu-novo-app
+```
 
 ---
 
-## 🚀 Como Rodar em 1 Minuto
+## 🛡️ O que é o Urion Safeguard?
+
+Uma solução arquitetural e operacional desenhada especialmente para **solopreneurs, criadores não-técnicos e desenvolvedores** que usam assistentes de IA (Cursor, Antigravity/Gemini, Claude Code, Windsurf, Copilot) para construir software.
+
+Ele impõe o **Dogma Zero (Honestidade Absoluta da IA)**, **Feature-Sliced Design (FSD)**, **Spec-Driven Development (SDD)** e **Proteção contra Prompt Injection**, garantindo que o seu sonho digital não vire frustração nem colapse por falta de arquitetura.
+
+---
+
+## 💻 Como Rodar este Repositório Localmente
 
 ### 1. Iniciar o Backend & Banco de Dados
 
 ```bash
-git clone <repo> meu-app && cd meu-app
+git clone https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard.git meu-app && cd meu-app
 docker-compose up -d
 npm install
 npm run dev
