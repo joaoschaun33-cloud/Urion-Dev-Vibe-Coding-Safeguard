@@ -5,15 +5,15 @@ services:
     image: postgres:16-alpine
     container_name: vibe-postgres
     environment:
-      POSTGRES_USER: vibeuser
-      POSTGRES_PASSWORD: vibepass
-      POSTGRES_DB: vibedb
+      POSTGRES_USER: ${POSTGRES_USER:-vibeuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vibepass}
+      POSTGRES_DB: ${POSTGRES_DB:-vibedb}
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U vibeuser -d vibedb"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-vibeuser} -d ${POSTGRES_DB:-vibedb}']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,28 +22,14 @@ services:
     image: redis:7-alpine
     container_name: vibe-redis
     ports:
-      - "6379:6379"
+      - '6379:6379'
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 5s
       timeout: 5s
       retries: 5
-
-  # app:
-  #   build: .
-  #   container_name: vibe-app
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - DATABASE_URL=postgresql://vibeuser:vibepass@postgres:5432/vibedb
-  #     - REDIS_URL=redis://redis:6379
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #     redis:
-  #       condition: service_healthy
 
 volumes:
   postgres_data:

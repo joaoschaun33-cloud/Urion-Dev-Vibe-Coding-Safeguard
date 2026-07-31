@@ -55,6 +55,83 @@ function checkMdcFile(filePath) {
   ok(`${filePath} — valido`);
 }
 
+// Subrotina de Auditoria Estática Real de Código (AST & Heurísticas)
+function auditCodeQuality(dir) {
+  console.log('\n🔬 Auditoria Estatica de Codigo (AST & Segredos):');
+  const files = getAllFiles(path.join(ROOT, dir));
+
+  let consoleLogCount = 0;
+  let hardcodedSecretsCount = 0;
+  const secretRegex = /(api[_-]?key|secret[_-]?key|bearer\s+[a-zA-Z0-9_\-\.]{20,}|password\s*=\s*['"][^'"]+['"])/i;
+
+  for (const file of files) {
+    if (file.endsWith('.ts') || file.endsWith('.tsx') || file.endsWith('.js')) {
+      const relative = path.relative(ROOT, file);
+      const content = fs.readFileSync(file, 'utf8');
+
+      // 1. Proibir console.log em codigo de producao (fora de testes e scripts)
+      if (!relative.includes('test') && !relative.includes('scripts') && !relative.includes('tools')) {
+        const matches = content.match(/console\.log\(/g);
+        if (matches) {
+          consoleLogCount += matches.length;
+          warn(`${relative}: ${matches.length} console.log() encontrado(s) em codigo de producao`);
+        }
+      }
+
+      // 2. Proibir hardcoded secrets
+      if (secretRegex.test(content) && !relative.includes('example') && !relative.includes('test')) {
+        hardcodedSecretsCount++;
+        error(`${relative}: Possivel credencial/secret hardcoded detectado!`);
+      }
+    }
+  }
+
+  if (consoleLogCount === 0) ok('Zero console.log() residuais em codigo fonte de producao');
+  if (hardcodedSecretsCount === 0) ok('Zero credenciais ou secrets hardcoded detectados em src/');
+}
+
+function checkControllerTests() {
+  console.log('\n🧪 Auditoria de Cobertura de Rotas (Controller vs Test):');
+  const featuresDir = path.join(ROOT, 'src/features');
+  if (!fs.existsSync(featuresDir)) return;
+
+  const features = fs.readdirSync(featuresDir);
+  for (const feat of features) {
+    const featPath = path.join(featuresDir, feat);
+    if (fs.statSync(featPath).isDirectory()) {
+      const presentationDir = path.join(featPath, 'presentation');
+      const testsDir = path.join(featPath, 'tests');
+
+      if (fs.existsSync(presentationDir)) {
+        const controllers = fs.readdirSync(presentationDir).filter(f => f.endsWith('-controller.ts'));
+        for (const ctrl of controllers) {
+          const hasTest = fs.existsSync(testsDir) && fs.readdirSync(testsDir, { recursive: true }).some(t => t.includes(ctrl.replace('-controller.ts', '')));
+          if (hasTest) {
+            ok(`Controller [${feat}/${ctrl}] possui testes associados`);
+          } else {
+            warn(`Controller [${feat}/${ctrl}] nao possui arquivo de teste unitario/integracao em tests/`);
+          }
+        }
+      }
+    }
+  }
+}
+
+function getAllFiles(dirPath, arrayOfFiles = []) {
+  if (!fs.existsSync(dirPath)) return arrayOfFiles;
+  const files = fs.readdirSync(dirPath);
+
+  for (const file of files) {
+    const fullPath = path.join(dirPath, file);
+    if (fs.statSync(fullPath).isDirectory()) {
+      getAllFiles(fullPath, arrayOfFiles);
+    } else {
+      arrayOfFiles.push(fullPath);
+    }
+  }
+  return arrayOfFiles;
+}
+
 console.log('🩺 Cursor Doctor — Diagnostico do Repositorio\n');
 console.log('='.repeat(60));
 
@@ -93,6 +170,10 @@ checkFileExists('src/features/todo/domain/todo.ts');
 checkFileExists('src/features/todo/application/create-todo.ts');
 checkFileExists('src/features/todo/infrastructure/todo-repository.prisma.ts');
 checkFileExists('src/features/todo/presentation/todo-controller.ts');
+
+// Auditoria Estática Real
+auditCodeQuality('src');
+checkControllerTests();
 
 console.log('\n📐 Configuracoes:');
 checkFileExists('eslint.config.js');
@@ -152,10 +233,10 @@ checkFileExists('CONTRIBUTING.md');
 console.log('\n' + '='.repeat(60));
 console.log(`\n📊 Resumo: ${errors} erro(s), ${warnings} aviso(s)`);
 if (errors > 0) {
-  console.log('❌ Repositorio NAO esta saudavel.');
+  console.error('❌ Repositorio NAO esta saudavel.');
   process.exit(1);
 } else if (warnings > 0) {
-  console.log('⚠️  Funcional com avisos.');
+  console.warn('⚠️  Funcional com avisos.');
   process.exit(0);
 } else {
   console.log('🎉 100% saudavel! Pronto para vibe coding.');

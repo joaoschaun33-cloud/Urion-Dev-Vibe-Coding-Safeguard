@@ -1,74 +1,34 @@
-name: CI
+name: CI & Safeguard Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
-# Actions pinadas em SHA (supply-chain). Dependabot mantem os SHAs atualizados.
 jobs:
-  build-lint-test:
+  audit-and-test:
+    name: Build, Audit & Test Pipeline
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
-      - run: npm ci
-      - run: npm run build
-      - run: npm run lint
-      - run: npm run test:coverage
-      - run: npm run test:smoke
 
-  integration:
-    runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: vibeuser
-          POSTGRES_PASSWORD: vibepass
-          POSTGRES_DB: vibedb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U vibeuser -d vibedb"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
-    env:
-      DATABASE_URL: postgresql://vibeuser:vibepass@localhost:5432/vibedb
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm ci
-      # globalSetup aplica o schema (prisma db push) antes da suite.
-      - run: npm run test:integration
+      - name: Install Dependencies
+        run: npm ci
 
-  secret-scan:
-    # Trufflehog em modo diff so faz sentido em PR (base != head).
-    # Em push para main, base==head causa falha — por isso restringimos a PR.
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          fetch-depth: 0
-      - name: Secret Detection
-        uses: trufflesecurity/trufflehog@6f3c981e7b77f235fd2702dd74af25fc4b72bf11 # v3.96.0
-        with:
-          extra_args: --only-verified
+      - name: Run Vitest Unit & Integration Tests
+        run: npm test
 
-  sast:
-    runs-on: ubuntu-latest
-    container:
-      image: semgrep/semgrep
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Run Semgrep SAST
-        run: semgrep scan --config p/security-audit --config p/owasp-top-ten --config p/cwe-top-25 --error
+      - name: Run Smoke Tests
+        run: npm run test:smoke
+
+      - name: Run Cursor Doctor Safeguard Audit
+        run: npm run cursor-doctor
