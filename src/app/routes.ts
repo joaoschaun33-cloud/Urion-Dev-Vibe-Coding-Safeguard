@@ -9,13 +9,20 @@ import { container } from './container';
  * Injeção de Dependências 100% Desacoplada via Awilix Container.
  */
 
+import { TodoController } from '@/features/todo/presentation/todo-controller';
+import { ProjectHealthController } from '@/features/project-health/presentation/project-health-controller';
+import { SpecManagerController } from '@/features/spec-manager/presentation/spec-manager-controller';
+import { SecurityAuditController } from '@/features/security-audit/presentation/security-audit-controller';
+
 const router = Router();
 
 // Resolve Controllers dinamicamente do Awilix Container
-const todoController = container.resolve('todoController');
-const projectHealthController = container.resolve('projectHealthController');
-const specManagerController = container.resolve('specManagerController');
-const securityAuditController = container.resolve('securityAuditController');
+const todoController = container.resolve<TodoController>('todoController');
+const projectHealthController =
+  container.resolve<ProjectHealthController>('projectHealthController');
+const specManagerController = container.resolve<SpecManagerController>('specManagerController');
+const securityAuditController =
+  container.resolve<SecurityAuditController>('securityAuditController');
 
 // === Todo Feature ===
 router.post(

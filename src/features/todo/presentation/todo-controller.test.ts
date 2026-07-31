@@ -34,17 +34,12 @@ describe('TodoController', () => {
     expect(res.json).toHaveBeenCalledWith(result);
   });
 
-  it('create() com body invalido responde 400 (Problem Details)', async () => {
+  it('create() lança ZodError para body invalido (delegado ao error handler global)', async () => {
     const { controller } = makeController();
     const req = { body: {}, path: '/todos' } as unknown as Request;
     const res = mockRes();
 
-    await controller.create(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(400);
-    expect(res.json).toHaveBeenCalledWith(
-      expect.objectContaining({ status: 400, title: 'Validation Failed' }),
-    );
+    await expect(controller.create(req, res)).rejects.toThrow();
   });
 
   it('create() relanca erro que nao seja de validacao', async () => {

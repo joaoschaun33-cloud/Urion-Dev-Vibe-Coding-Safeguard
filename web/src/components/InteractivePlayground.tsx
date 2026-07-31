@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShieldCheck, Play, CheckCircle2, AlertTriangle, RefreshCw } from 'lucide-react';
+import { ShieldCheck, Play, CheckCircle2, RefreshCw } from 'lucide-react';
 
 export function InteractivePlayground() {
   const [prompt, setPrompt] = useState(

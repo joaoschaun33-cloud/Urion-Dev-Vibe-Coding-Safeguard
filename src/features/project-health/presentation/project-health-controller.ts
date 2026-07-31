@@ -16,7 +16,7 @@ export class ProjectHealthController {
     res.status(201).json(result);
   }
 
-  async list(req: Request, res: Response): Promise<void> {
+  async list(_req: Request, res: Response): Promise<void> {
     const list = await this.repository.findAll();
     res.json(list.map(toProjectHealthResponseDTO));
   }

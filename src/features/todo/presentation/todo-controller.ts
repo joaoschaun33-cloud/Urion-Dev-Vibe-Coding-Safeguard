@@ -4,8 +4,6 @@ import { Request, Response } from 'express';
 import { CreateTodoUseCase } from '../application/create-todo';
 import { ListTodosUseCase } from '../application/list-todos';
 import { CreateTodoSchema } from '../application/dto/create-todo.dto';
-import { ProblemDetails } from '@/shared/http/problem-details';
-import { logger } from '@/shared/infrastructure/logger';
 
 /**
  * Controller: adapta HTTP para os use cases.
@@ -14,22 +12,13 @@ import { logger } from '@/shared/infrastructure/logger';
 export class TodoController {
   constructor(
     private readonly createUseCase: CreateTodoUseCase,
-    private readonly listUseCase: ListTodosUseCase,
+    private readonly listUseCase: ListTodosUseCase
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
-    try {
-      const dto = CreateTodoSchema.parse(req.body);
-      const result = await this.createUseCase.execute(dto);
-      res.status(201).json(result);
-    } catch (error) {
-      if (error instanceof Error && error.name === 'ZodError') {
-        res.status(400).json(ProblemDetails.validationFailed(error, req.path));
-        return;
-      }
-      logger.error({ event: 'CREATE_TODO_ERROR', error: (error as Error).message });
-      throw error;
-    }
+    const dto = CreateTodoSchema.parse(req.body);
+    const result = await this.createUseCase.execute(dto);
+    res.status(201).json(result);
   }
 
   async list(req: Request, res: Response): Promise<void> {

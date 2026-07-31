@@ -22,7 +22,16 @@ export class PrismaTodoRepository implements ITodoRepository {
       take: limit,
       orderBy: { createdAt: 'desc' },
     });
-    return raw.map(r => Todo.reconstitute(this.mapToProps(r)));
+    return raw.map((r) => Todo.reconstitute(this.mapToProps(r)));
+  }
+
+  async findManyWithCursor({ cursor, limit }: { cursor?: string; limit: number }): Promise<Todo[]> {
+    const raw = await this.prisma.todo.findMany({
+      take: limit,
+      ...(cursor ? { skip: 1, cursor: { id: cursor } } : {}),
+      orderBy: { createdAt: 'desc' },
+    });
+    return raw.map((r) => Todo.reconstitute(this.mapToProps(r)));
   }
 
   async save(todo: Todo): Promise<void> {

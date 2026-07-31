@@ -11,18 +11,22 @@ import { logger } from '@/shared/infrastructure/logger';
 
 dotenv.config();
 
+import { env } from '@/shared/config/env';
+import { requestIdMiddleware } from './middleware/request-id';
+
 const app = express();
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = Number(env.PORT);
 
 import { rateLimiter } from './middleware/rate-limiter';
 import { redis } from '@/shared/infrastructure/redis';
 
 // Middlewares globais
+app.use(requestIdMiddleware);
 app.use(helmet());
 app.use(rateLimiter);
 
-const isProduction = process.env.NODE_ENV === 'production';
-const allowedOrigin = process.env.CORS_ORIGIN;
+const isProduction = env.NODE_ENV === 'production';
+const allowedOrigin = env.CORS_ORIGIN;
 
 if (isProduction && !allowedOrigin) {
   logger.error(
@@ -60,31 +64,40 @@ const server = app.listen(PORT, () => {
   logger.info({
     event: 'SERVER_STARTED',
     port: PORT,
-    env: process.env.NODE_ENV,
+    env: env.NODE_ENV,
     url: `http://localhost:${String(PORT)}`,
   });
 });
 
 // Graceful Shutdown Handler (Garantia de Produção)
-const shutdown = async (signal: string) => {
+const shutdown = (signal: string): void => {
   logger.info({ event: 'SERVER_SHUTTING_DOWN', signal });
-  server.close(async () => {
-    try {
-      const { prisma } = await import('@/shared/infrastructure/database');
-      const { auditWorker } = await import('@/shared/infrastructure/queue');
-      await auditWorker.close();
-      await prisma.$disconnect();
-      await redis.quit();
-      logger.info({ event: 'INFRASTRUCTURE_DISCONNECTED_CLEANLY' });
-    } catch (err) {
-      logger.error({ event: 'SHUTDOWN_ERROR', error: err });
-    } finally {
-      process.exit(0);
-    }
+  server.close(() => {
+    (async (): Promise<void> => {
+      try {
+        const { prisma } = await import('@/shared/infrastructure/database');
+        const { auditWorker } = await import('@/shared/infrastructure/queue');
+        await auditWorker.close();
+        await prisma.$disconnect();
+        await redis.quit();
+        logger.info({ event: 'INFRASTRUCTURE_DISCONNECTED_CLEANLY' });
+      } catch (err) {
+        logger.error({ event: 'SHUTDOWN_ERROR', error: err });
+      } finally {
+        process.exit(0);
+      }
+    })().catch((err: unknown) => {
+      logger.error({ event: 'SHUTDOWN_UNHANDLED_ERROR', error: err });
+      process.exit(1);
+    });
   });
 };
 
-process.on('SIGTERM', () => void shutdown('SIGTERM'));
-process.on('SIGINT', () => void shutdown('SIGINT'));
+process.on('SIGTERM', () => {
+  shutdown('SIGTERM');
+});
+process.on('SIGINT', () => {
+  shutdown('SIGINT');
+});
 
 export default app;

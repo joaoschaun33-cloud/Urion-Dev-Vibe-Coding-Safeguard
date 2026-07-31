@@ -25,13 +25,15 @@ export class CreateSecurityAuditUseCase {
     });
 
     // Enfileira processamento pesado no Redis via BullMQ Worker
-    try {
-      await auditQueue.add('process-audit-report', {
-        auditId: audit.id,
-        severity: audit.severity,
-      });
-    } catch {
-      // Ignora erro de enfileiramento caso Redis não esteja ativo no ambiente local
+    if (process.env.NODE_ENV !== 'test') {
+      try {
+        await auditQueue.add('process-audit-report', {
+          auditId: audit.id,
+          severity: audit.severity,
+        });
+      } catch {
+        // Ignora erro de enfileiramento caso Redis não esteja ativo no ambiente local
+      }
     }
 
     return audit;
