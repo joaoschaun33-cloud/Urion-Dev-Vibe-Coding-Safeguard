@@ -46,7 +46,9 @@ router.get(
   asyncHandler((req, res) => specManagerController.list(req, res))
 );
 
-// Endpoint de Healthcheck da API
+import { deepHealthCheck } from '@/shared/http/health-check';
+
+// Endpoint de Healthcheck Simples
 router.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
@@ -54,5 +56,8 @@ router.get('/health', (_req, res) => {
     diContainer: 'awilix',
   });
 });
+
+// Endpoint de Healthcheck Aprofundado (PostgreSQL + Redis)
+router.get('/health/deep', asyncHandler(deepHealthCheck));
 
 export default router;
