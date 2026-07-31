@@ -2,7 +2,7 @@
 
 import { ITodoRepository } from '../domain/todo-repository.interface';
 import { Todo, TodoProps } from '../domain/todo';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Todo as PrismaTodo } from '@prisma/client';
 
 /**
  * Implementacao do repositorio com Prisma.
@@ -65,15 +65,15 @@ export class PrismaTodoRepository implements ITodoRepository {
     return this.prisma.todo.count();
   }
 
-  private mapToProps(raw: Record<string, unknown>): TodoProps {
+  private mapToProps(raw: PrismaTodo): TodoProps {
     return {
-      id: raw.id as string,
-      title: raw.title as string,
-      description: raw.description as string | undefined,
-      isCompleted: raw.isCompleted as boolean,
+      id: raw.id,
+      title: raw.title,
+      description: raw.description ?? undefined,
+      isCompleted: raw.isCompleted,
       priority: raw.priority as TodoProps['priority'],
-      createdAt: raw.createdAt as Date,
-      updatedAt: raw.updatedAt as Date,
+      createdAt: raw.createdAt,
+      updatedAt: raw.updatedAt,
     };
   }
 }

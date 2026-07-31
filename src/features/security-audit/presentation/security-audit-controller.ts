@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { CreateSecurityAuditUseCase } from '../application/create-security-audit';
 import { ISecurityAuditRepository } from '../domain/security-audit';
+import { createSecurityAuditSchema } from './security-audit-dto';
 
 export class SecurityAuditController {
   constructor(
@@ -9,7 +10,8 @@ export class SecurityAuditController {
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
-    const audit = await this.createSecurityAuditUseCase.execute(req.body);
+    const dto = createSecurityAuditSchema.parse(req.body);
+    const audit = await this.createSecurityAuditUseCase.execute(dto);
     res.status(201).json(audit);
   }
 

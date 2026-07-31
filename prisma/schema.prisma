@@ -19,6 +19,7 @@ model Todo {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
+  @@index([createdAt])
   @@map("todos")
 }
 
@@ -40,6 +41,7 @@ model ProjectHealthReport {
   architectureViolations Int      @map("architecture_violations")
   createdAt              DateTime @default(now()) @map("created_at")
 
+  @@index([createdAt])
   @@map("project_health_reports")
 }
 
@@ -52,6 +54,8 @@ model SpecDocument {
   isValidated             Boolean  @default(false) @map("is_validated")
   createdAt               DateTime @default(now()) @map("created_at")
 
+  @@index([createdAt])
+  @@index([status])
   @@map("spec_documents")
 }
 
@@ -64,5 +68,7 @@ model SecurityAuditLog {
   auditedBy    String   @map("audited_by")
   createdAt    DateTime @default(now()) @map("created_at")
 
+  @@index([createdAt])
+  @@index([status])
   @@map("security_audit_logs")
 }

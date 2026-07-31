@@ -51,6 +51,12 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
+      - name: Run Unit Tests & Coverage Gate
+        run: npm run test
+
+      - name: Compile TypeScript & Build Production Asset
+        run: npm run build
+
       - name: Run Smoke Tests
         run: npm run test:smoke
 
