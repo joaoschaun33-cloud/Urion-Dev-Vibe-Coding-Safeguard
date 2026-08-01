@@ -1,8 +1,12 @@
 #!/usr/bin/env node
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+/**
+ * 🛡️ Urion Safeguard CLI — Executável ESM
+ */
+
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 
 const projectName = process.argv[2] || 'my-vibe-app';
 const targetPath = path.join(process.cwd(), projectName);
@@ -28,6 +32,6 @@ try {
   console.log(`  cd ${projectName}`);
   console.log(`  npm run dev\n`);
 } catch (error) {
-  console.error(`\n❌ Falha ao inicializar o projeto:`, error.message);
+  console.error(`\n❌ Falha ao inicializar o projeto:`, error instanceof Error ? error.message : String(error));
   process.exit(1);
 }
