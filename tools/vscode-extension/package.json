@@ -1,0 +1,40 @@
+{
+  "name": "urion-safeguard-extension",
+  "displayName": "Urion Trust & Safety — Defensive Co-Pilot",
+  "description": "Assistente defensivo em tempo real para Vibe Coding, No-Code e desenvolvedores acelerados por IA. Detecta credenciais expostas, violações FSD e erros declarativos no VS Code / Cursor.",
+  "version": "1.0.0",
+  "publisher": "urion",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Linters",
+    "Security",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:typescript",
+    "onLanguage:javascript",
+    "onLanguage:json",
+    "onLanguage:yaml"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "urion.runScan",
+        "title": "Urion: Executar Scan de Segurança e Qualidade"
+      }
+    ],
+    "configuration": {
+      "title": "Urion Safeguard",
+      "properties": {
+        "urion.enableRealtimeScan": {
+          "type": "boolean",
+          "default": true,
+          "description": "Habilita a varredura defensiva em tempo real ao salvar arquivos."
+        }
+      }
+    }
+  }
+}
