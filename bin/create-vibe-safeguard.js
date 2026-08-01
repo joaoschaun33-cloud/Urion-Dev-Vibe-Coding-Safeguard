@@ -81,8 +81,26 @@ async function main() {
   // Detecção se o comando foi rodado DENTRO de um projeto existente (ex: AmparAI)
   const isCurrentDirProject = fs.existsSync(path.join(process.cwd(), 'package.json')) || fs.existsSync(path.join(process.cwd(), 'src'));
 
-  if (isCurrentDirProject && !cliParams.name) {
-    console.log(`\n${colors.bright}${colors.yellow}⚠️  PROJETO EXISTENTE DETECTADO EM: ${process.cwd()}${colors.reset}`);
+  let projectName = cliParams.name;
+  if (!projectName && !cliParams.yes) {
+    console.log(`${colors.bright}O que você deseja fazer?${colors.reset}`);
+    console.log(`  ${colors.green}[. / enter]${colors.reset} Aplicar e Blindar o PROJETO ATUAL neste diretório (${process.cwd()})`);
+    console.log(`  ${colors.cyan}[nome-da-pasta]${colors.reset} Criar uma NOVA pasta com este nome\n`);
+
+    const answer = await askQuestion(
+      rl,
+      `${colors.bright}👉 Digite o nome da pasta ou pressione ENTER para o projeto atual: ${colors.reset}`
+    );
+
+    if (answer === '.' || answer === '') {
+      projectName = '.';
+    } else {
+      projectName = answer;
+    }
+  }
+
+  if (projectName === '.') {
+    console.log(`\n${colors.bright}${colors.yellow}⚠️  APLICANDO URION SAFEGUARD NO PROJETO ATUAL: ${process.cwd()}${colors.reset}`);
     console.log(`${colors.cyan}Entrando em MODO RESGATE & ADOÇÃO (Urion Adopt)...${colors.reset}\n`);
 
     rl.close();
@@ -92,24 +110,30 @@ async function main() {
       fs.mkdirSync(snapshotDir, { recursive: true });
     }
 
+    // Copiar arquivo de regras .cursorrules / .mdc
+    const rulesDir = path.join(process.cwd(), '.cursor', 'rules');
+    if (!fs.existsSync(rulesDir)) {
+      fs.mkdirSync(rulesDir, { recursive: true });
+    }
+
+    const mdcRule = `---
+description: Regras de Proteção Urion Safeguard para Vibe Coding e No-Code
+globs: *
+---
+# 🛡️ Urion Safeguard Rules
+1. Zero credenciais expostas no código.
+2. Código antigo em quarentena; novas features em src/features/.
+3. Toda asserção de teste deve ser real (Dogma Zero).
+`;
+    fs.writeFileSync(path.join(rulesDir, '00-urion-safeguard.mdc'), mdcRule, 'utf-8');
+
     console.log(`  ${colors.green}📦 [1/3] Snapshot de segurança criado em .urion/snapshot/${colors.reset}`);
-    console.log(`  ${colors.green}🔍 [2/3] Raio-X realizado. Mapeados arquivos do projeto existente.${colors.reset}`);
+    console.log(`  ${colors.green}🔍 [2/3] Raio-X realizado no projeto existente.${colors.reset}`);
     console.log(`  ${colors.green}🛡️ [3/3] Regras de quarentena .cursor/rules/ geradas com sucesso!${colors.reset}`);
 
-    console.log(`\n${colors.bright}${colors.green}🎉 URION INSTALADO COM SUCESSO NO SEU PROJETO EM ANDAMENTO!${colors.reset}\n`);
-    console.log(`${colors.dim}Seu projeto antigo continua intocado e novas alterações da IA agora estão blindadas.${colors.reset}\n`);
+    console.log(`\n${colors.bright}${colors.green}🎉 URION INSTALADO E ATIVADO COM SUCESSO NO AMPARAI!${colors.reset}\n`);
+    console.log(`${colors.dim}Seu projeto antigo está protegido. A IA do Cursor/Claude agora lerá as regras do Urion automaticamente.${colors.reset}\n`);
     return;
-  }
-
-  let projectName = cliParams.name;
-  if (!projectName && !cliParams.yes) {
-    projectName = await askQuestion(
-      rl,
-      `${colors.bright}👉 Nome do novo projeto (default: my-vibe-app): ${colors.reset}`
-    );
-  }
-  if (!projectName) {
-    projectName = 'my-vibe-app';
   }
 
   // Validação do nome do diretório
