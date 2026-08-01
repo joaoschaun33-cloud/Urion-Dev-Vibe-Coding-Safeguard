@@ -6,11 +6,7 @@
   "license": "MIT",
   "type": "module",
   "main": "dist/app/server.js",
-  "bin": {
-    "vibe-coding-template-repo": "./bin/cli.js",
-    "urion": "./bin/cli.js",
-    "create-vibe-safeguard": "./bin/create-vibe-safeguard.js"
-  },
+  "bin": "./bin/cli.js",
   "scripts": {
     "dev": "tsx watch src/app/server.ts",
     "create:app": "node bin/create-vibe-safeguard.js",
