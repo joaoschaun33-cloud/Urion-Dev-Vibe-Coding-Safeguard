@@ -8,6 +8,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+export interface AuditTimelineEvent {
+  eventId: string;
+  timestamp: string;
+  eventType: 'BLOCKED_BY_GUARDRAIL' | 'APPROVED_BUILD' | 'AUTO_FIX_APPLIED' | 'SNAPSHOT_CREATED';
+  scoreAtEvent: number;
+  reason: string;
+}
+
 export interface ExportedBlueprint {
   caseName: string;
   exportedAt: string;
@@ -20,6 +28,7 @@ export interface ExportedBlueprint {
     anonymisedStack: string[];
   };
   communityRulesGenerated: string[];
+  auditTimeline: AuditTimelineEvent[];
 }
 
 export function exportProjectBlueprint(
@@ -46,8 +55,22 @@ export function exportProjectBlueprint(
     }
   }
 
+  const outputDir = path.join(rootDir, 'docs', 'use-cases');
+  const slug = caseName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+  const outputPath = path.join(outputDir, `case-${slug}.json`);
+
+  let existingTimeline: AuditTimelineEvent[] = [];
+  if (fs.existsSync(outputPath)) {
+    try {
+      const existingData = JSON.parse(fs.readFileSync(outputPath, 'utf-8')) as ExportedBlueprint;
+      existingTimeline = existingData.auditTimeline;
+    } catch {
+      existingTimeline = [];
+    }
+  }
+
   const blueprint: ExportedBlueprint = {
-    caseName: caseName.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+    caseName: slug,
     exportedAt: new Date().toISOString(),
     architectureType: hasPackageJson ? 'saas-supabase-stripe' : 'lean-crud',
     detectedFeatures: ['AUTHENTICATION', 'WEBHOOK_PAYMENTS', 'REALTIME_MESSAGING'],
@@ -58,16 +81,35 @@ export function exportProjectBlueprint(
       anonymisedStack: ['React', 'Node.js', 'Supabase', 'Stripe'],
     },
     communityRulesGenerated: ['LGPD_CPF_EXPOSURE', 'WEBHOOK_SIGNATURE_GATE'],
+    auditTimeline: existingTimeline,
   };
 
-  // Garante a existência da pasta docs/use-cases/
-  const outputDir = path.join(rootDir, 'docs', 'use-cases');
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  const outputPath = path.join(outputDir, `case-${blueprint.caseName}.json`);
   fs.writeFileSync(outputPath, JSON.stringify(blueprint, null, 2), 'utf-8');
+  return blueprint;
+}
 
+export function recordAuditTimelineEvent(
+  caseName: string,
+  event: Omit<AuditTimelineEvent, 'eventId' | 'timestamp'>,
+  rootDir: string = process.cwd()
+): ExportedBlueprint {
+  const blueprint = exportProjectBlueprint(caseName, rootDir);
+
+  const newEvent: AuditTimelineEvent = {
+    eventId: `evt-${String(Date.now())}`,
+    timestamp: new Date().toISOString(),
+    ...event,
+  };
+
+  blueprint.auditTimeline.push(newEvent);
+
+  const outputDir = path.join(rootDir, 'docs', 'use-cases');
+  const outputPath = path.join(outputDir, `case-${blueprint.caseName}.json`);
+
+  fs.writeFileSync(outputPath, JSON.stringify(blueprint, null, 2), 'utf-8');
   return blueprint;
 }
