@@ -11,7 +11,7 @@ export interface ScannedSpecResult {
   status: 'DRAFT' | 'APPROVED' | 'OUTDATED';
 }
 
-const SCAN_DIRECTORIES = ['00-context', '01-product'];
+const SCAN_DIRECTORIES = ['00-context', '01-product', 'docs/00-context', 'docs/01-product'];
 
 export function scanProjectSpecs(rootDir: string = process.cwd()): SpecDocument[] {
   const documents: SpecDocument[] = [];
