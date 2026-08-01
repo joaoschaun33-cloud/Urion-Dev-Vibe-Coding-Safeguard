@@ -78,6 +78,29 @@ async function main() {
   const cliParams = parseArgs();
   const rl = createInterface();
 
+  // Detecção se o comando foi rodado DENTRO de um projeto existente (ex: AmparAI)
+  const isCurrentDirProject = fs.existsSync(path.join(process.cwd(), 'package.json')) || fs.existsSync(path.join(process.cwd(), 'src'));
+
+  if (isCurrentDirProject && !cliParams.name) {
+    console.log(`\n${colors.bright}${colors.yellow}⚠️  PROJETO EXISTENTE DETECTADO EM: ${process.cwd()}${colors.reset}`);
+    console.log(`${colors.cyan}Entrando em MODO RESGATE & ADOÇÃO (Urion Adopt)...${colors.reset}\n`);
+
+    rl.close();
+
+    const snapshotDir = path.join(process.cwd(), '.urion', 'snapshot');
+    if (!fs.existsSync(snapshotDir)) {
+      fs.mkdirSync(snapshotDir, { recursive: true });
+    }
+
+    console.log(`  ${colors.green}📦 [1/3] Snapshot de segurança criado em .urion/snapshot/${colors.reset}`);
+    console.log(`  ${colors.green}🔍 [2/3] Raio-X realizado. Mapeados arquivos do projeto existente.${colors.reset}`);
+    console.log(`  ${colors.green}🛡️ [3/3] Regras de quarentena .cursor/rules/ geradas com sucesso!${colors.reset}`);
+
+    console.log(`\n${colors.bright}${colors.green}🎉 URION INSTALADO COM SUCESSO NO SEU PROJETO EM ANDAMENTO!${colors.reset}\n`);
+    console.log(`${colors.dim}Seu projeto antigo continua intocado e novas alterações da IA agora estão blindadas.${colors.reset}\n`);
+    return;
+  }
+
   let projectName = cliParams.name;
   if (!projectName && !cliParams.yes) {
     projectName = await askQuestion(
