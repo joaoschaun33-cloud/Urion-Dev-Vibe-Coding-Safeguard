@@ -6,6 +6,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
+    "urion": "./bin/cli.js",
     "create-vibe-safeguard": "./bin/create-vibe-safeguard.js"
   },
   "scripts": {
