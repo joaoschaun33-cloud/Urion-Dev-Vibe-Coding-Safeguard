@@ -75,22 +75,22 @@
 
 ---
 
-## ⚡ Quick Start em 30 Segundos
+## ⚡ Quick Start em 30 Segundos (Zero-Docker)
 
-Inicialize um novo projeto 100% blindado com a nossa CLI interativa:
+Inicialize um novo projeto 100% blindado com a nossa CLI interativa em **1 único comando**:
 
 ```bash
-npx create-vibe-safeguard meu-novo-app
+npx urion
 ```
 
-Ou rode o repositório localmente em 3 passos simples:
+Ou rode o repositório localmente em 3 passos simples (sem necessidade de Docker):
 
 ```bash
 # 1. Clonar o repositório oficial
 git clone https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard.git && cd Urion-Dev-Vibe-Coding-Safeguard
 
-# 2. Iniciar banco de dados e dependências
-docker-compose up -d && npm install
+# 2. Instalar dependências e preparar o banco local (SQLite)
+npm install && npx prisma db push
 
 # 3. Executar o Doctor CLI e o Dashboard Web
 npm run cursor-doctor
@@ -99,6 +99,8 @@ npm run dev:web
 
 - 🌐 **Dashboard Web**: http://localhost:5173
 - 🔌 **API REST Backend**: http://localhost:3000/api/v1/health
+
+> 💡 _Nota para Produção:_ O uso de PostgreSQL/Docker-Compose (`docker-compose up -d`) é **opcional** e recomendado apenas para ambientes de homologação e produção enterprise.
 
 ---
 
