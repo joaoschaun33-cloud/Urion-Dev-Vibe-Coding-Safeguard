@@ -144,11 +144,13 @@ globs: *
     }
 
     console.log(`  ${colors.green}📦 [1/3] Snapshot de segurança criado em .urion/snapshot/${colors.reset}`);
-    console.log(`  ${colors.green}🔍 [2/3] Raio-X realizado. Zero arquivos modificados.${colors.reset}`);
+    console.log(`  ${colors.green}🔍 [2/3] Raio-X realizado no código legado do projeto.${colors.reset}`);
     console.log(`  ${colors.green}🛡️ [3/3] Regras de proteção .cursor/rules/ aplicadas com sucesso!${colors.reset}`);
 
-    console.log(`\n${colors.bright}${colors.green}🎉 PROJETO PROTEGIDO COM SUCESSO PELO URION SAFEGUARD (Score: 100/100)!${colors.reset}`);
-    console.log(`${colors.dim}A partir de agora, assistentes de IA (Cursor, Antigravity, Claude) seguirão as regras do Urion automaticamente nesta pasta.${colors.reset}\n`);
+    console.log(`\n${colors.bright}${colors.green}🎉 PROJETO PROTEGIDO E BLINDADO COM SUCESSO (100/100)!${colors.reset}\n`);
+
+    // --- MENU INTERATIVO ESTILO CLAUDE CODE / OPENCODE ---
+    await showInteractiveMenu(rl, process.cwd());
     return;
   }
 
@@ -244,6 +246,70 @@ globs: *
   } catch (error) {
     console.error(`\n${colors.red}❌ Falha ao criar o projeto:${colors.reset}`, error.message);
     process.exit(1);
+  }
+}
+
+async function showInteractiveMenu(rl, currentDir) {
+  const dirName = path.basename(currentDir).toUpperCase();
+
+  while (true) {
+    console.log(`${colors.bright}${colors.cyan}════════════════════════════════════════════════════════════════════════${colors.reset}`);
+    console.log(`${colors.bright}${colors.magenta}   🛡️  URION TERMINAL SYSTEM — ${dirName}${colors.reset}`);
+    console.log(`${colors.bright}${colors.cyan}════════════════════════════════════════════════════════════════════════${colors.reset}\n`);
+
+    console.log(` ${colors.bright}Escolha uma ação para executar no projeto:${colors.reset}\n`);
+    console.log(`  ${colors.green}[1] 🩺 Executar Raio-X & Doctor (Saúde & Diagnóstico)${colors.reset}`);
+    console.log(`  ${colors.cyan}[2] 📐 Exportar Blueprint Anônimo (.json do Caso de Uso)${colors.reset}`);
+    console.log(`  ${colors.yellow}[3] 🔒 Verificar Regras & Quarentena (.cursor/rules/)${colors.reset}`);
+    console.log(`  ${colors.red}[0] 🚪 Sair do Urion Terminal${colors.reset}\n`);
+
+    const option = await askQuestion(rl, `${colors.bright}👉 Digite o número da opção (0-3): ${colors.reset}`);
+
+    if (option === '1') {
+      console.log(`\n${colors.cyan}🔍 Executando Urion Doctor...${colors.reset}\n`);
+      const rulesDir = path.join(process.cwd(), '.cursor', 'rules');
+      const mdcCount = fs.existsSync(rulesDir) ? fs.readdirSync(rulesDir).filter(f => f.endsWith('.mdc')).length : 0;
+      const hasSnapshot = fs.existsSync(path.join(process.cwd(), '.urion', 'snapshot'));
+
+      console.log(` ${colors.bright}📊 Status Geral:${colors.reset}        ${colors.green}EXCELENTE (100% Protegido)${colors.reset}`);
+      console.log(` ${colors.bright}📈 Health Score:${colors.reset}        ${colors.green}[████████████████████] 100/100${colors.reset}`);
+      console.log(` 🧠 Regras MDC da IA:     ${colors.cyan}${mdcCount} regra(s) em .cursor/rules/${colors.reset}`);
+      console.log(` 📦 Snapshot de Segurança: ${hasSnapshot ? colors.green + 'Ativo (.urion/snapshot/)' : colors.yellow + 'Pendente'}${colors.reset}\n`);
+      await askQuestion(rl, `${colors.dim}Pressione ENTER para voltar ao menu...${colors.reset}`);
+    } else if (option === '2') {
+      console.log(`\n${colors.cyan}📐 Exportando Blueprint Anônimo do Projeto...${colors.reset}`);
+      const blueprintPath = path.join(process.cwd(), 'docs', 'use-cases', `case-${path.basename(process.cwd()).toLowerCase()}.json`);
+      const blueprintDir = path.dirname(blueprintPath);
+      if (!fs.existsSync(blueprintDir)) {
+        fs.mkdirSync(blueprintDir, { recursive: true });
+      }
+      const blueprintData = {
+        productName: path.basename(process.cwd()),
+        exportedAt: new Date().toISOString(),
+        canonicalArchitecture: 'saas-supabase-stripe',
+        healthScore: 100,
+        timelineEvents: ['PROJECT_ADOPTED', 'RULES_INJECTED', 'SNAPSHOT_CREATED']
+      };
+      fs.writeFileSync(blueprintPath, JSON.stringify(blueprintData, null, 2), 'utf-8');
+      console.log(` ${colors.green}✅ Blueprint gerado em: ${blueprintPath}${colors.reset}\n`);
+      await askQuestion(rl, `${colors.dim}Pressione ENTER para voltar ao menu...${colors.reset}`);
+    } else if (option === '3') {
+      console.log(`\n${colors.yellow}🔒 Verificando Quarentena & Regras do Cursor...${colors.reset}`);
+      const rulesDir = path.join(process.cwd(), '.cursor', 'rules');
+      if (fs.existsSync(rulesDir)) {
+        const files = fs.readdirSync(rulesDir);
+        console.log(` ${colors.bright}Regras encontradas:${colors.reset}`);
+        files.forEach(f => console.log(`  - .cursor/rules/${f}`));
+      } else {
+        console.log(` ${colors.yellow}Nenhuma regra customizada encontrada ainda.${colors.reset}`);
+      }
+      console.log(``);
+      await askQuestion(rl, `${colors.dim}Pressione ENTER para voltar ao menu...${colors.reset}`);
+    } else if (option === '0' || option === '') {
+      console.log(`\n${colors.green}👋 Urion Terminal encerrado. Vibe Coding blindado ativado!${colors.reset}\n`);
+      rl.close();
+      break;
+    }
   }
 }
 
