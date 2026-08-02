@@ -16,7 +16,45 @@
 import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import readline from 'node:readline';
+import os from 'node:os';
+
+// Caminho do arquivo de configuração do token
+const tokenConfigPath = path.join(os.homedir(), '.urion', 'config.json');
+// Caminho do arquivo de configuração do token
+const tokenConfigPath = path.join(os.homedir(), '.urion', 'config.json');
+
+/**
+ * Lê o token armazenado ou pede ao usuário e salva.
+ */
+async function getGitHubToken(rl) {
+  // Primeiro tenta a variável de ambiente
+  const envToken = process.env.URION_GITHUB_TOKEN;
+  if (envToken) return envToken;
+
+  // Depois tenta ler do arquivo de configuração
+  try {
+    if (fs.existsSync(tokenConfigPath)) {
+      const cfg = JSON.parse(fs.readFileSync(tokenConfigPath, 'utf8'));
+      if (cfg.githubToken) return cfg.githubToken;
+    }
+  } catch (_) {}
+
+  // Se não houver, pede ao usuário
+  console.log(`${colors.cyan}⚙️  Preciso do seu token de acesso pessoal do GitHub para publicar o blueprint.`);
+  const token = await askQuestion(rl, `${colors.bright}🔑 Digite o token (ou deixe vazio para cancelar): ${colors.reset}`);
+  if (!token) {
+    console.warn('⚠️  Token não fornecido – o blueprint não será publicado.');
+    return null;
+  }
+
+  // Garantir diretório
+  const dir = path.dirname(tokenConfigPath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(tokenConfigPath, JSON.stringify({ githubToken: token }, null, 2), { mode: 0o600 });
+  console.log(`${colors.green}✅ Token salvo em ${tokenConfigPath}`);
+  return token;
+}
+
 
 // Configuração das cores ANSI para terminal
 const colors = {
@@ -29,6 +67,37 @@ const colors = {
   red: '\x1b[31m',
   magenta: '\x1b[35m',
 };
+
+// Função para publicar o blueprint no repositório público da Urion
+async function publishBlueprint(blueprintPath: string) {
+  const token = process.env.URION_GITHUB_TOKEN;
+  if (!token) {
+    console.warn('⚠️  URION_GITHUB_TOKEN não definido. O blueprint não será enviado ao repositório público.');
+    return;
+  }
+  const repoUrl = `https://${token}@github.com/urion/cases.git`;
+  const tmpDir = path.join(os.tmpdir(), `urion_cases_${Date.now()}`);
+  try {
+    // Clonar repositório temporariamente
+    execSync(`git clone ${repoUrl} "${tmpDir}"`, { stdio: 'ignore' });
+    // Copiar blueprint para o repositório clonado
+    const dest = path.join(tmpDir, path.basename(blueprintPath));
+    fs.copyFileSync(blueprintPath, dest);
+    // Configurar usuário de commit
+    execSync(`git -C "${tmpDir}" config user.name "Urion Bot"`);
+    execSync(`git -C "${tmpDir}" config user.email "bot@urion.io"`);
+    // Commitar e enviar
+    execSync(`git -C "${tmpDir}" add .`);
+    execSync(`git -C "${tmpDir}" commit -m "feat: add blueprint ${path.basename(blueprintPath)}"`);
+    execSync(`git -C "${tmpDir}" push origin main`);
+    console.log('✅ Blueprint publicado com sucesso no repositório Urion Cases.');
+  } catch (err) {
+    console.error('❌ Falha ao publicar o blueprint no repositório Urion Cases:', err);
+  } finally {
+    try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (_) {}
+  }
+}
+
 
 function createInterface() {
   return readline.createInterface({
@@ -329,7 +398,8 @@ async function showInteractiveMenu(rl, currentDir) {
       };
       fs.writeFileSync(blueprintPath, JSON.stringify(blueprintData, null, 2), 'utf-8');
       console.log(` ${colors.green}✅ Blueprint gerado em: ${blueprintPath}${colors.reset}\n`);
-      await askQuestion(rl, `${colors.dim}Pressione ENTER para voltar ao menu...${colors.reset}`);
+      await publishBlueprint(blueprintPath);
+await askQuestion(rl, `${colors.dim}Pressione ENTER para voltar ao menu...${colors.reset}`);
     } else if (option === '3') {
       console.log(`\n${colors.yellow}🔒 Verificando Quarentena & Regras do Cursor...${colors.reset}`);
       const rulesDir = path.join(process.cwd(), '.cursor', 'rules');

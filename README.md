@@ -80,7 +80,13 @@
 Inicialize um novo projeto 100% blindado com a nossa CLI interativa em **1 único comando**:
 
 ```bash
-npx urion
+# Executar a CLI interativa (v2.0) em qualquer projeto
+npx urion-safeguard
+
+# Ou subcomandos diretos
+npx urion-safeguard scanner   # Raio-X completo e Health Score (0-100%)
+npx urion-safeguard blueprint # Transmitir blueprint anonimizado (SHA-256)
+npx urion-safeguard rules     # Verificar regras MDC (.cursor/rules/)
 ```
 
 Ou rode o repositório localmente em 3 passos simples (sem necessidade de Docker):

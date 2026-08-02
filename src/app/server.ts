@@ -78,6 +78,7 @@ app.use(express.json({ limit: '10kb' }));
 
 // Rotas
 app.use('/api/v1', routes);
+app.use('/v1', routes);
 
 // 404 handler
 app.use((_req, res) => {

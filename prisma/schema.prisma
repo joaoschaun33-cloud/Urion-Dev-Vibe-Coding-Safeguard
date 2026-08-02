@@ -122,3 +122,22 @@ model OutboxEvent {
   @@index([createdAt])
   @@map("outbox_events")
 }
+
+model Blueprint {
+  id               String   @id @default(uuid())
+  blueprintId      String   @unique @map("blueprint_id")
+  blueprintVersion String   @map("blueprint_version")
+  projectName      String   @map("project_name")
+  architecture     String
+  stack            Json
+  featureCount     Int      @map("feature_count")
+  features         Json
+  fileMetrics      Json     @map("file_metrics")
+  governance       Json
+  gitMetrics       Json     @map("git_metrics")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@index([createdAt])
+  @@map("blueprints")
+}
+

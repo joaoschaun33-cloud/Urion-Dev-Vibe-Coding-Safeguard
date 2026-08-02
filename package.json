@@ -1,13 +1,20 @@
 {
   "name": "urion-safeguard",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "Repositorio blindado e escalavel para desenvolvimento com IA (vibe coding).",
   "private": false,
   "license": "MIT",
   "type": "module",
   "main": "dist/app/server.js",
-  "bin": "./bin/cli.js",
+  "bin": {
+    "urion-safeguard": "./bin/urion-safeguard.cjs",
+    "urion": "./bin/urion-safeguard.cjs"
+  },
   "scripts": {
+    "cli": "node bin/urion-safeguard.cjs",
+    "scanner": "node bin/urion-safeguard.cjs scanner",
+    "blueprint": "node bin/urion-safeguard.cjs blueprint",
+    "rules": "node bin/urion-safeguard.cjs rules",
     "dev": "tsx watch src/app/server.ts",
     "create:app": "node bin/create-vibe-safeguard.js",
     "dev:web": "npm --prefix web run dev",

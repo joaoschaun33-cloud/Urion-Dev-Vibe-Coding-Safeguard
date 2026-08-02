@@ -13,6 +13,7 @@ import { TodoController } from '@/features/todo/presentation/todo-controller';
 import { ProjectHealthController } from '@/features/project-health/presentation/project-health-controller';
 import { SpecManagerController } from '@/features/spec-manager/presentation/spec-manager-controller';
 import { SecurityAuditController } from '@/features/security-audit/presentation/security-audit-controller';
+import { BlueprintHubController } from '@/features/blueprint-hub/presentation/blueprint-hub-controller';
 
 const router = Router();
 
@@ -23,6 +24,21 @@ const projectHealthController =
 const specManagerController = container.resolve<SpecManagerController>('specManagerController');
 const securityAuditController =
   container.resolve<SecurityAuditController>('securityAuditController');
+const blueprintHubController = container.resolve<BlueprintHubController>('blueprintHubController');
+
+// === Blueprint Hub Feature ===
+router.post(
+  '/blueprints',
+  asyncHandler((req, res) => blueprintHubController.create(req, res))
+);
+router.get(
+  '/blueprints',
+  asyncHandler((req, res) => blueprintHubController.list(req, res))
+);
+router.get(
+  '/blueprints/:id',
+  asyncHandler((req, res) => blueprintHubController.getById(req, res))
+);
 
 // === Todo Feature ===
 router.post(
