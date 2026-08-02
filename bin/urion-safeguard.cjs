@@ -6,7 +6,8 @@
  * 
  * Comandos:
  *   npx urion-safeguard          → Menu interativo (primeiro contato)
- *   npx urion-safeguard scanner  → Executar scanner direto
+ *   npx urion-safeguard scanner  → Executar scanner direto (--mode=maker suportado)
+ *   npx urion-safeguard vibeguard → Modo Maker VibeGuard (Linguagem simples)
  *   npx urion-safeguard blueprint → Executar blueprint automatico
  *   npx urion-safeguard rules    → Verificar regras
  * 
@@ -18,10 +19,11 @@ const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
 
-const { colors, symbols, box, printHeader, printSuccess, printError } = require('./lib/ui-kit.cjs');
+const { colors, symbols, box, printHeader, printError } = require('./lib/ui-kit.cjs');
 const { runScanner } = require('./lib/scanner-engine.cjs');
 const { runBlueprintAuto } = require('./lib/blueprint-auto.cjs');
 const { runRulesChecker } = require('./lib/rules-checker.cjs');
+const { runModeMakerScanner } = require('./lib/mode-maker.cjs');
 
 function createInterface() {
   return readline.createInterface({
@@ -70,16 +72,17 @@ async function showMainMenu(rl, projectPath) {
         '',
         `   ${colors.bright}Escolha uma acao para executar:${colors.reset}`,
         '',
-        `   ${colors.green}[1] 🔍  SCANNER${colors.reset}      → Raio-X completo do projeto`,
-        `   ${colors.cyan}[2] 📐 BLUEPRINT${colors.reset}     → Enviar caso de uso (automatico)`,
-        `   ${colors.yellow}[3] 🔒 REGRAS${colors.reset}       → Verificar .cursor/rules/`,
+        `   ${colors.green}[1] 🔍  SCANNER TÉCNICO${colors.reset}  → Raio-X completo do projeto`,
+        `   ${colors.magenta}[2] 🛡️  VIBEGUARD (MAKER)${colors.reset} → Diagnóstico simples para não-devs`,
+        `   ${colors.cyan}[3] 📐 BLUEPRINT${colors.reset}        → Enviar caso de uso (automático)`,
+        `   ${colors.yellow}[4] 🔒 REGRAS${colors.reset}          → Verificar .cursor/rules/`,
         '',
-        `   ${colors.red}[0] 🚪 SAIR${colors.reset}         → Encerrar sessao blindada`,
+        `   ${colors.red}[0] 🚪 SAIR${colors.reset}            → Encerrar sessão blindada`,
         '',
       ]
     ));
 
-    const option = await askQuestion(rl, `${colors.bright}👉 Digite o numero da opcao (0-3): ${colors.reset}`);
+    const option = await askQuestion(rl, `${colors.bright}👉 Digite o numero da opcao (0-4): ${colors.reset}`);
 
     switch (option) {
       case '1':
@@ -88,11 +91,16 @@ async function showMainMenu(rl, projectPath) {
         break;
 
       case '2':
-        await runBlueprintAuto(projectPath);
+        runModeMakerScanner(projectPath);
         await askQuestion(rl, `${colors.dim}Pressione ENTER para voltar ao menu...${colors.reset}`);
         break;
 
       case '3':
+        await runBlueprintAuto(projectPath);
+        await askQuestion(rl, `${colors.dim}Pressione ENTER para voltar ao menu...${colors.reset}`);
+        break;
+
+      case '4':
         await runRulesChecker(projectPath);
         await askQuestion(rl, `${colors.dim}Pressione ENTER para voltar ao menu...${colors.reset}`);
         break;
@@ -114,6 +122,16 @@ async function main() {
   const command = args[0];
 
   const projectPath = detectProject();
+  const isMakerMode = args.includes('--mode=maker') || command === 'vibeguard' || command === 'maker';
+
+  if (isMakerMode) {
+    if (!projectPath) {
+      printError('Nenhum projeto detectado no diretorio atual.');
+      process.exit(1);
+    }
+    runModeMakerScanner(projectPath);
+    return;
+  }
 
   if (command === 'scanner' || command === 'scan' || command === 'doctor') {
     if (!projectPath) {

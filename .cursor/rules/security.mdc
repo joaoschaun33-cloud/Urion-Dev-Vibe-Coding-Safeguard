@@ -1,43 +1,34 @@
 ---
-description: Regras de segurança para código, APIs e dados
-globs: ["*.ts", "*.tsx", "*.js", "*.jsx", "*.py", "*.go", "*.env*"]
+description: Regras de Segurança VibeGuard para Prevenção Ativa durante a Geração de Código por IA
+globs: **/*.{ts,tsx,js,jsx,py,java,go}
 alwaysApply: true
 ---
 
-# Security Skill — Segurança em Código
+# 🛡️ Urion VibeGuard — Security Rules for AI Code Generation
 
-## 🔐 Secrets & Credenciais
-- NUNCA hardcode: API keys, tokens, senhas, connection strings.
-- Use `.env` + validação de schema (ex: `znv` para TS).
-- `.env.example` deve estar no repo (sem valores reais).
-- Gitleaks/TruffleHog roda em todo push.
+Estas regras devem ser rigorosamente aplicadas ANTES de gerar ou modificar qualquer arquivo no codebase. Qualquer violação deve ser recusada ou corrigida imediatamente.
 
-## 🛡️ Input Validation
-- Sanitize TODA entrada de usuário.
-- XSS: escape output em templates. Use bibliotecas como `DOMPurify`.
-- SQL Injection: use ORM/prepared statements (NUNCA concatene SQL).
-- Path Traversal: valide paths, use allowlists.
+## 1. Secrets Hardcoded (CRITICAL)
+- **REGRA**: NUNCA escreva chaves de API, senhas, tokens JWT ou segredos privados em arquivos `.ts`, `.js`, `.tsx`, `.jsx`, `.py` ou no código fonte.
+- **MOTIVO**: Qualquer chave no frontend pode ser extraída em segundos e usada indevidamente.
+- **SOLUÇÃO**: Use exclusivamente `process.env.VARIAVEL` e garanta que o `.env` está no `.gitignore`.
 
-## 🔑 Autenticação
-- JWT: algoritmo RS256 (asymmetric) ou HS256 com secret forte.
-- Expiração curta: access token ≤ 15 min, refresh token ≤ 7 dias.
-- Password reset: token de 1 uso, expira em 1 hora.
-- 2FA: TOTP (Google Authenticator) para ações sensíveis.
+## 2. Autenticação Client-Side / LocalStorage (CRITICAL)
+- **REGRA**: NUNCA salve tokens de autenticação ou JWT diretamente no `localStorage` ou `sessionStorage`.
+- **MOTIVO**: Ataques de XSS podem ler o `localStorage` e roubar a sessão do usuário.
+- **SOLUÇÃO**: Utilize cookies seguros com a flag `HttpOnly`, `Secure` e `SameSite=Strict`.
 
-## 🌐 Headers HTTP & CSP
-- Helmet.js (Node) ou equivalente para headers de segurança.
-- CSP (Content Security Policy): `default-src 'self'; script-src 'self' 'nonce-{random}'; object-src 'none';`. NUNCA use `'unsafe-inline'` em produção.
-- CORS: allowlist explícita, nunca `*` em produção.
+## 3. SQL Injection (CRITICAL)
+- **REGRA**: NUNCA concatene strings ou use interpolação simples `${var}` para montar instruções SQL em banco de dados.
+- **MOTIVO**: Permite que invasores executem comandos arbitrários no banco de dados.
+- **SOLUÇÃO**: Use exclusivamente Prepared Statements (queries parametrizadas com `$1`, `?` ou Prisma ORM).
 
-## 🗄️ SQL & Data Access
-- Prepared Statements: NUNCA concatene variáveis em queries SQL (ex: `SELECT * FROM users WHERE id = ${id}`). Use placeholders (`SELECT * FROM users WHERE id = ?`) ou ORM tipado (Prisma/TypeORM).
+## 4. Cross-Site Scripting - XSS (CRITICAL)
+- **REGRA**: NUNCA renderize HTML dinamicamente usando `dangerouslySetInnerHTML` ou `innerHTML` sem antes sanitizar o conteúdo.
+- **MOTIVO**: Scripts maliciosos enviados por usuários podem ser executados no navegador de outros clientes.
+- **SOLUÇÃO**: Passe todo o HTML pela biblioteca `DOMPurify.sanitize(...)` antes da renderização.
 
-## 🚨 OWASP A09: Security Logging & Failures
-- Logue TODAS as falhas de autenticação, acessos negados, alterações de permissão e tentativas de bypass de segurança.
-- Os logs de segurança devem ser emitidos com o Pino Logger estruturado em formato JSON contendo Correlation ID (`X-Request-ID`), IP mascarado e timestamp ISO-8601.
-- Audit trail de segurança persistido para rastreabilidade de eventos críticos.
-
-## 📋 Compliance
-- LGPD/GDPR: consentimento explícito, direito ao esquecimento.
-- Não logue PII (CPF, email, telefone) em texto claro. Utilize PII Redact ativado no logger Pino.
-- Anonimize dados em logs de debug.
+## 5. Ausência de Rate Limiting (WARNING)
+- **REGRA**: SEMPRE adicione middleware de Rate Limiting (limitação de requisições) em rotas de login, cadastro, recuperação de senha e pagamento.
+- **MOTIVO**: Endpoints desprotegidos são alvos fáceis para ataques de força bruta ou robôs automáticos.
+- **SOLUÇÃO**: Utilize middlewares como `express-rate-limit` (ex: máximo 5 tentativas por 15 minutos).

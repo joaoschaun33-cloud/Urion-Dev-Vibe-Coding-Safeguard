@@ -112,8 +112,14 @@ function auditCodeQualityAST(dir) {
 
       visit(sourceFile);
 
-      // 2. Proibir hardcoded secrets
-      if (secretRegex.test(content) && !relative.includes('example') && !relative.includes('test')) {
+      // 2. Proibir hardcoded secrets (exclui testes, exemplos e definicoes de regras de auditoria de seguranca)
+      if (
+        secretRegex.test(content) &&
+        !relative.includes('example') &&
+        !relative.includes('test') &&
+        !relative.includes('security-audit') &&
+        !relative.includes('vibe-guard')
+      ) {
         hardcodedSecretsCount++;
         error(`${relative}: Possivel credencial/secret hardcoded detectado!`);
       }
