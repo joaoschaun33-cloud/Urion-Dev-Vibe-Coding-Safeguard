@@ -256,10 +256,10 @@ async function showInteractiveMenu(rl, currentDir) {
     console.log(`${colors.bright}${colors.cyan}════════════════════════════════════════════════════════════════════════${colors.reset}\n`);
 
     console.log(` ${colors.bright}Escolha uma ação para executar no projeto:${colors.reset}\n`);
-    console.log(`  ${colors.green}[1] 🩺 Executar Raio-X & Doctor (Saúde & Diagnóstico)${colors.reset}`);
-    console.log(`  ${colors.cyan}[2] 📐 Exportar Blueprint Anônimo (.json do Caso de Uso)${colors.reset}`);
-    console.log(`  ${colors.yellow}[3] 🔒 Verificar Regras & Quarentena (.cursor/rules/)${colors.reset}`);
-    console.log(`  ${colors.red}[0] 🚪 Sair do Urion Terminal${colors.reset}\n`);
+    console.log(`  ${colors.green}1. 🩺 Executar Raio-X e Doctor (Saude e Diagnostico)${colors.reset}`);
+    console.log(`  ${colors.cyan}2. 📐 Exportar Blueprint Anonimo (.json do Caso de Uso)${colors.reset}`);
+    console.log(`  ${colors.yellow}3. 🔒 Verificar Regras e Quarentena (.cursor/rules/)${colors.reset}`);
+    console.log(`  ${colors.red}0. 🚪 Sair do Urion Terminal${colors.reset}\n`);
 
     const option = await askQuestion(rl, `${colors.bright}👉 Digite o número da opção (0-3): ${colors.reset}`);
 
