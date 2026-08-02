@@ -112,8 +112,6 @@ async function main() {
     console.log(`${colors.bright}${colors.green}🛡️ PROJETO EXISTENTE DETECTADO: ${process.cwd()}${colors.reset}`);
     console.log(`${colors.cyan}Aplicando Proteção Urion Safeguard em 3 segundos...${colors.reset}\n`);
 
-    rl.close();
-
     // 1. Snapshot de segurança
     const snapshotDir = path.join(process.cwd(), '.urion', 'snapshot');
     if (!fs.existsSync(snapshotDir)) {
