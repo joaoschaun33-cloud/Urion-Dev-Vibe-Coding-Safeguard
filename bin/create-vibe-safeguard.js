@@ -72,7 +72,7 @@ function parseArgs() {
 
 async function main() {
   console.log(`\n${colors.bright}${colors.cyan}====================================================${colors.reset}`);
-  console.log(`${colors.bright}${colors.cyan}  🛡️  URION SAFEGUARD — BIG TECH VIBE CODING CLI  ${colors.reset}`);
+  console.log(`${colors.bright}${colors.cyan}         🛡️  URION SAFEGUARD CLI          ${colors.reset}`);
   console.log(`${colors.cyan}====================================================${colors.reset}\n`);
 
   const cliParams = parseArgs();
