@@ -264,15 +264,54 @@ async function showInteractiveMenu(rl, currentDir) {
     const option = await askQuestion(rl, `${colors.bright}👉 Digite o número da opção (0-3): ${colors.reset}`);
 
     if (option === '1') {
-      console.log(`\n${colors.cyan}🔍 Executando Urion Doctor...${colors.reset}\n`);
-      const rulesDir = path.join(process.cwd(), '.cursor', 'rules');
-      const mdcCount = fs.existsSync(rulesDir) ? fs.readdirSync(rulesDir).filter(f => f.endsWith('.mdc')).length : 0;
-      const hasSnapshot = fs.existsSync(path.join(process.cwd(), '.urion', 'snapshot'));
+      console.log(`\n${colors.cyan}🔍 Executando Urion Doctor & AST Real Scanner em ${currentDir}...${colors.reset}\n`);
 
-      console.log(` ${colors.bright}📊 Status Geral:${colors.reset}        ${colors.green}EXCELENTE (100% Protegido)${colors.reset}`);
-      console.log(` ${colors.bright}📈 Health Score:${colors.reset}        ${colors.green}[████████████████████] 100/100${colors.reset}`);
-      console.log(` 🧠 Regras MDC da IA:     ${colors.cyan}${mdcCount} regra(s) em .cursor/rules/${colors.reset}`);
-      console.log(` 📦 Snapshot de Segurança: ${hasSnapshot ? colors.green + 'Ativo (.urion/snapshot/)' : colors.yellow + 'Pendente'}${colors.reset}\n`);
+      const rulesDir = path.join(currentDir, '.cursor', 'rules');
+      const mdcFiles = fs.existsSync(rulesDir) ? fs.readdirSync(rulesDir).filter(f => f.endsWith('.mdc')) : [];
+      const hasSnapshot = fs.existsSync(path.join(currentDir, '.urion', 'snapshot'));
+
+      // Raio-X Real de arquivos no projeto
+      let totalFiles = 0;
+      let godFiles = [];
+      const scanDir = (dir) => {
+        if (!fs.existsSync(dir)) return;
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === '.urion') continue;
+          const fullPath = path.join(dir, entry.name);
+          if (entry.isDirectory()) {
+            scanDir(fullPath);
+          } else if (entry.isFile()) {
+            totalFiles++;
+            if (entry.name.endsWith('.ts') || entry.name.endsWith('.tsx') || entry.name.endsWith('.js') || entry.name.endsWith('.py')) {
+              const lines = fs.readFileSync(fullPath, 'utf8').split('\n').length;
+              if (lines > 500) godFiles.push({ file: path.relative(currentDir, fullPath), lines });
+            }
+          }
+        }
+      };
+      scanDir(currentDir);
+
+      let healthScore = 100;
+      if (godFiles.length > 0) healthScore -= godFiles.length * 10;
+      if (mdcFiles.length === 0) healthScore -= 20;
+      if (!hasSnapshot) healthScore -= 10;
+      healthScore = Math.max(0, healthScore);
+
+      console.log(` ${colors.bright}📊 Status Geral:${colors.reset}        ${healthScore >= 90 ? colors.green + 'EXCELENTE' : colors.yellow + 'ATENÇÃO'} (${healthScore}% Auditado Real)${colors.reset}`);
+      console.log(` ${colors.bright}📈 Health Score:${colors.reset}        [${'█'.repeat(Math.round(healthScore / 5))}${'░'.repeat(20 - Math.round(healthScore / 5))}] ${healthScore}/100`);
+      console.log(` 📁 Total de Arquivos Auditados: ${colors.cyan}${totalFiles} arquivos reais${colors.reset}`);
+      console.log(` 🧠 Regras MDC da IA:            ${colors.cyan}${mdcFiles.length} regra(s) em .cursor/rules/${colors.reset}`);
+      console.log(` 📦 Snapshot de Segurança:       ${hasSnapshot ? colors.green + 'Ativo (.urion/snapshot/)' : colors.yellow + 'Pendente'}${colors.reset}`);
+      
+      if (godFiles.length > 0) {
+        console.log(`\n ${colors.yellow}⚠️  God Files (> 500 linhas) Detectados:${colors.reset}`);
+        godFiles.forEach(g => console.log(`   - ${g.file} (${g.lines} linhas)`));
+      } else {
+        console.log(` 🛡️  Quarentena God Files:       ${colors.green}Zero arquivos gigantes (> 500 linhas)${colors.reset}`);
+      }
+
+      console.log(`────────────────────────────────────────────────────────────────────────\n`);
       await askQuestion(rl, `${colors.dim}Pressione ENTER para voltar ao menu...${colors.reset}`);
     } else if (option === '2') {
       console.log(`\n${colors.cyan}📐 Exportando Blueprint Anônimo do Projeto...${colors.reset}`);
