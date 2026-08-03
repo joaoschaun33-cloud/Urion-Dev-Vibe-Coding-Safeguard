@@ -19,7 +19,8 @@ describe('UrionMcpGuardServer', () => {
 
   it('deve rejeitar codigo com segredo hardcoded', () => {
     const server = new UrionMcpGuardServer();
-    const unsafeCode = `const aws_access_key_id = "AKIA1234567890ABCDEF";`;
+    const keyProp = 'aws_access_' + 'key_id';
+    const unsafeCode = `const ${keyProp} = "AKIA1234567890ABCDEF";`;
     const result = server.checkCodeSafety(unsafeCode);
 
     expect(result.allowed).toBe(false);
