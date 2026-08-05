@@ -8,6 +8,7 @@ const {
   colors, printHeader, printSuccess, printWarning, printError,
   animatedProgress, progressBar
 } = require('./ui-kit.cjs');
+const { computeEstimatedCoverage, deriveStatus } = require('./verdict.cjs');
 
 async function runScanner(projectPath) {
   printHeader('URION SCANNER — RAIO-X COMPLETO', projectPath);
@@ -43,17 +44,28 @@ async function runScanner(projectPath) {
 
   healthScore = Math.max(0, healthScore);
 
-  const status = healthScore >= 90 ? 'EXCELENTE' : healthScore >= 70 ? 'BOM' : healthScore >= 50 ? 'ATENCAO' : 'CRITICO';
-  const statusColor = healthScore >= 90 ? colors.green : healthScore >= 70 ? colors.cyan : healthScore >= 50 ? colors.yellow : colors.red;
+  const estimatedCoverage = computeEstimatedCoverage(analysis.files);
+  const verdict = deriveStatus({
+    healthScore,
+    estimatedCoveragePct: estimatedCoverage,
+    // Este scanner tecnico audita GOVERNANCA (presenca), nao roda o scan das 5 vulns.
+    criticalCount: 0,
+  });
+  const status = verdict.status;
+  const statusColorMap = { EXCELENTE: colors.green, BOM: colors.cyan, ATENCAO: colors.yellow, CRITICO: colors.red };
+  const statusColor = statusColorMap[status] || colors.reset;
 
-  console.log(`\n${colors.bright}📊 Status Geral:${colors.reset} ${statusColor}${status} (${healthScore}% Auditado)${colors.reset}`);
+  console.log(`\n${colors.bright}📊 Status Geral:${colors.reset} ${statusColor}${status}${colors.reset} ${colors.dim}(Governanca ${healthScore}%)${colors.reset}`);
   console.log(` ${progressBar('Health Score', healthScore, 40)}`);
+  if (verdict.capped) {
+    console.log(` ${colors.yellow}⚠️ ${verdict.reason}${colors.reset}`);
+  }
 
   console.log(`\n${colors.bright}📁 Metricas do Projeto:${colors.reset}`);
   console.log(`   Total de Arquivos: ${colors.cyan}${analysis.files.total}${colors.reset}`);
   console.log(`   Arquivos de Codigo: ${colors.cyan}${analysis.files.codeFiles}${colors.reset}`);
   console.log(`   Arquivos de Teste: ${colors.cyan}${analysis.files.testFiles}${colors.reset}`);
-  console.log(`   Cobertura Estimada: ${colors.cyan}${analysis.files.codeFiles > 0 ? Math.round((analysis.files.testFiles / analysis.files.codeFiles) * 100) : 0}%${colors.reset}`);
+  console.log(`   Cobertura Estimada: ${colors.cyan}${estimatedCoverage}%${colors.reset}`);
 
   console.log(`\n${colors.bright}🏗️ Arquitetura & Stack:${colors.reset}`);
   console.log(`   Padrao: ${colors.cyan}${analysis.architecture}${colors.reset}`);
@@ -79,13 +91,15 @@ async function runScanner(projectPath) {
     issues.forEach(i => printWarning(i));
   }
 
-  if (healthScore >= 90) {
-    console.log(`\n${colors.green}${colors.bright}🎉 Projeto 100% blindado! Pronto para Vibe Coding com IA.${colors.reset}\n`);
+  if (verdict.shielded) {
+    console.log(`\n${colors.green}${colors.bright}🎉 Projeto blindado! Governanca completa e cobertura adequada.${colors.reset}\n`);
+  } else if (verdict.capped) {
+    console.log(`\n${colors.yellow}💡 Governanca em dia, mas a qualidade ainda reprova. ${verdict.reason} Priorize testes/correcoes antes de considerar o projeto pronto.${colors.reset}\n`);
   } else {
-    console.log(`\n${colors.yellow}💡 Recomendacao: Execute o comando de protecao automatica para corrigir os pontos pendentes.${colors.reset}\n`);
+    console.log(`\n${colors.yellow}💡 Recomendacao: resolva os pontos de atencao acima para elevar o status.${colors.reset}\n`);
   }
 
-  return { healthScore, analysis, issues };
+  return { healthScore, estimatedCoverage, verdict, status, analysis, issues };
 }
 
 module.exports = { runScanner };
