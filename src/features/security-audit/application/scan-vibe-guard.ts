@@ -30,9 +30,9 @@ export class ScanVibeGuardUseCase {
                 lineNumber: index + 1,
                 snippet: line.trim(),
                 autoFixable: rule.autoFixable,
-                fixCommand: rule.autoFixable
-                  ? `npx urion-safeguard fix --rule=${rule.id.toLowerCase()}`
-                  : undefined,
+                // fixCommand omitido de proposito: o comando `fix` ainda NAO existe.
+                // Anunciar um comando inexistente viola o Dogma Zero. Sera preenchido
+                // quando o auto-fix real for implementado (ver roadmap, backlog).
               });
             }
           }

@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Urion Verified Grade A](https://img.shields.io/badge/Urion_Verified-Grade_A-brightgreen.svg?style=flat-square)](https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard)
 
-Ferramentas como **Cursor, Lovable, Bolt e v0** permitem criar aplicativos completos em minutos apenas com prompts. No entanto, **92% dos aplicativos criados por IA contêm vulnerabilidades graves de segurança** (chaves de API expostas, logins desprotegidos, riscos de invasão de banco de dados).
+Ferramentas como **Cursor, Lovable, Bolt e v0** permitem criar aplicativos completos em minutos apenas com prompts. No entanto, pesquisas recentes mostram que **cerca de 45% do código gerado por IA introduz falhas de segurança conhecidas** ([Veracode, 2025](https://www.veracode.com/blog/ai-generated-code-security-risks/)) — como chaves de API expostas, logins desprotegidos e riscos de invasão de banco de dados.
 
 O **Urion VibeGuard** é uma ferramenta ultraleve e sem fricção que analisa seu código instantaneamente, explica os riscos em **português simples** e impede que seu aplicativo seja hackeado.
 
@@ -24,7 +24,7 @@ npx urion-safeguard vibeguard
 
 1. **Varredura Instantânea**: Analisa seu código procurando as 5 falhas mais letais de apps gerados por IA.
 2. **Diagnóstico Amigável**: Mostra seu **Score de Segurança (0 a 100)** e explica em português simples o risco real de cada problema.
-3. **Correção em 1 Clique**: Indica o comando exato para aplicar correções automáticas no seu código.
+3. **Como Corrigir**: Explica, em português simples, o passo a passo para corrigir manualmente cada risco encontrado.
 
 ---
 
