@@ -2,28 +2,17 @@
   "mcpServers": {
     "database-schema": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-postgres",
-        "postgresql://localhost:5432/mydb"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "postgresql://localhost:5432/mydb"],
       "description": "Permite à IA ler o schema do banco de dados PostgreSQL"
     },
     "filesystem": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "."
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."],
       "description": "Permite à IA navegar e ler arquivos do projeto"
     },
     "github": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-github"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
       },
@@ -31,11 +20,13 @@
     },
     "command-runner": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-commands"
-      ],
+      "args": ["-y", "@modelcontextprotocol/server-commands"],
       "description": "Permite à IA executar comandos de terminal de forma segura"
+    },
+    "urion-vibeguard": {
+      "command": "npx",
+      "args": ["-y", "-p", "urion-safeguard", "urion-mcp-server"],
+      "description": "Urion VibeGuard — verifica trechos de código contra as 5 vulnerabilidades críticas (parecer consultivo, em tempo real)"
     }
   }
 }

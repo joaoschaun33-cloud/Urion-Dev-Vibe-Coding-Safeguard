@@ -8,7 +8,8 @@
   "main": "dist/app/server.js",
   "bin": {
     "urion-safeguard": "./bin/urion-safeguard.cjs",
-    "urion": "./bin/urion-safeguard.cjs"
+    "urion": "./bin/urion-safeguard.cjs",
+    "urion-mcp-server": "./bin/urion-mcp-server.mjs"
   },
   "scripts": {
     "cli": "node bin/urion-safeguard.cjs",
@@ -18,7 +19,8 @@
     "dev": "tsx watch src/app/server.ts",
     "create:app": "node bin/create-vibe-safeguard.js",
     "dev:web": "npm --prefix web run dev",
-    "build": "npm run sync:rules:guard && tsc",
+    "build": "npm run sync:rules:guard && npm run build:mcp && tsc",
+    "build:mcp": "esbuild src/mcp/index.ts --bundle --platform=node --format=esm --outfile=bin/urion-mcp-server.mjs --banner:js=\"#!/usr/bin/env node\"",
     "sync:rules:guard": "tsx scripts/sync-vibe-guard-rules.ts",
     "start": "node dist/app/server.js",
     "test": "vitest run",
@@ -42,10 +44,12 @@
     "setup": "bash first-time.sh",
     "postinstall": "prisma generate",
     "prepare": "husky || exit 0",
+    "prepublishOnly": "npm run build:mcp",
     "test:integration:local": "node scripts/with-embedded-postgres.mjs",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
     "@prisma/client": "^5.16.0",
     "awilix": "13.0.5",
     "bullmq": "6.0.2",
@@ -72,6 +76,7 @@
     "@typescript-eslint/eslint-plugin": "^7.16.0",
     "@typescript-eslint/parser": "^7.16.0",
     "@vitest/coverage-v8": "^2.0.0",
+    "esbuild": "0.28.1",
     "eslint": "^8.57.0",
     "husky": "^9.0.0",
     "lint-staged": "^15.0.0",
