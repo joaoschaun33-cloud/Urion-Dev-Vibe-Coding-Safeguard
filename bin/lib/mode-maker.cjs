@@ -15,6 +15,12 @@ function colorize(text, colorName) {
 // `npm run sync:rules:guard`. NAO redefina regras aqui (Dogma: fonte unica).
 const { VIBE_GUARD_RULES } = require('./vibe-guard-rules.generated.cjs');
 
+// Espelho de src/features/security-audit/domain/scan-filters.ts (reduz falso positivo).
+const TEST_OR_FIXTURE_RE =
+  /\.(?:test|spec)\.[cm]?[jt]sx?$|(?:^|[\\/])(?:__mocks__|__fixtures__|__tests__|fixtures|mocks)[\\/]/i;
+const MOCK_VALUE_RE =
+  /\b(?:mock|fake|dummy|example|exemplo|placeholder|changeme|your[_-]?(?:api[_-]?)?key|test[_-]?key|xxx+)/i;
+
 function runModeMakerScanner(targetDir = process.cwd()) {
   console.log(ui.box('🛡️ URION VIBEGUARD v2.0 — MODO MAKER', [
     'Diagnóstico em Linguagem Simples para Criadores (No-Code / Low-Code)',
@@ -40,7 +46,8 @@ function runModeMakerScanner(targetDir = process.cwd()) {
         if (!ignoreDirs.has(item)) scan(fullPath);
       } else if (stat.isFile()) {
         const ext = path.extname(item).toLowerCase();
-        if (allowedExts.has(ext)) {
+        const relForFilter = path.relative(targetDir, fullPath);
+        if (allowedExts.has(ext) && !TEST_OR_FIXTURE_RE.test(relForFilter)) {
           scannedFiles++;
           try {
             const content = fs.readFileSync(fullPath, 'utf8');
@@ -48,6 +55,9 @@ function runModeMakerScanner(targetDir = process.cwd()) {
             lines.forEach((line, index) => {
               for (const rule of VIBE_GUARD_RULES) {
                 if (rule.regex.test(line)) {
+                  if (rule.id === 'SECRETS_HARDCODED' && MOCK_VALUE_RE.test(line)) {
+                    continue;
+                  }
                   issues.push({
                     rule,
                     file: path.relative(targetDir, fullPath).replace(/\\/g, '/'),

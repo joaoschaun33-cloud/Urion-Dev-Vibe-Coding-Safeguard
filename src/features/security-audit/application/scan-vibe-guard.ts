@@ -3,6 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 import { VIBE_GUARD_RULES, VibeGuardIssue, VibeGuardReport } from '../domain/vibe-guard-rules';
+import { isTestOrFixturePath, looksLikeMockValue } from '../domain/scan-filters';
 
 export class ScanVibeGuardUseCase {
   execute(targetDir: string): Promise<VibeGuardReport> {
@@ -17,6 +18,10 @@ export class ScanVibeGuardUseCase {
         lines.forEach((line, index) => {
           for (const rule of VIBE_GUARD_RULES) {
             if (rule.regex.test(line)) {
+              // Reduz falso positivo: ignora valores obviamente falsos (mock/exemplo).
+              if (rule.id === 'SECRETS_HARDCODED' && looksLikeMockValue(line)) {
+                continue;
+              }
               const relPath = path.relative(targetDir, filePath).replace(/\\/g, '/');
               issues.push({
                 id: `vg-${rule.id.toLowerCase()}-${String(issues.length + 1)}`,
@@ -107,7 +112,9 @@ export class ScanVibeGuardUseCase {
           }
         } else if (stat.isFile()) {
           const ext = path.extname(item).toLowerCase();
-          if (allowedExts.has(ext)) {
+          const rel = path.relative(dir, fullPath);
+          // Nao escaneia arquivos de teste/fixture (evita flag em chaves de exemplo).
+          if (allowedExts.has(ext) && !isTestOrFixturePath(rel)) {
             results.push(fullPath);
           }
         }

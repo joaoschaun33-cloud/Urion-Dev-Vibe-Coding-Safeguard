@@ -41,10 +41,28 @@ const p3 = 'pass' + 'word';
 const p4 = 'aws_access_' + 'k' + 'ey_id';
 const p5 = 'token';
 
+// Tokens de provedores conhecidos: alta confianca mesmo sem nome de variavel.
+const providerToken =
+  'sk_(?:live|test)_[A-Za-z0-9]{15,}' +
+  '|sk-proj-[A-Za-z0-9_-]{8,}' +
+  '|ghp_[A-Za-z0-9]{20,}' +
+  '|gho_[A-Za-z0-9]{20,}' +
+  '|xox[baprs]-[A-Za-z0-9-]{10,}' +
+  '|AKIA[A-Z0-9]{16}';
+
 const SECRET_KEY_PATTERN = new RegExp(
   '(?:' +
+    // 1) chave nomeada (api_key/secret/token/...) = valor (inclui valor generico 20+)
+    '(?:' +
     [p1, p2, p3, p4, p5].join('|') +
-    ')\\s*[:=]\\s*["\'](?:sk_(?:live|test)_[A-Za-z0-9]{15,}|AKIA[A-Z0-9]{16}|[A-Za-z0-9\\-_]{20,})["\']',
+    ')\\s*[:=]\\s*["\'](?:' +
+    providerToken +
+    '|[A-Za-z0-9\\-_]{20,})["\']' +
+    // 2) token de provedor conhecido, com QUALQUER nome de variavel
+    '|["\'](?:' +
+    providerToken +
+    ')["\']' +
+    ')',
   'i'
 );
 

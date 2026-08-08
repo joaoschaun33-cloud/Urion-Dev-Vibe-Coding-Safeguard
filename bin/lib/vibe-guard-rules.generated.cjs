@@ -7,7 +7,7 @@ const VIBE_GUARD_RULES = [
   {
     id: "SECRETS_HARDCODED",
     title: "Chave de API / Segredo Exposto no Código",
-    regex: new RegExp("(?:api[_-]?key|secret[_-]?key|password|aws_access_key_id|token)\\s*[:=]\\s*[\"'](?:sk_(?:live|test)_[A-Za-z0-9]{15,}|AKIA[A-Z0-9]{16}|[A-Za-z0-9\\-_]{20,})[\"']", "i"),
+    regex: new RegExp("(?:(?:api[_-]?key|secret[_-]?key|password|aws_access_key_id|token)\\s*[:=]\\s*[\"'](?:sk_(?:live|test)_[A-Za-z0-9]{15,}|sk-proj-[A-Za-z0-9_-]{8,}|ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[A-Z0-9]{16}|[A-Za-z0-9\\-_]{20,})[\"']|[\"'](?:sk_(?:live|test)_[A-Za-z0-9]{15,}|sk-proj-[A-Za-z0-9_-]{8,}|ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[A-Z0-9]{16})[\"'])", "i"),
     severity: "CRITICAL",
     descriptionLeiga: "Sua chave de acesso secreta está visível diretamente no código do aplicativo.",
     riscoReal: "Qualquer pessoa que acessar seu site ou código pode roubar essa chave e usar seus serviços gerando cobranças no seu cartão.",
