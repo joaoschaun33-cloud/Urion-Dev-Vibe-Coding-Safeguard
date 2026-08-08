@@ -20,10 +20,29 @@ export function createUrionMcpServer(): McpServer {
         '(segredos hardcoded, auth no navegador, SQL injection, XSS, falta de rate limiting). ' +
         'Retorna APPROVED ou REJECTED com explicacao em portugues simples. Parecer consultivo, nao bloqueio.',
       inputSchema: { code: z.string().describe('O trecho de codigo a verificar.') },
+      outputSchema: {
+        status: z.enum(['APPROVED', 'REJECTED']),
+        score: z.number(),
+        findings: z.array(
+          z.object({
+            ruleId: z.string(),
+            severity: z.string(),
+            file: z.string(),
+            line: z.number().optional(),
+            message: z.string(),
+            remediation: z.string(),
+          })
+        ),
+        remediations: z.array(z.string()),
+      },
     },
     (args) => {
       const r = runSecurityCheck({ code: args.code });
-      return { content: r.content, isError: r.isError };
+      return {
+        content: r.content,
+        structuredContent: r.structuredContent as unknown as Record<string, unknown>,
+        isError: r.isError,
+      };
     }
   );
 

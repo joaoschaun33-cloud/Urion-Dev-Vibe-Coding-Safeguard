@@ -4,28 +4,29 @@ import { runSecurityCheck, runExplainRisk } from '../../tools';
 import { createUrionMcpServer } from '../../server';
 
 describe('runSecurityCheck', () => {
-  it('aprova codigo seguro (APPROVED, sem violacoes)', () => {
+  it('aprova codigo seguro (APPROVED, score 100, sem findings)', () => {
     const r = runSecurityCheck({ code: 'const apiKey = process.env.STRIPE_API_KEY;' });
-    const sc = r.structuredContent as { status: string; violations: unknown[] };
     expect(r.isError).toBe(false);
-    expect(sc.status).toBe('APPROVED');
-    expect(sc.violations).toHaveLength(0);
+    expect(r.structuredContent.status).toBe('APPROVED');
+    expect(r.structuredContent.score).toBe(100);
+    expect(r.structuredContent.findings).toHaveLength(0);
     expect(r.content[0].text).toContain('APPROVED');
   });
 
-  it('rejeita secret hardcoded (REJECTED + SECRETS_HARDCODED)', () => {
+  it('rejeita secret hardcoded (REJECTED + finding CRITICAL + score<100)', () => {
     const key = 'aws_access_' + 'key_id';
     const r = runSecurityCheck({ code: `const ${key} = "AKIA1234567890ABCDEF";` });
-    const sc = r.structuredContent as { status: string; violations: Array<{ ruleId: string }> };
-    expect(sc.status).toBe('REJECTED');
-    expect(sc.violations[0].ruleId).toBe('SECRETS_HARDCODED');
+    expect(r.structuredContent.status).toBe('REJECTED');
+    expect(r.structuredContent.findings[0].ruleId).toBe('SECRETS_HARDCODED');
+    expect(r.structuredContent.findings[0].severity).toBe('CRITICAL');
+    expect(r.structuredContent.score).toBeLessThan(100);
+    expect(r.structuredContent.remediations.length).toBeGreaterThan(0);
     expect(r.content[0].text).toContain('REJECTED');
   });
 
   it('trata string vazia como APPROVED', () => {
     const r = runSecurityCheck({ code: '' });
-    const sc = r.structuredContent as { status: string };
-    expect(sc.status).toBe('APPROVED');
+    expect(r.structuredContent.status).toBe('APPROVED');
   });
 });
 
