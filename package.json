@@ -7,10 +7,10 @@
   "type": "module",
   "main": "dist/app/server.js",
   "bin": {
-    "urion-safeguard": "./bin/urion-safeguard.cjs",
-    "urion": "./bin/urion-safeguard.cjs",
-    "urion-mcp-server": "./bin/urion-mcp-server.mjs",
-    "urion-checks": "./bin/urion-checks.mjs"
+    "urion-safeguard": "bin/urion-safeguard.cjs",
+    "urion": "bin/urion-safeguard.cjs",
+    "urion-mcp-server": "bin/urion-mcp-server.mjs",
+    "urion-checks": "bin/urion-checks.mjs"
   },
   "scripts": {
     "cli": "node bin/urion-safeguard.cjs",
