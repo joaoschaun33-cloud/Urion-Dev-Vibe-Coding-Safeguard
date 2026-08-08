@@ -42,3 +42,9 @@ vitest.config.ts.timestamp-*.mjs
 
 # Bundle gerado do MCP server (produzido por build:mcp/prepublishOnly)
 bin/urion-mcp-server.mjs
+
+# scripts temporarios de smoke MCP (nao commitar)
+tmp-mcp-smoke*.mjs
+
+# Bundle gerado do Config Gate (produzido por build:checks/prepublishOnly)
+bin/urion-checks.mjs

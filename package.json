@@ -9,7 +9,8 @@
   "bin": {
     "urion-safeguard": "./bin/urion-safeguard.cjs",
     "urion": "./bin/urion-safeguard.cjs",
-    "urion-mcp-server": "./bin/urion-mcp-server.mjs"
+    "urion-mcp-server": "./bin/urion-mcp-server.mjs",
+    "urion-checks": "./bin/urion-checks.mjs"
   },
   "scripts": {
     "cli": "node bin/urion-safeguard.cjs",
@@ -19,8 +20,10 @@
     "dev": "tsx watch src/app/server.ts",
     "create:app": "node bin/create-vibe-safeguard.js",
     "dev:web": "npm --prefix web run dev",
-    "build": "npm run sync:rules:guard && npm run build:mcp && tsc",
+    "build": "npm run sync:rules:guard && npm run build:mcp && npm run build:checks && tsc",
     "build:mcp": "esbuild src/mcp/index.ts --bundle --platform=node --format=esm --outfile=bin/urion-mcp-server.mjs --banner:js=\"#!/usr/bin/env node\"",
+    "build:checks": "esbuild src/features/security-audit/presentation/checks-cli.ts --bundle --platform=node --format=esm --outfile=bin/urion-checks.mjs --banner:js=\"#!/usr/bin/env node\"",
+    "checks": "tsx src/features/security-audit/presentation/checks-cli.ts",
     "sync:rules:guard": "tsx scripts/sync-vibe-guard-rules.ts",
     "start": "node dist/app/server.js",
     "test": "vitest run",
@@ -44,7 +47,7 @@
     "setup": "bash first-time.sh",
     "postinstall": "prisma generate",
     "prepare": "husky || exit 0",
-    "prepublishOnly": "npm run build:mcp",
+    "prepublishOnly": "npm run build:mcp && npm run build:checks",
     "test:integration:local": "node scripts/with-embedded-postgres.mjs",
     "test:coverage": "vitest run --coverage"
   },
