@@ -10,6 +10,16 @@ export type ScannerStatus = 'EXCELENTE' | 'BOM' | 'ATENCAO' | 'CRITICO';
 export interface DeriveStatusInput {
   healthScore: number;
   estimatedCoveragePct: number;
+  /**
+   * false (padrao) = nenhum relatorio real de cobertura foi encontrado (ver
+   * bin/lib/coverage-reader.cjs, que le coverage/coverage-summary.json gerado
+   * pela propria suite de testes do projeto). Isso NAO e "cobertura zero": e
+   * "nao sabemos" — e por Dogma Zero, "nao sabemos" tambem nao pode receber o
+   * selo "blindado". Ate 2026-09-17 esse numero vinha de uma proxy
+   * (testFiles/codeFiles) que parecia uma medicao real e nao era — ver
+   * docs/decisions-log.md.
+   */
+  coverageMeasured?: boolean;
   criticalCount?: number;
   coverageThreshold?: number;
 }
@@ -21,18 +31,6 @@ export interface ScannerVerdict {
   shielded: boolean; // true SOMENTE quando pode declarar "projeto blindado".
 }
 
-export function computeEstimatedCoverage(files: {
-  codeFiles?: number;
-  testFiles?: number;
-}): number {
-  const codeFiles = files.codeFiles ?? 0;
-  const testFiles = files.testFiles ?? 0;
-  if (codeFiles <= 0) {
-    return 0;
-  }
-  return Math.round((testFiles / codeFiles) * 100);
-}
-
 const RANK: Record<ScannerStatus, number> = {
   CRITICO: 0,
   ATENCAO: 1,
@@ -42,13 +40,14 @@ const RANK: Record<ScannerStatus, number> = {
 
 /**
  * Deriva o status final combinando governanca (presenca) com qualidade real.
- * REGRA ANTI-FALSO-VERDE: o status nao pode exceder ATENCAO se a cobertura estiver
- * abaixo do limite OU se houver qualquer problema critico.
+ * REGRA ANTI-FALSO-VERDE: o status nao pode exceder ATENCAO se a cobertura nao
+ * foi medida de verdade, estiver abaixo do limite, OU se houver problema critico.
  */
 export function deriveStatus(input: DeriveStatusInput): ScannerVerdict {
   const {
     healthScore,
     estimatedCoveragePct,
+    coverageMeasured = true,
     criticalCount = 0,
     coverageThreshold = COVERAGE_THRESHOLD,
   } = input;
@@ -64,7 +63,7 @@ export function deriveStatus(input: DeriveStatusInput): ScannerVerdict {
     base = 'CRITICO';
   }
 
-  const coverageLow = estimatedCoveragePct < coverageThreshold;
+  const coverageLow = !coverageMeasured || estimatedCoveragePct < coverageThreshold;
   const hasCritical = criticalCount > 0;
   const mustCap = coverageLow || hasCritical;
 
@@ -77,9 +76,15 @@ export function deriveStatus(input: DeriveStatusInput): ScannerVerdict {
     capped = true;
     const reasons: string[] = [];
     if (coverageLow) {
-      reasons.push(
-        `cobertura ${String(estimatedCoveragePct)}% < ${String(coverageThreshold)}% exigido`
-      );
+      if (!coverageMeasured) {
+        reasons.push(
+          'cobertura nao medida (nenhum relatorio real encontrado — rode seus testes com --coverage)'
+        );
+      } else {
+        reasons.push(
+          `cobertura ${String(estimatedCoveragePct)}% < ${String(coverageThreshold)}% exigido`
+        );
+      }
     }
     if (hasCritical) {
       reasons.push(`${String(criticalCount)} problema(s) critico(s)`);

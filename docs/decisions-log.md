@@ -110,6 +110,51 @@ protege contra regressão a partir de agora, sem fingir que a meta de 80%
 - Não mexer e continuar sem rodar `test:coverage` no CI — rejeitada: mantém o
   overclaim ativo (o nome do step já prometia uma checagem que não existe).
 
+### 2026-09-17 — Scanner do produto lê cobertura real em vez de estimar por proxy
+
+**Status**: Aceita
+**Contexto**: `bin/lib/verdict.cjs` (usado pelo `npx urion-safeguard scanner`,
+o comando que roda contra o projeto de QUALQUER terceiro) calculava
+"cobertura estimada" como `testFiles/codeFiles * 100` — contagem de arquivos,
+não execução de teste. Rodado contra este próprio repo, essa proxy dava ~20%;
+a cobertura real medida por `vitest --coverage` é 68%. Quase 50 pontos de
+diferença, na direção que mais importa (subestimar quando na verdade está
+melhor, ou o oposto em outro projeto) — um número que parece uma medição e não
+é.
+**Decisão**: Criar `bin/lib/coverage-reader.cjs`, que lê
+`coverage/coverage-summary.json` (formato Istanbul, gerado por Vitest/Jest/nyc
+com o reporter `json-summary`) se o projeto escaneado já rodou seus testes com
+cobertura. `deriveStatus` (em `verdict.cjs` e no espelho TS
+`scanner-verdict.ts`) ganhou um parâmetro `coverageMeasured`: quando não há
+relatório, o veredito diz "cobertura não medida" em vez de mostrar um
+percentual inventado — e continua sem poder receber o selo "blindado", porque
+"não sabemos" não é "está tudo bem". `vitest.config.ts` deste repo passou a
+gerar esse relatório (reporter `json-summary` adicionado) para servir de caso
+de teste real.
+**Decisão explícita de NÃO fazer**: o Urion não executa os testes do projeto
+de terceiro para gerar a cobertura automaticamente. Rodar `npm test`/`pytest`
+alheio sem saber se é seguro (efeitos colaterais em banco real, chamadas de
+rede, testes que travam) contradiz a promessa de "zero-fricção, 3 segundos" do
+`npx urion-safeguard` e abriria superfície de risco desproporcional ao ganho.
+Fica como possível item futuro, com escopo próprio (execução sandboxed, opt-in
+explícito), não como parte desta correção.
+**Consequências**:
+
+- Positivas: quem usa o scanner do produto agora vê um número real ou um aviso
+  honesto — nunca mais um número fabricado que parece medição.
+- Negativas: para projetos sem relatório de cobertura gerado (a maioria dos
+  "vibe coders" iniciantes, público primário do Urion), o veredito vai dizer
+  "não medida" — não é uma resposta tão satisfatória quanto um número, mas é a
+  resposta honesta; o CLI já orienta como gerar o relatório.
+  **Alternativas consideradas**:
+- Manter a proxy mas renomear para "estimativa (não é cobertura real)" —
+  rejeitada: ainda seria um número sem relação confiável com qualidade real;
+  melhor não mostrar número nenhum do que mostrar um que parece preciso e não
+  é.
+- Executar os testes do projeto automaticamente para sempre ter um número —
+  rejeitada por risco de efeito colateral e tempo, ver "Decisão explícita de
+  NÃO fazer" acima.
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões

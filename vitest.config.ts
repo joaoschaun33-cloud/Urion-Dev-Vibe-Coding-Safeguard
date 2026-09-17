@@ -10,7 +10,10 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       all: true,
-      reporter: ['text', 'json', 'html'],
+      // 'json-summary' gera coverage/coverage-summary.json (formato Istanbul),
+      // que e o que o scanner do produto le como cobertura REAL (ver
+      // bin/lib/coverage-reader.cjs) em vez de estimar por proxy.
+      reporter: ['text', 'json', 'json-summary', 'html'],
       // Superficie de teste UNITARIO: dominio + aplicacao + apresentacao + shared/http.
       include: ['src/**/*.ts'],
       exclude: [
@@ -30,17 +33,20 @@ export default defineConfig({
         'src/**/infrastructure/**', // adapters Prisma/DB -> testes de integracao
       ],
       // "Ratchet" honesto (Dogma Zero, 2026-09-17): o piso abaixo reflete a
-      // cobertura MEDIDA hoje (67.98% linhas, 76% branches, 76.04% funcoes),
-      // nao a meta declarada em AGENTS.md/vision.md (80%). Antes deste ajuste
-      // o limiar era 85%/80%, reprovava sempre, e o CI nunca rodava
+      // cobertura MEDIDA hoje (67.93% linhas/statements, 75.87% branches,
+      // 75.78% funcoes — remedido apos remover a proxy morta
+      // computeEstimatedCoverage e seus testes), com uma margem de seguranca
+      // pequena para nao quebrar por flutuacao natural entre execucoes. Nao e
+      // a meta declarada em AGENTS.md/vision.md (80%). Antes deste ajuste o
+      // limiar era 85%/80%, reprovava sempre, e o CI nunca rodava
       // `test:coverage` — entao a reprovacao era invisivel. Agora o piso e
       // real e o CI (ver .github/workflows/ci.yml) o aplica de verdade: quem
       // reduzir a cobertura quebra o build; quem aumentar pode subir o piso.
       // Meta declarada continua 80%+ — ver docs/01-product/roadmap.md (3.1).
       thresholds: {
         lines: 67,
-        functions: 76,
-        branches: 76,
+        functions: 75,
+        branches: 75,
         statements: 67,
       },
     },

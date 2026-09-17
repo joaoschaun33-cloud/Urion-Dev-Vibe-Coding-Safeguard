@@ -1,18 +1,6 @@
 // src/shared/domain/scanner-verdict.test.ts
 import { describe, it, expect } from 'vitest';
-import { computeEstimatedCoverage, deriveStatus, COVERAGE_THRESHOLD } from './scanner-verdict';
-
-describe('computeEstimatedCoverage', () => {
-  it('retorna 0 quando nao ha arquivos de codigo', () => {
-    expect(computeEstimatedCoverage({ codeFiles: 0, testFiles: 5 })).toBe(0);
-    expect(computeEstimatedCoverage({})).toBe(0);
-  });
-
-  it('calcula percentual arredondado', () => {
-    expect(computeEstimatedCoverage({ codeFiles: 131, testFiles: 24 })).toBe(18);
-    expect(computeEstimatedCoverage({ codeFiles: 4, testFiles: 1 })).toBe(25);
-  });
-});
+import { deriveStatus, COVERAGE_THRESHOLD } from './scanner-verdict';
 
 describe('deriveStatus (anti-falso-verde)', () => {
   it('rebaixa para ATENCAO quando governanca alta mas cobertura baixa', () => {
@@ -54,5 +42,29 @@ describe('deriveStatus (anti-falso-verde)', () => {
     const v = deriveStatus({ healthScore: 75, estimatedCoveragePct: 50 });
     expect(v.status).toBe('ATENCAO');
     expect(v.capped).toBe(true);
+  });
+
+  it('rebaixa quando cobertura nao foi medida, mesmo com numero alto ignorado', () => {
+    const v = deriveStatus({
+      healthScore: 100,
+      estimatedCoveragePct: 999,
+      coverageMeasured: false,
+      criticalCount: 0,
+    });
+    expect(v.status).toBe('ATENCAO');
+    expect(v.capped).toBe(true);
+    expect(v.shielded).toBe(false);
+    expect(v.reason).toContain('nao medida');
+  });
+
+  it('permite blindado quando cobertura foi medida de verdade e bate o limite', () => {
+    const v = deriveStatus({
+      healthScore: 100,
+      estimatedCoveragePct: 85,
+      coverageMeasured: true,
+      criticalCount: 0,
+    });
+    expect(v.status).toBe('EXCELENTE');
+    expect(v.shielded).toBe(true);
   });
 });
