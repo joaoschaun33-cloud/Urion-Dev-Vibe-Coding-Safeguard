@@ -8,6 +8,10 @@ import path from 'node:path';
 import { detectMissingRls } from '../application/detect-missing-rls';
 import { detectUnprotectedRoutes } from '../application/detect-unprotected-routes';
 import { detectEnvLeaks } from '../application/detect-env-leaks';
+import { detectUserIdFromClient } from '../application/detect-userid-from-client';
+import { detectSwallowedErrors } from '../application/detect-swallowed-errors';
+import { detectUnverifiedWebhook } from '../application/detect-unverified-webhook';
+import { detectUnvalidatedWrite } from '../application/detect-unvalidated-write';
 import { scoreFromFindings, type Finding } from '../domain/findings';
 import { isTestOrFixturePath } from '../domain/scan-filters';
 
@@ -34,6 +38,13 @@ function safeRead(p: string): string {
     return '';
   }
 }
+
+// Arquivo de codigo escrito a mao raramente passa disso; bundle/minificado
+// (esbuild, webpack, etc.) rotineiramente passa muito. Acima do limite, os
+// heuristicos por regex/linha viram ruido (linha aponta pra dependencia de
+// terceiro empacotada, nao pro codigo do projeto) — melhor nao escanear do
+// que gerar achado enganoso.
+const MAX_CODE_FILE_BYTES = 200 * 1024;
 
 function walk(root: string): { code: FileEntry[]; sql: FileEntry[]; envFiles: string[] } {
   const code: FileEntry[] = [];
@@ -67,7 +78,11 @@ function walk(root: string): { code: FileEntry[]; sql: FileEntry[]; envFiles: st
         envFiles.push(rel);
       } else if (ext === '.sql') {
         sql.push({ path: rel, content: safeRead(full) });
-      } else if (/\.(?:m|c)?[jt]sx?$/.test(item) && !isTestOrFixturePath(rel)) {
+      } else if (
+        /\.(?:m|c)?[jt]sx?$/.test(item) &&
+        !isTestOrFixturePath(rel) &&
+        stat.size <= MAX_CODE_FILE_BYTES
+      ) {
         code.push({ path: rel, content: safeRead(full) });
       }
     }
@@ -89,6 +104,10 @@ function main(): void {
     ...detectMissingRls(sql),
     ...detectUnprotectedRoutes(code),
     ...detectEnvLeaks({ gitignore, envFiles }),
+    ...detectUserIdFromClient(code),
+    ...detectSwallowedErrors(code),
+    ...detectUnverifiedWebhook(code),
+    ...detectUnvalidatedWrite(code),
   ];
   const score = scoreFromFindings(findings);
   const critical = findings.filter((f) => f.severity === 'CRITICAL').length;
@@ -97,7 +116,7 @@ function main(): void {
     process.stdout.write(`${s}\n`);
   };
 
-  out('🛡️  Urion Config Gate — RLS / Auth / .env');
+  out('🛡️  Urion Config Gate — R1-R9 (RLS, auth, .env, userId, erros, webhook, validacao)');
   out(
     `Score: ${String(score)}/100 · ${String(findings.length)} achado(s) (${String(critical)} critico(s))\n`
   );

@@ -155,6 +155,43 @@ explícito), não como parte desta correção.
   rejeitada por risco de efeito colateral e tempo, ver "Decisão explícita de
   NÃO fazer" acima.
 
+### 2026-09-17 — Ruleset R1–R10: só regras com heurística confiável; documentar as que ficam de fora
+
+**Status**: Aceita
+**Contexto**: Roadmap item 2.4 pedia cobrir R1–R10 (ver
+`docs/research/aprendizados-workflow-docs.md`). Faltavam R2 (userId do
+cliente), R6 (erro engolido), R7 (validação de schema) e R9 (assinatura de
+webhook) — R1/R3(parcial via RLS)/R4/R5/R8 já existiam.
+**Decisão**: Implementar R2, R6, R9 com heurística de alta precisão (padrão
+textual bem restrito, poucas formas de dar falso positivo). Implementar R7 de
+forma deliberadamente estreita — só o caso mais óbvio (`data: req.body` literal
+num write de ORM) — em vez de tentar detectar "toda falta de validação Zod",
+que exigiria entender fluxo de dados e teria falso-positivo alto. **Não
+implementar R10** (log de ação admin): decidir o que conta como "ação admin" e
+provar ausência de log via regex tem falso-positivo alto demais para o padrão
+de confiança das outras regras — melhor declarar "não coberto" do que fingir
+cobertura fraca. R3 além do que RLS já cobre (checar posse do recurso, não só
+autenticação) fica pelo mesmo motivo: precisa de análise de fluxo de dados.
+Dogfooding (rodar `npm run checks -- --strict` neste repo) revelou que o
+scanner também vasculhava `bin/urion-mcp-server.mjs`, um bundle esbuild de
+962KB, gerando achados que apontavam para dependência de terceiro empacotada —
+corrigido com um limite de tamanho de arquivo (200KB) no walker, uma correção
+genérica (útil para qualquer projeto com bundle solto fora de `dist/`), não
+específica deste repo.
+**Consequências**:
+
+- Positivas: ruleset R1–R9 real e testado (13 novos testes unitários); tabela
+  do roadmap não afirma cobertura que não existe para R10; o limite de tamanho
+  de arquivo evita ruído em qualquer projeto escaneado que tenha bundles soltos
+  fora de pastas convencionalmente ignoradas.
+- Negativas: R10 continua sem detector — se alguém precisar dessa regra,
+  precisa de uma abordagem diferente (ex.: exigir uma anotação/convenção no
+  código, não inferência via regex).
+  **Alternativas consideradas**:
+- Implementar as 10 regras a qualquer custo para "fechar a tabela" — rejeitada:
+  contradiz o próprio aviso de risco da Fase 2 ("falso positivo alto se
+  heurística for fraca") e o Dogma Zero.
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões
