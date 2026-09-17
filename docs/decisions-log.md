@@ -85,7 +85,7 @@ para quem quer a metodologia completa, sem competir pela mensagem principal.
 branches, mas a cobertura real medida era 67,98%/76%/76,04% — o limiar sempre
 reprovaria. Isso não aparecia em lugar nenhum porque o `ci.yml` rodava
 `npm run test` (sem cobertura) num step chamado, de forma enganosa, "Coverage
-Gate". Two overclaims silenciosos: um limiar que nunca era cumprido e um nome
+Gate". Dois overclaims silenciosos: um limiar que nunca era cumprido e um nome
 de step que prometia uma checagem que não existia.
 **Decisão**: Baixar o limiar do `vitest.config.ts` para bater com a cobertura
 real medida (piso: 67% linhas/statements, 76% branches/funções) e fazer o
