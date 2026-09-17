@@ -10,4 +10,12 @@ npm run test:smoke
 echo "🔍 Rodando cursor-doctor..."
 npm run cursor-doctor
 
+echo "🛡️  Rodando Urion Config Gate (RLS/auth/.env)..."
+npm run checks -- --strict
+if [ $? -ne 0 ]; then
+  echo "❌ Config Gate encontrou problema(s) CRITICO(S). Corrija ou marque rotas"
+  echo "   publicas de proposito com \"// PUBLIC: motivo\" antes de commitar."
+  exit 1
+fi
+
 echo "✅ Pre-commit passou!"

@@ -78,6 +78,38 @@ para quem quer a metodologia completa, sem competir pela mensagem principal.
   por `posicionamento-estrategia.md`) justifica; revisitar se a adoção do CLI
   validar a tese de mercado.
 
+### 2026-09-17 — Ratchet de cobertura de testes em vez de limiar aspiracional
+
+**Status**: Aceita
+**Contexto**: `vitest.config.ts` exigia 85% linhas/statements/funções e 80%
+branches, mas a cobertura real medida era 67,98%/76%/76,04% — o limiar sempre
+reprovaria. Isso não aparecia em lugar nenhum porque o `ci.yml` rodava
+`npm run test` (sem cobertura) num step chamado, de forma enganosa, "Coverage
+Gate". Two overclaims silenciosos: um limiar que nunca era cumprido e um nome
+de step que prometia uma checagem que não existia.
+**Decisão**: Baixar o limiar do `vitest.config.ts` para bater com a cobertura
+real medida (piso: 67% linhas/statements, 76% branches/funções) e fazer o
+`ci.yml` rodar `npm run test:coverage` de verdade. O piso vira um "ratchet":
+protege contra regressão a partir de agora, sem fingir que a meta de 80%
+(AGENTS.md/vision.md) já foi atingida.
+**Consequências**:
+
+- Positivas: CI para de mentir sobre cobrir cobertura; qualquer PR que reduza
+  cobertura quebra o build de verdade; a meta de 80% continua declarada e
+  visível (roadmap 3.1), só não é fingida como já cumprida.
+- Negativas: o piso de 67%/76% é baixo — não é uma vitória, é o fim de uma
+  mentira silenciosa. Ainda falta o trabalho real de escrever testes para
+  arquivos com 0% de cobertura (`shared/config/env.ts`,
+  `shared/http/health-check.ts`, `shared/domain/domain-event-bus.ts`, entre
+  outros) para subir o piso até 80%+.
+  **Alternativas consideradas**:
+- Manter 85%/80% e deixar o CI vermelho até alguém escrever os testes —
+  rejeitada: travaria todo PR imediatamente sem plano de correção, e o
+  objetivo desta sessão era parar o sangramento de honestidade, não um sprint
+  de testes.
+- Não mexer e continuar sem rodar `test:coverage` no CI — rejeitada: mantém o
+  overclaim ativo (o nome do step já prometia uma checagem que não existe).
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões
