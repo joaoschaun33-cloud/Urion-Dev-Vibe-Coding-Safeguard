@@ -54,6 +54,7 @@ Acesse: http://localhost:3000/api/v1/health
 ## 🧪 Teste a API
 
 ### Criar um Todo
+
 ```bash
 curl -X POST http://localhost:3000/api/v1/todos \
   -H "Content-Type: application/json" \
@@ -65,6 +66,7 @@ curl -X POST http://localhost:3000/api/v1/todos \
 ```
 
 ### Listar Todos
+
 ```bash
 curl "http://localhost:3000/api/v1/todos?page=1&limit=10"
 ```
@@ -90,7 +92,7 @@ npm run cursor-doctor
 
 1. **Leia a BIBLIA**: `.cursor/rules/honesty.mdc` e `AGENTS.md`
 2. **Entenda a arquitetura**: `docs/architecture.md`
-3. **Adicione uma feature**: `bash scripts/generate-feature.sh minha-feature`
+3. **Adicione uma feature**: `npm run generate:feature -- minha-feature`
 4. **Vibe coding**: Abra o Cursor, mencione `@AGENTS.md`, e comece a construir
 
 ---
@@ -98,13 +100,17 @@ npm run cursor-doctor
 ## 🆘 Problemas Comuns
 
 ### "Cannot find module '@/shared/...'"
+
 Verifique se `tsconfig.json` esta na raiz e os paths estao configurados.
 
 ### "Prisma Client not found"
+
 Rode `npm run db:generate` para gerar o client do Prisma.
 
 ### "Port 3000 already in use"
+
 Mude a porta no `.env`: `PORT=3001`
 
 ### "Database connection refused"
+
 Verifique se o Docker esta rodando: `docker-compose ps`

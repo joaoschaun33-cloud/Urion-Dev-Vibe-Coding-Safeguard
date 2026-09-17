@@ -64,6 +64,18 @@ Seu projeto alcançou **Score ≥ 90** no VibeGuard? Adicione o selo oficial ao 
 
 ---
 
+## 🏗️ Construindo um projeto do zero (não só protegendo um existente)
+
+O `urion-safeguard` nasceu dentro de um repositório que usa, para si mesmo, uma
+metodologia completa de vibe coding profissional — arquitetura (Feature-Sliced
+Design), especificação antes de codar (SDD), ADRs, e o "Dogma Zero" de
+honestidade da IA. Se você quer começar um app do zero com essa mesma
+disciplina (não só escanear um já existente), clone este repositório como
+template e siga o [QUICKSTART.md](QUICKSTART.md) — a metodologia completa está
+documentada em [`docs/`](docs/).
+
+---
+
 ## 📄 Licença
 
 Distribuído sob a licença MIT. Criado para proteger a comunidade de Vibe Coders e Makers.
