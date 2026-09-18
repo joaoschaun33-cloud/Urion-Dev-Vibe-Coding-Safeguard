@@ -67,7 +67,9 @@ function runModeMakerScanner(targetDir = process.cwd()) {
                 }
               }
             });
-          } catch {}
+          } catch (err) {
+            console.warn(`⚠️  Não foi possível ler "${fullPath}": ${err.message}`);
+          }
         }
       }
     }

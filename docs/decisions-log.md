@@ -192,6 +192,53 @@ específica deste repo.
   contradiz o próprio aviso de risco da Fase 2 ("falso positivo alto se
   heurística for fraca") e o Dogma Zero.
 
+### 2026-09-18 — Corrigir vazamento de processo no CodeSandboxRunner (falso verde real)
+
+**Status**: Aceita
+**Contexto**: Ao corrigir os 3 achados `ERROR_SWALLOWED` da sessão anterior
+(2 em `bin/create-vibe-safeguard.js`, 1 em `bin/lib/mode-maker.cjs`), rodar
+`npm run test:unit` repetidamente revelou que a máquina estava cada vez mais
+lenta — uma execução chegou a levar 153s (normal: ~4s), com "transform" de
+532s. Investigação encontrou **12 processos `node -e "while(true){}"`**
+rodando havia horas, consumindo CPU sem parar. Origem: o teste
+`code-sandbox.test.ts` ("deve interromper comandos que excedem o timeout
+limite") roda exatamente esse comando via `CodeSandboxRunner.runIsolated` com
+timeout de 500ms — e o teste **passava**, reportando `timedOut: true`
+corretamente. Só que no Windows, `child_process.exec()` roda o comando dentro
+de um `cmd.exe`; o `timeout` nativo do Node mata só esse `cmd.exe` (o filho
+direto) — o processo `node` real (neto) fica órfão e continua rodando pra
+sempre. Um teste verde escondendo um recurso que nunca foi limpo — exatamente
+o tipo de "falso verde" que o Dogma Zero existe para matar, só que desta vez
+não no scanner do produto, no próprio motor de sandbox do repo.
+**Decisão**: `CodeSandboxRunner` passou a gerenciar o timeout manualmente no
+Windows (sem usar a opção `timeout` do `exec`) e mata a árvore inteira via
+`taskkill /pid <pid> /T /F` **enquanto o `cmd.exe` ainda está vivo** — só
+assim o Windows consegue enumerar e matar o processo neto também (depois que
+o `cmd.exe` já morreu, `taskkill /T` não acha mais os filhos dele). No POSIX
+o timeout nativo do Node continua sendo usado sem alteração (lá o shell
+tipicamente faz exec-replace num comando simples, então matar o filho direto
+já mata o processo real — o bug é específico do Windows).
+**Consequências**:
+
+- Positivas: o teste que afirma "interrompe o comando" agora interrompe de
+  verdade — nenhum processo sobrevive ao timeout (validado rodando a suíte 3x
+  seguidas e conferindo a lista de processos após cada rodada). Efeito
+  colateral bom: a máquina de desenvolvimento para de degradar ao longo de
+  uma sessão longa de testes.
+- Negativas: comportamento agora bifurcado por plataforma (Windows vs POSIX)
+  dentro da mesma função — mais um `if` para manter, mas necessário porque as
+  duas plataformas têm semânticas de processo genuinamente diferentes aqui.
+  **Alternativas consideradas**:
+- Adicionar a dependência `tree-kill` (biblioteca madura para esse problema
+  exato) — plausível e mais testado que uma chamada direta a `taskkill`, mas
+  rejeitado por ora para não adicionar uma dependência nova numa correção
+  pontual; revisitar se mais casos de kill-de-árvore aparecerem no projeto.
+- Ignorar o achado por ser "só o ambiente de dev, não afeta produção" —
+  rejeitada: o mesmo padrão (`exec` com timeout) poderia vazar processos reais
+  em produção se reaproveitado para rodar comandos de usuário sob timeout, e
+  a suíte de testes rodando em CI/Windows de outros contribuidores sofreria o
+  mesmo problema.
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões
