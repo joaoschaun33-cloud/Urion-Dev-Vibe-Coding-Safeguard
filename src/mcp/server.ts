@@ -4,7 +4,7 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { runSecurityCheck, runExplainRisk } from './tools';
+import { runSecurityCheck, runExplainRisk, runSpecGate } from './tools';
 
 export const URION_MCP_INFO = { name: 'urion-vibeguard', version: '2.0.0' } as const;
 
@@ -58,6 +58,49 @@ export function createUrionMcpServer(): McpServer {
     (args) => {
       const r = runExplainRisk({ ruleId: args.ruleId });
       return { content: r.content, isError: r.isError };
+    }
+  );
+
+  server.registerTool(
+    'urion_spec_gate',
+    {
+      title: 'Urion Spec Gate',
+      description:
+        'Gate de spec (Spec-Driven Development): chame ANTES de implementar uma feature. ' +
+        'Retorna SPEC_OK quando existe spec com criterios de aceite; NEEDS_SPEC ou INCOMPLETE_SPEC ' +
+        'quando falta — nesses casos NAO implemente: peca/complete a spec com o usuario. Parecer consultivo.',
+      inputSchema: {
+        feature: z
+          .string()
+          .min(1)
+          .describe('Nome da feature a implementar, ex.: "login com google".'),
+        projectPath: z
+          .string()
+          .optional()
+          .describe('Raiz do projeto (padrao: diretorio atual do servidor MCP).'),
+      },
+      outputSchema: {
+        status: z.enum(['SPEC_OK', 'NEEDS_SPEC', 'INCOMPLETE_SPEC']),
+        feature: z.string(),
+        spec: z
+          .object({
+            path: z.string(),
+            title: z.string(),
+            criteria: z.number(),
+            completedCriteria: z.number(),
+          })
+          .nullable(),
+        message: z.string(),
+        nextStep: z.string(),
+      },
+    },
+    (args) => {
+      const r = runSpecGate({ feature: args.feature, projectPath: args.projectPath });
+      return {
+        content: r.content,
+        structuredContent: r.structuredContent as unknown as Record<string, unknown>,
+        isError: r.isError,
+      };
     }
   );
 

@@ -10,6 +10,14 @@ import {
   type Severity,
 } from '../features/security-audit/domain/findings';
 
+import path from 'node:path';
+import fs from 'node:fs';
+import {
+  evaluateSpecGate,
+  type SpecGateResult,
+} from '../features/spec-manager/application/check-spec-gate';
+import { collectSpecCandidates } from '../features/spec-manager/infrastructure/spec-candidates-reader';
+
 const guard = new UrionMcpGuardServer();
 
 export interface StructuredSecurityResult {
@@ -91,6 +99,46 @@ export function runExplainRisk(input: { ruleId: string }): {
 
   return {
     content: [{ type: 'text', text: guard.explainRisk(ruleId) }],
+    isError: false,
+  };
+}
+
+export interface SpecGateToolResult {
+  content: Array<{ type: 'text'; text: string }>;
+  structuredContent: SpecGateResult;
+  isError: boolean;
+}
+
+/**
+ * Gate de spec (roadmap 3.3): antes de implementar uma feature, a IA chama esta
+ * tool. Sem spec (ou sem criterios de aceite) o parecer e NEEDS_SPEC /
+ * INCOMPLETE_SPEC e a IA deve pedir a spec ao usuario em vez de codar.
+ * Parecer consultivo (nao bloqueia fisicamente), como as demais tools.
+ */
+export function runSpecGate(input: { feature: string; projectPath?: string }): SpecGateToolResult {
+  const root = path.resolve(input.projectPath ?? process.cwd());
+  if (!fs.existsSync(root)) {
+    const result: SpecGateResult = {
+      status: 'NEEDS_SPEC',
+      feature: input.feature,
+      spec: null,
+      message: `Pasta do projeto nao encontrada: ${root}`,
+      nextStep: 'Informe projectPath correto (raiz do projeto) e chame o gate de novo.',
+    };
+    return {
+      content: [{ type: 'text', text: `⚠️ ${result.message}` }],
+      structuredContent: result,
+      isError: true,
+    };
+  }
+
+  const result = evaluateSpecGate(input.feature, collectSpecCandidates(root));
+  const icon = result.status === 'SPEC_OK' ? '✅' : '🛑';
+  return {
+    content: [
+      { type: 'text', text: `${icon} ${result.status} — ${result.message}\n→ ${result.nextStep}` },
+    ],
+    structuredContent: result,
     isError: false,
   };
 }

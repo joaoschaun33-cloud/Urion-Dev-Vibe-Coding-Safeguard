@@ -255,6 +255,14 @@ já mata o processo real — o bug é específico do Windows).
 **Consequências**: pega o caso clássico (`for` + `findUnique`, `Promise.all(ids.map(...))`). Não pega N+1 indireto (helper que consulta o banco chamado no loop) — precisaria de análise entre arquivos; declarado como limite, não escondido.
 **Alternativas consideradas**: AST completo (TypeScript Compiler API) — rejeitada por ora: o `urion-checks` roda em qualquer projeto JS/TS de terceiros como bundle sem dependências; um teste de integração contando queries reais foi mantido como complemento futuro, não como substituto.
 
+### 2026-09-19 — Gate de spec como tool MCP consultiva (roadmap 3.3)
+
+**Status**: Aceita
+**Contexto**: O SDLC do projeto exige spec antes de código, mas nada impedia a IA de pular a fase ESPECIFICAR.
+**Decisão**: Tool `urion_spec_gate` no servidor MCP. Lógica pura em `spec-manager/application/check-spec-gate.ts`, I/O separado em `infrastructure/spec-candidates-reader.ts` (só lê `.md` de pastas de spec, profundidade ≤ 3, arquivos ≤ 500KB). Estados `SPEC_OK` / `NEEDS_SPEC` / `INCOMPLETE_SPEC`; os dois últimos instruem explicitamente a NÃO implementar.
+**Consequências**: a IA passa a ter um ponto de consulta objetivo antes de codar. É consultivo — nenhum MCP bloqueia o editor; o bloqueio real vem dos gates de pre-commit/CI (e do gate de launch, 3.4).
+**Alternativas consideradas**: exigir campo "status: aprovada" na spec — rejeitada por ora (o formato de status varia entre projetos e forçaria uma convenção que o público não-técnico não tem); pode virar opção depois.
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões

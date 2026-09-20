@@ -177,6 +177,10 @@ bloqueio físico (bloqueio via hooks vem em fase futura).
   (`SECRETS_HARDCODED`, `AUTH_CLIENT_SIDE`, `SQL_INJECTION`, `XSS_UNSANITIZED`,
   `RATE_LIMIT_MISSING`).
 
+- `urion_spec_gate({ feature, projectPath? })` → gate de spec: chame **antes de implementar**.
+  Retorna `SPEC_OK`, `NEEDS_SPEC` ou `INCOMPLETE_SPEC`; nos dois últimos a IA deve pedir/completar
+  a spec (`docs/01-product/` ou `docs/specs/`, com seção "Critérios de aceite") em vez de codar.
+
 ### Cursor
 
 Adicione ao seu `~/.cursor/mcp.json` (ou ao `.cursor/mcp.json` do projeto):
