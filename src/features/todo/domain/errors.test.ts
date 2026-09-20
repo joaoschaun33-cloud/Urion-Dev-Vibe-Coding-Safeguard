@@ -1,11 +1,7 @@
 // src/features/todo/domain/errors.test.ts
 
 import { describe, it, expect } from 'vitest';
-import {
-  TodoNotFoundError,
-  TodoTitleEmptyError,
-  TodoAlreadyCompletedError,
-} from './errors';
+import { TodoNotFoundError, TodoTitleEmptyError, TodoAlreadyCompletedError } from './errors';
 import { DomainError } from '@/shared/errors';
 
 describe('Erros de dominio do Todo', () => {

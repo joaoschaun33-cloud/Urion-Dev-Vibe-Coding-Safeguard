@@ -32,22 +32,18 @@ export default defineConfig({
         'src/shared/utils/**', // utilitarios de frontend
         'src/**/infrastructure/**', // adapters Prisma/DB -> testes de integracao
       ],
-      // "Ratchet" honesto (Dogma Zero, 2026-09-17): o piso abaixo reflete a
-      // cobertura MEDIDA hoje (67.93% linhas/statements, 75.87% branches,
-      // 75.78% funcoes — remedido apos remover a proxy morta
-      // computeEstimatedCoverage e seus testes), com uma margem de seguranca
-      // pequena para nao quebrar por flutuacao natural entre execucoes. Nao e
-      // a meta declarada em AGENTS.md/vision.md (80%). Antes deste ajuste o
-      // limiar era 85%/80%, reprovava sempre, e o CI nunca rodava
-      // `test:coverage` — entao a reprovacao era invisivel. Agora o piso e
-      // real e o CI (ver .github/workflows/ci.yml) o aplica de verdade: quem
-      // reduzir a cobertura quebra o build; quem aumentar pode subir o piso.
-      // Meta declarada continua 80%+ — ver docs/01-product/roadmap.md (3.1).
+      // "Ratchet" honesto (Dogma Zero): o piso reflete a cobertura MEDIDA, com
+      // pequena margem contra flutuacao entre execucoes. Historico: 2026-09-17 era
+      // 67/75/75 (medido 67.9%); 2026-09-19 subiu para 84/90/85 (medido 84.49%
+      // linhas, 85.77% branches, 91.81% funcoes) apos testes dos modulos que
+      // estavam em 0%. A meta do AGENTS.md (80%) esta atingida; o CI
+      // (.github/workflows/ci.yml) roda test:coverage, entao quem reduzir a
+      // cobertura quebra o build. Suba o piso sempre que a cobertura subir.
       thresholds: {
-        lines: 67,
-        functions: 75,
-        branches: 75,
-        statements: 67,
+        lines: 84,
+        functions: 90,
+        branches: 85,
+        statements: 84,
       },
     },
     setupFiles: ['./tests/setup.ts'],

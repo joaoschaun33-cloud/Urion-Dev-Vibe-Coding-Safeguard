@@ -239,6 +239,14 @@ já mata o processo real — o bug é específico do Windows).
   a suíte de testes rodando em CI/Windows de outros contribuidores sofreria o
   mesmo problema.
 
+### 2026-09-19 — Ratchet de cobertura sobe de 67/75 para 84/90/85
+
+**Status**: Aceita
+**Contexto**: O ratchet de 2026-09-17 (67% linhas) era um piso honesto, não uma vitória. A meta declarada (80%) exigia testes reais, não ajuste de número.
+**Decisão**: Escrever testes para os módulos com 0% de cobertura (DomainEventBus, envSchema, health checks com Prisma/Redis mockados, controllers de blueprint-hub/security-audit/spec-manager/project-health, DTOs, erros de domínio, regras de pontuação de ProjectHealth) e subir o piso do `vitest.config.ts` para 84% linhas/statements, 90% funções, 85% branches (medido: 84,49/91,81/85,77).
+**Consequências**: meta de 80% atingida e protegida pelo CI. Fora do cálculo continuam (por decisão anterior) `src/app/**` e `src/**/infrastructure/**`, cobertos só por testes de integração — a cobertura unitária reportada não inclui esses adapters.
+**Alternativas consideradas**: manter o piso baixo — rejeitada, deixaria a meta declarada sem verificação.
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões
