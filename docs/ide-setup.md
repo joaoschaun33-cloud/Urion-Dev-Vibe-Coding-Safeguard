@@ -185,6 +185,8 @@ bloqueio físico (bloqueio via hooks vem em fase futura).
   concluída, cobertura real ≥ 80%, zero achado crítico e auditoria independente aprovada
   (`.urion/audit/*.json`, ver `prompts/auditor.md`). Também via `npm run launch:gate`.
 
+> ⚠️ **Disponibilidade (Dogma Zero):** a última versão **publicada no npm é a 2.0.0**, que ainda não contém o `urion-mcp-server` nem `urion-checks`. Os comandos `npx` abaixo só funcionarão depois da próxima publicação. Até lá, use o build local (seção "Rodar localmente a partir deste repositório").
+
 ### Cursor
 
 Adicione ao seu `~/.cursor/mcp.json` (ou ao `.cursor/mcp.json` do projeto):
