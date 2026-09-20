@@ -35,7 +35,8 @@ coverage/
 # Misc
 *.tgz
 *.tar.gz
-.urion/
+.urion/*
+!.urion/audit/
 
 # Vitest temp files
 vitest.config.ts.timestamp-*.mjs

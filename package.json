@@ -49,7 +49,9 @@
     "prepare": "husky || exit 0",
     "prepublishOnly": "npm run build:mcp && npm run build:checks",
     "test:integration:local": "node scripts/with-embedded-postgres.mjs",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "launch:gate": "tsx src/mcp/gates-cli.ts launch",
+    "audit:validate": "tsx src/mcp/gates-cli.ts audit"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.30.0",

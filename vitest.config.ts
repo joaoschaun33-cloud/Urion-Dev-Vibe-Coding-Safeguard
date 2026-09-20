@@ -34,16 +34,16 @@ export default defineConfig({
       ],
       // "Ratchet" honesto (Dogma Zero): o piso reflete a cobertura MEDIDA, com
       // pequena margem contra flutuacao entre execucoes. Historico: 2026-09-17 era
-      // 67/75/75 (medido 67.9%); 2026-09-19 subiu para 84/90/85 (medido 84.49%
-      // linhas, 85.77% branches, 91.81% funcoes) apos testes dos modulos que
-      // estavam em 0%. A meta do AGENTS.md (80%) esta atingida; o CI
+      // 67/75/75 (medido 67.9%); 2026-09-19 subiu para 84/90/85 (medido 84.49%) e depois para
+      // 90/92/89 (medido 90.81% linhas, 89.91% branches, 92.75% funcoes) apos os
+      // testes dos modulos em 0% e dos gates 3.3-3.5. A meta do AGENTS.md (80%) esta atingida; o CI
       // (.github/workflows/ci.yml) roda test:coverage, entao quem reduzir a
       // cobertura quebra o build. Suba o piso sempre que a cobertura subir.
       thresholds: {
-        lines: 84,
-        functions: 90,
-        branches: 85,
-        statements: 84,
+        lines: 90,
+        functions: 92,
+        branches: 89,
+        statements: 90,
       },
     },
     setupFiles: ['./tests/setup.ts'],

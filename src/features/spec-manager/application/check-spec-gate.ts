@@ -41,7 +41,7 @@ const BULLET_RE = /^\s*[-*]\s+\S/;
 const HEADING_RE = /^#{1,6}\s/;
 const CRITERIA_HEADING_RE = /^#{1,6}\s.*(crit[eé]rios?\s+de\s+aceit|acceptance\s+criteria)/i;
 
-function countCriteria(content: string): { total: number; completed: number } {
+export function countCriteria(content: string): { total: number; completed: number } {
   let total = 0;
   let completed = 0;
   let inCriteriaSection = false;

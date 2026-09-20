@@ -5,6 +5,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { runSecurityCheck, runExplainRisk, runSpecGate } from './tools';
+import { runLaunchGateTool } from './launch-tool';
 
 export const URION_MCP_INFO = { name: 'urion-vibeguard', version: '2.0.0' } as const;
 
@@ -96,6 +97,44 @@ export function createUrionMcpServer(): McpServer {
     },
     (args) => {
       const r = runSpecGate({ feature: args.feature, projectPath: args.projectPath });
+      return {
+        content: r.content,
+        structuredContent: r.structuredContent as unknown as Record<string, unknown>,
+        isError: r.isError,
+      };
+    }
+  );
+
+  server.registerTool(
+    'urion_launch_gate',
+    {
+      title: 'Urion Launch Gate',
+      description:
+        'Gate de "pronto para launch": Grade A somente com (1) spec com criterios de aceite concluidos, ' +
+        '(2) cobertura de testes REAL medida >= 80%, (3) nenhum achado de seguranca critico e ' +
+        '(4) auditoria independente aprovada e recente (.urion/audit/*.json). Qualquer falha => NOT_READY ' +
+        'com a lista de bloqueios. Parecer consultivo; o bloqueio de verdade e o CI/pre-commit.',
+      inputSchema: {
+        projectPath: z
+          .string()
+          .optional()
+          .describe('Raiz do projeto (padrao: diretorio atual do servidor MCP).'),
+      },
+      outputSchema: {
+        grade: z.enum(['A', 'NOT_READY']),
+        ready: z.boolean(),
+        checks: z.array(
+          z.object({
+            id: z.enum(['SPEC', 'TESTS', 'SECURITY', 'REVIEW']),
+            passed: z.boolean(),
+            detail: z.string(),
+          })
+        ),
+        blockers: z.array(z.string()),
+      },
+    },
+    async (args) => {
+      const r = await runLaunchGateTool({ projectPath: args.projectPath });
       return {
         content: r.content,
         structuredContent: r.structuredContent as unknown as Record<string, unknown>,

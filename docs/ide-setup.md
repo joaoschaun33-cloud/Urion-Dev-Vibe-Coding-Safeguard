@@ -181,6 +181,10 @@ bloqueio físico (bloqueio via hooks vem em fase futura).
   Retorna `SPEC_OK`, `NEEDS_SPEC` ou `INCOMPLETE_SPEC`; nos dois últimos a IA deve pedir/completar
   a spec (`docs/01-product/` ou `docs/specs/`, com seção "Critérios de aceite") em vez de codar.
 
+- `urion_launch_gate({ projectPath? })` → gate de "pronto para launch": Grade A só com spec
+  concluída, cobertura real ≥ 80%, zero achado crítico e auditoria independente aprovada
+  (`.urion/audit/*.json`, ver `prompts/auditor.md`). Também via `npm run launch:gate`.
+
 ### Cursor
 
 Adicione ao seu `~/.cursor/mcp.json` (ou ao `.cursor/mcp.json` do projeto):

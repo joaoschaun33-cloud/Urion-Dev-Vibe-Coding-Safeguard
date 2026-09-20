@@ -263,6 +263,14 @@ já mata o processo real — o bug é específico do Windows).
 **Consequências**: a IA passa a ter um ponto de consulta objetivo antes de codar. É consultivo — nenhum MCP bloqueia o editor; o bloqueio real vem dos gates de pre-commit/CI (e do gate de launch, 3.4).
 **Alternativas consideradas**: exigir campo "status: aprovada" na spec — rejeitada por ora (o formato de status varia entre projetos e forçaria uma convenção que o público não-técnico não tem); pode virar opção depois.
 
+### 2026-09-19 — Gate de launch e Auditor: validar por código o que é verificável, declarar o resto (roadmap 3.4/3.5)
+
+**Status**: Aceita
+**Contexto**: A doutrina promete "não lançar sem spec, testes e revisão", mas nada checava. Um auditor de IA em contexto limpo é mais uma convenção que um mecanismo.
+**Decisão**: (1) Gate de launch puro em `shared/domain` com coleta de fatos em `src/mcp` (camada de entrada pode compor features; features não se importam). Grade A exige SPEC + TESTS(cobertura real) + SECURITY + REVIEW; sem meio-termo. (2) Auditor: o **relatório** é validado por código (evidência obrigatória; APPROVED com CRITICAL/HIGH aberto é bloqueado; mais recente vence; contexto compartilhado não conta). O **subagente** é prompt + definição de agente. `.urion/audit/` passou a ser versionável (`.urion/*` + `!.urion/audit/` no `.gitignore`) para a evidência entrar no repositório/CI.
+**Consequências**: o gate reprova este próprio repo hoje (specs com critérios em aberto, sem auditoria) — dogfooding honesto, não bug. Independência do auditor continua sendo declaração, não prova; forjar relatório é possível para quem tem acesso ao repo.
+**Alternativas consideradas**: verificar `reviewedCommit == HEAD` — rejeitada por ora (invalida a auditoria a cada commit; a idade máxima de 14 dias é o compromisso); auditoria server-side/assinada — fica no backlog do roadmap.
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões
