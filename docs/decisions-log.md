@@ -247,6 +247,14 @@ já mata o processo real — o bug é específico do Windows).
 **Consequências**: meta de 80% atingida e protegida pelo CI. Fora do cálculo continuam (por decisão anterior) `src/app/**` e `src/**/infrastructure/**`, cobertos só por testes de integração — a cobertura unitária reportada não inclui esses adapters.
 **Alternativas consideradas**: manter o piso baixo — rejeitada, deixaria a meta declarada sem verificação.
 
+### 2026-09-19 — Detector de N+1 por heurística textual, só leituras
+
+**Status**: Aceita
+**Contexto**: O AGENTS.md proíbe queries N+1 e o roadmap 3.2 pedia uma heurística/teste que as sinalizasse.
+**Decisão**: `detect-n-plus-one.ts` (puro, mesmo padrão dos demais detectores): localiza loops, extrai o corpo por balanceamento de delimitadores e sinaliza leituras de banco dentro dele. Só leituras — escrita em loop é outro problema. Severidade WARNING; opt-out explícito `// N+1-OK: motivo`.
+**Consequências**: pega o caso clássico (`for` + `findUnique`, `Promise.all(ids.map(...))`). Não pega N+1 indireto (helper que consulta o banco chamado no loop) — precisaria de análise entre arquivos; declarado como limite, não escondido.
+**Alternativas consideradas**: AST completo (TypeScript Compiler API) — rejeitada por ora: o `urion-checks` roda em qualquer projeto JS/TS de terceiros como bundle sem dependências; um teste de integração contando queries reais foi mantido como complemento futuro, não como substituto.
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões

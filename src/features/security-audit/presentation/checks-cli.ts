@@ -12,6 +12,7 @@ import { detectUserIdFromClient } from '../application/detect-userid-from-client
 import { detectSwallowedErrors } from '../application/detect-swallowed-errors';
 import { detectUnverifiedWebhook } from '../application/detect-unverified-webhook';
 import { detectUnvalidatedWrite } from '../application/detect-unvalidated-write';
+import { detectNPlusOne } from '../application/detect-n-plus-one';
 import { scoreFromFindings, type Finding } from '../domain/findings';
 import { isTestOrFixturePath } from '../domain/scan-filters';
 
@@ -108,6 +109,7 @@ function main(): void {
     ...detectSwallowedErrors(code),
     ...detectUnverifiedWebhook(code),
     ...detectUnvalidatedWrite(code),
+    ...detectNPlusOne(code),
   ];
   const score = scoreFromFindings(findings);
   const critical = findings.filter((f) => f.severity === 'CRITICAL').length;
@@ -116,7 +118,9 @@ function main(): void {
     process.stdout.write(`${s}\n`);
   };
 
-  out('🛡️  Urion Config Gate — R1-R9 (RLS, auth, .env, userId, erros, webhook, validacao)');
+  out(
+    '🛡️  Urion Config Gate — R1-R9 + N+1 (RLS, auth, .env, userId, erros, webhook, validacao, consultas em loop)'
+  );
   out(
     `Score: ${String(score)}/100 · ${String(findings.length)} achado(s) (${String(critical)} critico(s))\n`
   );
