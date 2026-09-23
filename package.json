@@ -6,6 +6,12 @@
   "license": "MIT",
   "type": "module",
   "main": "dist/app/server.js",
+  "files": [
+    "dist",
+    "bin",
+    "prisma/schema.prisma",
+    "CHANGELOG.md"
+  ],
   "bin": {
     "urion-safeguard": "bin/urion-safeguard.cjs",
     "urion": "bin/urion-safeguard.cjs",
