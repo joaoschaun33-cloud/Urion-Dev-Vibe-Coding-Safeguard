@@ -151,6 +151,20 @@ describe('runLaunchGate (roadmap 3.4, coleta real de fatos)', () => {
     const { result } = await runLaunchGate(root);
     expect(result.checks.find((c) => c.id === 'SPEC')?.detail).toContain('1/2');
   });
+
+  it('ignora docs/00-context/feature-spec.md (template generico, nunca uma spec real)', async () => {
+    const root = makeProject({
+      spec: doneSpec,
+      coveragePct: 90,
+      audits: { 'a.json': audit() },
+      files: {
+        'docs/00-context/feature-spec.md':
+          '# Feature Spec Template\n\n### Requisitos\n\n- [ ] Critério de aceite 1\n',
+      },
+    });
+    const { result } = await runLaunchGate(root);
+    expect(result.checks.find((c) => c.id === 'SPEC')?.passed).toBe(true);
+  });
 });
 
 describe('readLatestAudit', () => {

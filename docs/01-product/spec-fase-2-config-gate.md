@@ -86,13 +86,32 @@ code check = CLI + MCP.
 
 ## Requisitos / critérios de aceite (por bloco)
 
-- [ ] A (RLS): projeto Supabase com `create table` sem RLS → **flag**; com RLS/policy → ok.
-- [ ] A (auth): rota sensível sem middleware e sem `// PUBLIC:` → flag; rota marcada → ok.
-- [ ] A (.env): `.env` sem estar no `.gitignore` OU segredo real versionado → flag.
-- [ ] D: `sk-proj-...`/`ghp_...` detectados; fixture em `*.test.*` NÃO gera flag.
-- [ ] C: `urion_security_check` retorna `structuredContent` validado por `outputSchema` + texto; sem quebrar clientes que só leem texto.
-- [ ] B: cada R1–R10 com detecção + teste (na sub-fase 2B).
-- [ ] Fonte única preservada; sem overclaim; heurísticas e limites documentados.
+- [x] A (RLS): projeto Supabase com `create table` sem RLS → **flag**; com RLS/policy → ok.
+      `detect-missing-rls.ts` + testes em `config-detectors.test.ts`.
+- [x] A (auth): rota sensível sem middleware e sem `// PUBLIC:` → flag; rota marcada → ok.
+      `detect-unprotected-routes.ts` + testes.
+- [x] A (.env): `.env` sem estar no `.gitignore` OU segredo real versionado → flag.
+      `detect-env-leaks.ts` (gitignore) + `SECRETS_HARDCODED` do VibeGuard
+      (segredo real versionado) cobrem os dois casos.
+- [x] D: `sk-proj-...`/`ghp_...` detectados; fixture em `*.test.*` NÃO gera flag.
+      Confirmado em `vibe-guard-rules.ts` (padrões `sk-proj-`, `ghp_`, `gho_`,
+      `xox[baprs]-`) e `scan-filters.ts` (`isTestOrFixturePath`), usado por
+      `scan-vibe-guard.ts` e espelhado em `bin/lib/mode-maker.cjs`.
+- [x] C: `urion_security_check` retorna `structuredContent` validado por `outputSchema` + texto; sem quebrar clientes que só leem texto.
+      Testado ao vivo pelo protocolo MCP real nesta sessão (2026-09):
+      `structuredContent` presente e coerente com o `outputSchema`, `content`
+      (texto) também presente.
+- [~] B: cada R1–R10 com detecção + teste (na sub-fase 2B). **A sub-fase 2B nunca
+  ganhou um plano próprio** (como este doc previa) — o ruleset foi expandido
+  depois, fora deste plano, no roadmap itens 2.4/3.2: hoje existem 8 das 10
+  regras (R1, R2, R4, R5, R6, R7, R8, R9 — mais R3 parcial via RLS) com
+  detecção e teste. **R10 (log de ação admin) e a parte de R3 além de RLS
+  ficam deliberadamente sem detector** (decisão registrada em
+  `decisions-log.md`: falso-positivo alto demais para uma heurística
+  confiável). Este critério não fecha 100% e não deveria — documentando em
+  vez de marcar `[x]` às cegas.
+- [x] Fonte única preservada; sem overclaim; heurísticas e limites documentados.
+      `decisions-log.md` documenta os limites de cada detector novo.
 
 ---
 
@@ -108,20 +127,32 @@ code check = CLI + MCP.
 
 ## Dependências
 
-- [ ] Aprovação do PO (D1–D4).
-- [ ] Nenhuma lib nova obrigatória em 2A (gitleaks/semgrep são itens futuros a avaliar).
+- [x] Aprovação do PO (D1–D4). (Ver cabeçalho: aprovadas 2026-08-05.)
+- [x] Nenhuma lib nova obrigatória em 2A (gitleaks/semgrep são itens futuros a avaliar).
+      Confirmado: os detectores usam só regex/leitura de arquivo, sem lib nova.
 
 ---
 
 ## Critérios de Pronto (Definition of Done)
 
-- [ ] Código seguindo AGENTS.md/`honesty.mdc`; fonte única mantida.
-- [ ] Testes unitários (≥80%) por detector + casos de falso positivo/negativo.
-- [ ] `tsc`/`eslint`/`smoke`/`cursor-doctor` ok; suíte verde.
-- [ ] **Dogfooding**: rodar os novos checks neste repo sem falso positivo indevido
-      (ex.: não flaggar nossos próprios fixtures).
-- [ ] Docs atualizadas; papel de cada check (advisory vs bloqueio) explícito.
-- [ ] Relatório de honestidade + nível de certeza.
+- [x] Código seguindo AGENTS.md/`honesty.mdc`; fonte única mantida.
+- [x] Testes unitários (≥80%) por detector + casos de falso positivo/negativo.
+      `config-detectors.test.ts` cobre RLS, rotas, env, userId, catch vazio,
+      webhook, write não validado e N+1, com casos positivos e negativos cada.
+- [x] `tsc`/`eslint`/`smoke`/`cursor-doctor` ok; suíte verde.
+      Confirmado 2026-09: lint limpo, cursor-doctor 0 erros, 213+ testes
+      passando.
+- [x] **Dogfooding**: rodar os novos checks neste repo sem falso positivo indevido
+      (ex.: não flaggar nossos próprios fixtures). `npm run checks -- --strict`
+      neste repo: score 100/100, 0 achados (2026-09) — inclusive depois de
+      corrigir um falso positivo real encontrado (bundle esbuild sendo
+      escaneado, ver roadmap 2.4/decisions-log).
+- [x] Docs atualizadas; papel de cada check (advisory vs bloqueio) explícito.
+      `docs/quando-usar-e-evitar.md` documenta o que cada gate garante/não
+      garante; `urion-checks` bloqueia de verdade via pre-commit/CI (não é só
+      advisory, diferente das tools MCP).
+- [ ] Relatório de honestidade + nível de certeza. **Pendente** — Auditor em
+      contexto fresco (roadmap 3.5), próximo passo desta sessão.
 
 ---
 

@@ -27,15 +27,30 @@ Fase 0.4) — nada de nova cópia de regras.
 
 ## Requisitos (critérios de aceite)
 
-- [ ] Existe um binário `urion-mcp-server` que sobe um servidor MCP real via **stdio**.
-- [ ] O Cursor/Claude conecta ao servidor e **lista** as tools sem erro.
-- [ ] Tool `urion_security_check` recebe um trecho de código e retorna
+- [x] Existe um binário `urion-mcp-server` que sobe um servidor MCP real via **stdio**.
+      `src/mcp/index.ts` usa `StdioServerTransport`; `package.json` define o bin.
+- [x] O Cursor/Claude conecta ao servidor e **lista** as tools sem erro. Verificado
+      2026-09 via cliente MCP oficial (`@modelcontextprotocol/sdk/client`) real,
+      em transporte em memória: `listTools()` retorna as 4 tools
+      (`urion_security_check`, `urion_explain_risk`, `urion_spec_gate`,
+      `urion_launch_gate`) sem erro. **Não verificado**: conexão de dentro do
+      Cursor/Claude Desktop propriamente ditos (ver "Aceite manual" abaixo).
+- [x] Tool `urion_security_check` recebe um trecho de código e retorna
       APPROVED/REJECTED + violações (reusa `UrionMcpGuardServer`, regras da fonte única).
-- [ ] Tool `urion_explain_risk` recebe um `ruleId` e retorna a explicação leiga.
-- [ ] Guia de instalação em **< 5 min** (`docs/ide-setup.md` + `mcp-config.json` exemplo).
-- [ ] Testes unitários das tools (entrada → saída), ≥80% na lógica nova.
-- [ ] Zero overclaim: a doc deixa claro que a tool é **chamada pela IA** (advisory),
-      não um bloqueio físico (bloqueio via hooks é Fase 2/3).
+      Testado ao vivo pelo protocolo real: código seguro → APPROVED score 100;
+      segredo hardcoded → REJECTED score 80 com o finding `SECRETS_HARDCODED`.
+- [x] Tool `urion_explain_risk` recebe um `ruleId` e retorna a explicação leiga.
+      Coberto por `src/mcp/tests/unit/tools.test.ts`.
+- [x] Guia de instalação em **< 5 min** (`docs/ide-setup.md` + `mcp-config.json` exemplo).
+      Seção "Urion VibeGuard MCP Server (< 5 min)" existe com JSON de exemplo
+      para Cursor e comando para Claude Code.
+- [x] Testes unitários das tools (entrada → saída), ≥80% na lógica nova.
+      `src/mcp/tests/unit/tools.test.ts`, `urion-mcp-server.test.ts`; cobertura
+      real do repo hoje: 91%.
+- [x] Zero overclaim: a doc deixa claro que a tool é **chamada pela IA** (advisory),
+      não um bloqueio físico (bloqueio via hooks é Fase 2/3). `docs/ide-setup.md`
+      diz explicitamente "parecer consultivo... não um bloqueio físico"; README
+      revisado na Fase 4.3 para não prometer "interceptação neural".
 
 ---
 
@@ -76,21 +91,30 @@ sem prometer "interceptação neural" que hoje não existe._
 
 ## Dependências
 
-- [ ] Aprovação do PO (D1–D4).
-- [ ] `@modelcontextprotocol/sdk` (versão a confirmar na instalação).
-- [ ] `zod` (já é dependência) para schema de input das tools.
+- [x] Aprovação do PO (D1–D4). (Ver cabeçalho: aprovadas 2026-08-05.)
+- [x] `@modelcontextprotocol/sdk` (versão a confirmar na instalação). Instalado
+      (`package.json`: `"@modelcontextprotocol/sdk": "1.30.0"`).
+- [x] `zod` (já é dependência) para schema de input das tools. Usado em
+      `src/mcp/server.ts` (`z.string()`, `z.enum(...)`, etc.).
 
 ---
 
 ## Critérios de Pronto (Definition of Done)
 
-- [ ] Código seguindo AGENTS.md e `honesty.mdc`.
-- [ ] Testes unitários (≥80%) da lógica nova; `tsc`/`eslint`/`smoke`/`cursor-doctor` ok.
+- [x] Código seguindo AGENTS.md e `honesty.mdc`.
+- [x] Testes unitários (≥80%) da lógica nova; `tsc`/`eslint`/`smoke`/`cursor-doctor` ok.
+      Confirmado 2026-09: lint limpo, cursor-doctor 0 erros, cobertura real 91%.
 - [ ] **Aceite manual**: conectar o servidor no Cursor/Claude, listar as 2 tools e
       obter um APPROVED e um REJECTED reais (registrar como evidência).
-- [ ] `docs/ide-setup.md` com passo a passo < 5 min + `mcp-config.json` exemplo.
-- [ ] Sem overclaim no README/docs; papel advisory documentado.
-- [ ] Relatório de honestidade + nível de certeza.
+      **Parcialmente verificado**: `listTools`/`callTool` reais via
+      `@modelcontextprotocol/sdk/client` (não simulado) confirmam APPROVED e
+      REJECTED corretos — ver critérios de aceite acima. **Não verificado**:
+      dentro do Cursor ou do Claude Desktop propriamente ditos — isso exige um
+      humano com esses apps instalados; não posso simular essa parte.
+- [x] `docs/ide-setup.md` com passo a passo < 5 min + `mcp-config.json` exemplo.
+- [x] Sem overclaim no README/docs; papel advisory documentado.
+- [ ] Relatório de honestidade + nível de certeza. **Pendente** — Auditor em
+      contexto fresco (roadmap 3.5), próximo passo desta sessão.
 
 ---
 

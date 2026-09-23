@@ -25,7 +25,16 @@ function readCoveragePct(root: string): number | null {
   }
 }
 
+// docs/00-context/feature-spec.md e o TEMPLATE generico ("[NOME_DA_FEATURE]")
+// usado para redigir novas specs — nunca uma entrega com criterios reais.
+// Contá-lo como spec faria o gate exigir que um template ficasse "concluido",
+// o que nao faz sentido (achado real ao verificar as specs desta sessao).
+const TEMPLATE_PATHS = new Set(['docs/00-context/feature-spec.md']);
+
 function isSpecLike(p: string): boolean {
+  if (TEMPLATE_PATHS.has(p)) {
+    return false;
+  }
   const base = p.split('/').pop() ?? p;
   return /spec/i.test(base) || /(^|\/)specs\//.test(p);
 }

@@ -33,41 +33,59 @@ Hoje `bin/lib/mode-maker.cjs` e o README anunciam
 
 ❓**DECISÃO 1:** implementar o `fix` de verdade (esforço maior, risco de auto-fix
 incorreto) **ou** remover o anúncio agora e mover "auto-fix real" para o backlog?
-*Proposta (recomendada):* **remover o anúncio** nesta fase; auto-fix vira backlog só
+_Proposta (recomendada):_ **remover o anúncio** nesta fase; auto-fix vira backlog só
 após precisão comprovada.
 
-- [ ] Nenhuma saída do CLI ou texto do README anuncia `fix` enquanto ele não existir.
-- [ ] Onde hoje sugere `fix`, o texto passa a orientar a correção manual (a
-      `recomendacaoLeiga` já existe em cada regra).
-- [ ] Se a DECISÃO for implementar: `command === 'fix'` tratado no dispatcher, com
-      pelo menos 1 regra auto-fixável funcionando e teste.
+- [x] Nenhuma saída do CLI ou texto do README anuncia `fix` enquanto ele não existir.
+      Verificado 2026-09 (`grep -rn "fix --rule\|urion-safeguard fix" README.md bin/ docs/
+    QUICKSTART.md` — zero ocorrências fora deste histórico de spec/research).
+- [x] Onde hoje sugere `fix`, o texto passa a orientar a correção manual (a
+      `recomendacaoLeiga` já existe em cada regra). Confirmado rodando
+      `node bin/urion-safeguard.cjs vibeguard` contra um projeto com segredo
+      exposto: a saída mostra só "🛠️ Como resolver" (a recomendação), sem
+      mencionar `fix`.
+- [x] **N/A** — a DECISÃO 1 foi remover o anúncio, não implementar o `fix`; este
+      item condicional não se aplica.
 
 ### 0.2 — Corrigir/citar a estatística "92%"
 
 README afirma "92% dos apps de IA contêm vulns graves"; as fontes atribuem 92% à
-*preocupação de líderes de segurança*, não a apps vulneráveis (números reais ~45–62%).
+_preocupação de líderes de segurança_, não a apps vulneráveis (números reais ~45–62%).
 
 ❓**DECISÃO 2:** substituir por número correto **com fonte** ou remover a estatística?
-*Proposta (recomendada):* substituir por dado citável (ex.: "~45% do código gerado por
+_Proposta (recomendada):_ substituir por dado citável (ex.: "~45% do código gerado por
 IA introduz falhas conhecidas — fonte X") com link.
 
-- [ ] Toda estatística no README/CLI tem fonte verificável (link) ou é removida.
-- [ ] Nenhuma linguagem de certeza absoluta sem respaldo (dogma `honesty.mdc`).
+- [x] Toda estatística no README/CLI tem fonte verificável (link) ou é removida.
+      README hoje cita "~45% do código gerado por IA introduz falhas de
+      segurança conhecidas ([Veracode, 2025](https://www.veracode.com/blog/ai-generated-code-security-risks/))".
+- [x] Nenhuma linguagem de certeza absoluta sem respaldo (dogma `honesty.mdc`).
+      Verificado por leitura do README/CLI nesta sessão (2026-09).
 
 ### 0.3 — Matar o "falso verde" (o item de maior impacto)
 
 `bin/lib/scanner-engine.cjs` calcula `healthScore` só por presença de governança e
 declara "EXCELENTE / 100% blindado" ignorando a cobertura (18%).
 
-❓**DECISÃO 3:** qual limite reprova o veredito? *Proposta:* o status **não** pode ser
+❓**DECISÃO 3:** qual limite reprova o veredito? _Proposta:_ o status **não** pode ser
 "EXCELENTE/blindado" se cobertura estimada < 80% (dogma do projeto) **ou** se houver
 qualquer issue CRITICAL. Nesses casos, status máximo = "ATENÇÃO".
 
-- [ ] Rodar `scanner` neste repo NÃO retorna "100% blindado" com cobertura 18%.
-- [ ] O veredito nunca contradiz uma métrica exibida na mesma tela.
-- [ ] O score de governança e o de qualidade (cobertura/vulns) são apresentados sem
-      se anularem (não misturar "presença" com "seguro").
-- [ ] Teste cobre: projeto com governança completa + cobertura baixa → "ATENÇÃO".
+- [x] Rodar `scanner` neste repo NÃO retorna "100% blindado" com cobertura 18%.
+      O repo hoje tem cobertura real de 91% (medida, não estimada — ver Fase 3.1
+      do roadmap) e por isso `scanner` retorna "blindado" de forma **verdadeira**;
+      o mecanismo de cap (`deriveStatus`) que impediria o falso "blindado" com
+      cobertura baixa está implementado e testado (ver teste ao lado).
+- [x] O veredito nunca contradiz uma métrica exibida na mesma tela. Verificado:
+      `scanner` mostra "Cobertura Real: 91%" e "blindado" de forma consistente.
+- [x] O score de governança e o de qualidade (cobertura/vulns) são apresentados sem
+      se anularem (não misturar "presença" com "seguro"). Confirmado: saída do
+      `scanner` mostra "Status Geral (Governanca 100%)" e "Cobertura Real: 91%"
+      como métricas separadas.
+- [x] Teste cobre: projeto com governança completa + cobertura baixa → "ATENÇÃO".
+      `src/shared/domain/scanner-verdict.test.ts`: "rebaixa para ATENCAO quando
+      governanca alta mas cobertura baixa" (healthScore 100, cobertura 18% →
+      ATENCAO, capped, shielded=false).
 
 ### 0.4 — Fonte única das regras VIBE_GUARD
 
@@ -76,13 +94,22 @@ qualquer issue CRITICAL. Nesses casos, status máximo = "ATENÇÃO".
 `src/.../application/scan-vibe-guard.ts`, `src/mcp/urion-mcp-server.ts`.
 
 ❓**DECISÃO 4:** onde fica a fonte canônica, dado o zero-install do `.cjs`?
-*Proposta:* fonte canônica em `src/.../domain/vibe-guard-rules.ts`; um script de build
+_Proposta:_ fonte canônica em `src/.../domain/vibe-guard-rules.ts`; um script de build
 gera o arquivo `.cjs` de regras consumido por `bin/` (mantém npx self-contained);
 `scan-vibe-guard.ts` e o MCP importam do domain. Sem duplicação manual.
 
-- [ ] `grep -r "SECRET_KEY_PATTERN\|VIBE_GUARD_RULES"` aponta 1 definição-fonte.
-- [ ] CLI, MCP e camada TS consomem a mesma fonte (direta ou gerada).
-- [ ] `npx urion-safeguard vibeguard` continua funcionando sem instalar nada.
+- [x] `grep -r "SECRET_KEY_PATTERN\|VIBE_GUARD_RULES"` aponta 1 definição-fonte.
+      Verificado: única definição em
+      `src/features/security-audit/domain/vibe-guard-rules.ts`; o
+      `bin/lib/vibe-guard-rules.generated.cjs` é artefato gerado
+      (`scripts/sync-vibe-guard-rules.ts`), não uma segunda fonte manual.
+- [x] CLI, MCP e camada TS consomem a mesma fonte (direta ou gerada). Confirmado:
+      `bin/lib/mode-maker.cjs` importa o `.generated.cjs`; `src/mcp/tools.ts`,
+      `src/mcp/urion-mcp-server.ts` e `scan-vibe-guard.ts` importam do domain.
+- [x] `npx urion-safeguard vibeguard` continua funcionando sem instalar nada.
+      Testado localmente (`node bin/urion-safeguard.cjs vibeguard` a partir de
+      um diretório novo, sem `npm install`) contra um projeto sintético com
+      segredo exposto — detectou corretamente, score 80%, sem instalar nada.
 
 ---
 
@@ -98,20 +125,30 @@ gera o arquivo `.cjs` de regras consumido por `bin/` (mantém npx self-contained
 
 ## Dependências
 
-- [ ] Aprovação do PO nas DECISÕES 1–4.
-- [ ] Nenhuma biblioteca nova prevista (a confirmar após PLANEJAR).
+- [x] Aprovação do PO nas DECISÕES 1–4. (Ver cabeçalho deste doc: aprovadas
+      2026-08-03.)
+- [x] Nenhuma biblioteca nova prevista (a confirmar após PLANEJAR). Confirmado:
+      nenhuma dependência nova foi adicionada para esta fase.
 
 ---
 
 ## Critérios de Pronto (Definition of Done)
 
-- [ ] Código seguindo AGENTS.md e `honesty.mdc`.
-- [ ] Testes unitários (≥80%) para o novo veredito (0.3) e para a fonte única (0.4).
-- [ ] `npm run lint`, `npm run test:smoke`, `npm run cursor-doctor` passando.
-- [ ] Dogfooding: rodar as 3 ferramentas neste repo e **nenhuma** emitir alegação
-      falsa (é o teste de aceite da fase inteira).
-- [ ] README/CLI sem overclaim; documentação atualizada.
+- [x] Código seguindo AGENTS.md e `honesty.mdc`.
+- [x] Testes unitários (≥80%) para o novo veredito (0.3) e para a fonte única (0.4).
+      `scanner-verdict.test.ts` e `rules-source.test.ts` existem e passam;
+      cobertura real do repo: 91% (ver Fase 3.1 do roadmap).
+- [x] `npm run lint`, `npm run test:smoke`, `npm run cursor-doctor` passando.
+      Confirmado 2026-09 (0 erros no cursor-doctor).
+- [x] Dogfooding: rodar as 3 ferramentas neste repo e **nenhuma** emitir alegação
+      falsa (é o teste de aceite da fase inteira). Rodadas 2026-09: `scanner`
+      (91% real, "blindado" verdadeiro), `vibeguard` (0 problemas, verdadeiro) e
+      `urion-checks`/MCP (100/100, verdadeiro) — nenhuma alegação falsa.
+- [x] README/CLI sem overclaim; documentação atualizada. (roadmap.md item 0.1–0.2;
+      limpeza adicional de overclaims na Fase 4.3.)
 - [ ] Revisão (humana ou IA) + relatório de honestidade com nível de certeza.
+      **Pendente** — é o próximo passo desta sessão (Auditor em contexto fresco,
+      roadmap 3.5).
 
 ---
 
@@ -135,21 +172,21 @@ gera o arquivo `.cjs` de regras consumido por `bin/` (mantém npx self-contained
 
 ## Arquivos a criar / modificar
 
-| Ação | Arquivo | O quê |
-| --- | --- | --- |
-| MOD | `bin/lib/mode-maker.cjs` | Remover a linha que anuncia `npx urion-safeguard fix --rule=...` (l.152). O texto de correção passa a ser só a `recomendacaoLeiga` já exibida em "🛠️ Como resolver". |
-| MOD | `README.md` | Trocar a frase dos "92%" (l.9) por dado citável (~45%) com link Veracode. |
-| SWEEP | repo todo | `grep` por `fix --rule`, `Correção Automática`, `1 Clique`, `92%` em `README.md`, `docs/`, `QUICKSTART.md`, `bin/` e limpar resíduos. |
-| CRIA | `bin/lib/verdict.cjs` | Funções puras `computeEstimatedCoverage` e `deriveStatus` (lógica do veredito). |
-| MOD | `bin/lib/scanner-engine.cjs` | Consumir `verdict.cjs`; aplicar cap; só imprimir "100% blindado" se `shielded`. |
-| CRIA | `src/features/security-audit/domain/vibe-guard-rules.data.json` | Payload canônico das regras (fonte única). |
-| MOD | `src/features/security-audit/domain/vibe-guard-rules.ts` | Passar a montar `VIBE_GUARD_RULES` a partir do JSON canônico (remove o hack `p1..p5`). |
-| CRIA | `scripts/sync-vibe-guard-rules.mjs` | Gera `bin/lib/vibe-guard-rules.generated.cjs` a partir do JSON. |
-| MOD | `bin/lib/mode-maker.cjs` + `src/mcp/urion-mcp-server.ts` + `.../application/scan-vibe-guard.ts` | Consumir a fonte única (gerado no `bin/`, JSON/TS no `src/`). |
-| MOD | `package.json` | Script `sync:rules:guard`; hook em `build`/`prepublishOnly`; garantir que o `.generated.cjs` seja publicado (checar campo `files`/`.npmignore`). |
-| CRIA | `bin/lib/tests/verdict.test.ts` | Testes do veredito. |
-| CRIA | `src/features/security-audit/tests/unit/rules-source.test.ts` | Garante TS e artefato `.cjs` em sincronia + regex compila. |
-| MOD | `checks/smoke.test.js` (ou novo teste) | Aceite da fase: rodar `scanner` neste repo NÃO retorna "blindado" com cobertura <80%. |
+| Ação  | Arquivo                                                                                         | O quê                                                                                                                                                                |
+| ----- | ----------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| MOD   | `bin/lib/mode-maker.cjs`                                                                        | Remover a linha que anuncia `npx urion-safeguard fix --rule=...` (l.152). O texto de correção passa a ser só a `recomendacaoLeiga` já exibida em "🛠️ Como resolver". |
+| MOD   | `README.md`                                                                                     | Trocar a frase dos "92%" (l.9) por dado citável (~45%) com link Veracode.                                                                                            |
+| SWEEP | repo todo                                                                                       | `grep` por `fix --rule`, `Correção Automática`, `1 Clique`, `92%` em `README.md`, `docs/`, `QUICKSTART.md`, `bin/` e limpar resíduos.                                |
+| CRIA  | `bin/lib/verdict.cjs`                                                                           | Funções puras `computeEstimatedCoverage` e `deriveStatus` (lógica do veredito).                                                                                      |
+| MOD   | `bin/lib/scanner-engine.cjs`                                                                    | Consumir `verdict.cjs`; aplicar cap; só imprimir "100% blindado" se `shielded`.                                                                                      |
+| CRIA  | `src/features/security-audit/domain/vibe-guard-rules.data.json`                                 | Payload canônico das regras (fonte única).                                                                                                                           |
+| MOD   | `src/features/security-audit/domain/vibe-guard-rules.ts`                                        | Passar a montar `VIBE_GUARD_RULES` a partir do JSON canônico (remove o hack `p1..p5`).                                                                               |
+| CRIA  | `scripts/sync-vibe-guard-rules.mjs`                                                             | Gera `bin/lib/vibe-guard-rules.generated.cjs` a partir do JSON.                                                                                                      |
+| MOD   | `bin/lib/mode-maker.cjs` + `src/mcp/urion-mcp-server.ts` + `.../application/scan-vibe-guard.ts` | Consumir a fonte única (gerado no `bin/`, JSON/TS no `src/`).                                                                                                        |
+| MOD   | `package.json`                                                                                  | Script `sync:rules:guard`; hook em `build`/`prepublishOnly`; garantir que o `.generated.cjs` seja publicado (checar campo `files`/`.npmignore`).                     |
+| CRIA  | `bin/lib/tests/verdict.test.ts`                                                                 | Testes do veredito.                                                                                                                                                  |
+| CRIA  | `src/features/security-audit/tests/unit/rules-source.test.ts`                                   | Garante TS e artefato `.cjs` em sincronia + regex compila.                                                                                                           |
+| MOD   | `checks/smoke.test.js` (ou novo teste)                                                          | Aceite da fase: rodar `scanner` neste repo NÃO retorna "blindado" com cobertura <80%.                                                                                |
 
 ## Contratos (definidos antes de codar)
 
