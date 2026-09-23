@@ -5,7 +5,13 @@
 
 import { type Finding } from '../domain/findings';
 
-const ROUTE_RE = /\b(?:app|router)\.(?:get|post|put|patch)\(\s*[`'"]([^`'"]+)[`'"]/i;
+// Aceita qualquer identificador terminado em "app"/"router" (nao so os nomes
+// literais "app"/"router") — cobre o padrao comum de sub-routers nomeados
+// (paymentsRouter, webhookRouter, stripeApp, etc.). Achado real via auditoria
+// (2026-09-23): a versao anterior (\b(?:app|router)\.) deixava passar
+// "paymentsRouter.post(...)" sem verificacao de assinatura, exatamente na
+// categoria (pagamentos) que o projeto trata como maior risco.
+const ROUTE_RE = /\b[\w$]*(?:router|app)\.(?:get|post|put|patch)\(\s*[`'"]([^`'"]+)[`'"]/i;
 const WEBHOOK_PATH_RE = /webhook/i;
 const PAYMENT_HINT_RE = /(stripe|paypal|payment|pagamento|checkout|billing|mercadopago|pagseguro)/i;
 const SIGNATURE_HINT_RE =

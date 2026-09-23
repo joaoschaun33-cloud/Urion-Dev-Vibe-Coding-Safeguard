@@ -63,6 +63,14 @@ describe('detectUnprotectedRoutes', () => {
       detectUnprotectedRoutes([{ path: 'r.ts', content: "router.get('/health', handler);" }])
     ).toHaveLength(0);
   });
+
+  it('flag rota sensivel num sub-router com nome customizado (achado de auditoria 2026-09-23)', () => {
+    const f = detectUnprotectedRoutes([
+      { path: 'r.ts', content: "adminRouter.post('/admin/delete', handler);" },
+    ]);
+    expect(f).toHaveLength(1);
+    expect(f[0].ruleId).toBe('ROUTE_NO_AUTH');
+  });
 });
 
 describe('detectEnvLeaks', () => {
@@ -155,6 +163,18 @@ describe('detectUnverifiedWebhook (R9)', () => {
         },
       ])
     ).toHaveLength(0);
+  });
+
+  it('flag webhook com sub-router nomeado, sem verificacao (achado de auditoria 2026-09-23)', () => {
+    const f = detectUnverifiedWebhook([
+      {
+        path: 'r.ts',
+        content:
+          "paymentsRouter.post('/webhook/stripe', (req, res) => {\n  const event = req.body;\n  res.status(200).send('ok');\n});",
+      },
+    ]);
+    expect(f).toHaveLength(1);
+    expect(f[0].ruleId).toBe('WEBHOOK_UNVERIFIED');
   });
 
   it('nao flag webhook sem relacao com pagamento', () => {

@@ -4,7 +4,11 @@
 
 import { type Finding } from '../domain/findings';
 
-const ROUTE_RE = /\b(?:app|router)\.(?:get|post|put|patch|delete)\(\s*[`'"]([^`'"]+)[`'"]/i;
+// Aceita qualquer identificador terminado em "app"/"router" (nao so os nomes
+// literais "app"/"router") — cobre sub-routers nomeados (adminRouter,
+// paymentsRouter, etc.). Mesma correcao aplicada em
+// detect-unverified-webhook.ts apos achado de auditoria (2026-09-23).
+const ROUTE_RE = /\b[\w$]*(?:router|app)\.(?:get|post|put|patch|delete)\(\s*[`'"]([^`'"]+)[`'"]/i;
 const SENSITIVE = /(admin|users?|accounts?|profile|orders?|payments?|billing|settings|\/me\b)/i;
 const AUTH_HINT =
   /(auth|authenticate|authmiddleware|requireauth|requireuser|ensureauth|isauthenticated|verifytoken|passport|guard)/i;
