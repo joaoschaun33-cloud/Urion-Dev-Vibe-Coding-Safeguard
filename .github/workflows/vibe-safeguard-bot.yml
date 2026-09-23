@@ -29,8 +29,7 @@ jobs:
         run: node scripts/pr-feedback-bot.mjs
 
       - name: Post Comment on PR
-        uses: mshick/fast-gh-pr-comment@v3
+        uses: mshick/add-pr-comment@v3
         with:
-          file: pr-comment.md
-          comment_tag: urion-safeguard-feedback
-          mode: recreate
+          message-path: pr-comment.md
+          message-id: urion-safeguard-feedback

@@ -20,7 +20,7 @@ function generatePRComment() {
     output = err.stdout || err.message;
   }
 
-  const isHealthy = !output.includes('❌ ERROR') && !output.includes('REPOSITORIO NAO ESTA SAUDAVEL');
+  const isHealthy = !output.includes('❌ ERROR') && !output.includes('NAO esta saudavel');
 
   const commentMarkdown = `## 🛡️ Urion Trust & Safety — Feedback de Qualidade no PR
 
