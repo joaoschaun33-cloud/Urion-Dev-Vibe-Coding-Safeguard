@@ -271,6 +271,15 @@ já mata o processo real — o bug é específico do Windows).
 **Consequências**: o gate reprova este próprio repo hoje (specs com critérios em aberto, sem auditoria) — dogfooding honesto, não bug. Independência do auditor continua sendo declaração, não prova; forjar relatório é possível para quem tem acesso ao repo.
 **Alternativas consideradas**: verificar `reviewedCommit == HEAD` — rejeitada por ora (invalida a auditoria a cada commit; a idade máxima de 14 dias é o compromisso); auditoria server-side/assinada — fica no backlog do roadmap.
 
+### 2026-09-23 — Release 2.1.0: bump minor + fix do `prepublishOnly`; empacotamento npm inchado fica como dívida declarada
+
+**Status**: Aceita
+**Contexto**: `package.json` estava em `2.0.3` (tag já usada no CHANGELOG para outra entrega, 2026-08-08) enquanto um bloco `[Unreleased]` inteiro (Fase 3: spec gate, launch gate, novos detectores, cobertura real, fix do sandbox) esperava versão. Publicar como `2.0.3` seria uma metadado enganoso. Também achei que `prepublishOnly` rodava só `build:mcp`/`build:checks`, sem `tsc` — ou seja, um publish sem `npm run build` manual antes publicaria `dist/` desatualizado ou ausente (o `main` do pacote). Por sorte `dist/` já estava atualizado nesta sessão (verificado via `npm pack --dry-run`), então não houve publish quebrado — mas o script continuaria sendo uma armadilha para o próximo release.
+**Decisão**: (1) Bump para `2.1.0` (minor, SemVer — funcionalidade nova retrocompatível) e `[Unreleased]` → `[2.1.0] — 2026-09-23` no CHANGELOG. (2) `prepublishOnly` passa a incluir `tsc`. (3) **Não** mexi no empacotamento em si: `npm pack --dry-run` mostra 723 arquivos / 4,5MB no tarball, incluindo `web/` (landing page inteira, `logo.png` de 598KB), `*.test.ts`, `tools/vscode-extension/` — nada disso é lido em runtime por nenhum `bin/*` (confirmei via grep: zero uso de `__dirname`/`import.meta.url` para caminhos de pacote em `bin/` e `src/`), mas cortar via `files`/`.npmignore` sem testar instalação isolada (pack → extract → `npm install` → rodar cada comando `bin/*`) tem risco real de quebrar `postinstall: prisma generate` (que precisa de `prisma/schema.prisma`) ou o scaffolding do `create-vibe-safeguard.js`. Isso já era assim na `2.0.0` publicada (467 arquivos/2.9MB) — não é regressão desta versão.
+**Consequências**: `2.1.0` published é honesto (versão reflete o conteúdo) e à prova de "publish com dist velho". O pacote continua maior do que precisa — quem instala baixa ~4.5MB de coisa que não usa. Ninguém quebra por isso, é só desperdício de banda/disco.
+**Alternativas consideradas**: cortar o empacotamento agora, na mesma sessão — rejeitada; risco de regressão silenciosa não testada não vale a pressa de um publish que já estava atrasado.
+**Follow-up necessário**: allowlist `files` no `package.json` restrita a `dist/**`, `bin/**`, `prisma/schema.prisma` (+ migrations se existirem) — validada com instalação isolada de verdade antes do próximo publish.
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões

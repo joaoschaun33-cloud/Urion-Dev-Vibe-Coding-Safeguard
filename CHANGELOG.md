@@ -7,6 +7,8 @@ e este projeto adere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+## [2.1.0] — 2026-09-23
+
 > Roadmap Fase 3 (gates de processo) + limpeza de dívida de honestidade encontrada
 > por dogfooding. Detalhe e justificativa de cada item em `docs/decisions-log.md`.
 

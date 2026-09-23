@@ -1,6 +1,6 @@
 {
   "name": "urion-safeguard",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "Repositorio blindado e escalavel para desenvolvimento com IA (vibe coding).",
   "private": false,
   "license": "MIT",
@@ -47,7 +47,7 @@
     "setup": "bash first-time.sh",
     "postinstall": "prisma generate",
     "prepare": "husky || exit 0",
-    "prepublishOnly": "npm run build:mcp && npm run build:checks",
+    "prepublishOnly": "npm run build:mcp && npm run build:checks && tsc",
     "test:integration:local": "node scripts/with-embedded-postgres.mjs",
     "test:coverage": "vitest run --coverage",
     "launch:gate": "tsx src/mcp/gates-cli.ts launch",
