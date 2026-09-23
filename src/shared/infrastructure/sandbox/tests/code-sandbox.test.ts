@@ -14,6 +14,24 @@ function isProcessAlive(pid: number): boolean {
   }
 }
 
+// Poll em vez de checar uma unica vez apos um delay fixo: o encerramento do
+// processo (e o reap de zumbi no POSIX) pode levar mais que 500ms numa
+// maquina de CI carregada — um unico ponto no tempo e franjavel por natureza.
+async function waitUntilProcessDead(
+  pid: number,
+  timeoutMs = 4000,
+  intervalMs = 100
+): Promise<boolean> {
+  const deadline = Date.now() + timeoutMs;
+  do {
+    if (!isProcessAlive(pid)) {
+      return true;
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  } while (Date.now() < deadline);
+  return !isProcessAlive(pid);
+}
+
 describe('CodeSandboxRunner', () => {
   const sandbox = new CodeSandboxRunner();
 
@@ -45,16 +63,14 @@ describe('CodeSandboxRunner', () => {
           'node -e "require(\'fs\').writeFileSync(process.env.PIDFILE, String(process.pid)); while(true){}"',
           { timeoutMs: 500, env: { PIDFILE: pidFile } }
         );
-        // Da um respiro pro SO liberar o processo depois do kill.
-        await new Promise((resolve) => setTimeout(resolve, 500));
 
         const pid = Number(fs.readFileSync(pidFile, 'utf8').trim());
         expect(Number.isNaN(pid)).toBe(false);
-        expect(isProcessAlive(pid)).toBe(false);
+        expect(await waitUntilProcessDead(pid)).toBe(true);
       } finally {
         fs.rmSync(pidFile, { force: true });
       }
     },
-    10_000
+    15_000
   );
 });
