@@ -12,7 +12,7 @@
 o processo que separa os apps de IA que dão certo dos que vazam dados ou colapsam
 — especificar antes de codar, gerar com guardrails, e não lançar sem revisão.**
 
-Não somos um scanner. O scanner é *uma* feature. Somos a camada que impede o
+Não somos um scanner. O scanner é _uma_ feature. Somos a camada que impede o
 código ruim de nascer e que só libera o launch quando o app está sólido.
 
 ---
@@ -32,7 +32,7 @@ Os incidentes que derrubam apps vibe-coded não são exóticos — são de proce
 - **Expectativa irreal** ("não preciso de expert") + testes cortados + ownership
   difuso.
 
-Lição-mãe da pesquisa: *IA/low-code não remove complexidade, redistribui* — dá
+Lição-mãe da pesquisa: _IA/low-code não remove complexidade, redistribui_ — dá
 poder de construir mais rápido, logo poder de **errar** mais rápido. E a frase que
 mais aparece nos casos de sucesso: **"a diferença entre sucesso e fracasso é se um
 profissional revisa o código antes do lançamento."**
@@ -60,8 +60,8 @@ O que nos torna defensáveis (o moat):
 4. **Honestidade como marca.** Num setor cheio de overclaim, ser o que não mente
    sobre o que faz é posicionamento, não só ética.
 
-**Mensagem central:** *"Urion — o profissional que revisa seu código de IA antes do
-launch, em tempo real, na sua língua."*
+**Mensagem central:** _"Urion — o profissional que revisa seu código de IA antes do
+launch, em tempo real, na sua língua."_
 
 ---
 
@@ -81,31 +81,46 @@ me envergonhar — sem eu precisar virar engenheiro."
 
 A decisão estratégica é fazer do **MCP guard em tempo real** o núcleo — o ponto onde
 o Urion intercepta a geração dentro do editor (Cursor/Claude/Antigravity) e aplica
-os gates *antes* do código entrar no arquivo.
+os gates _antes_ do código entrar no arquivo.
 
-### Estado atual (honesto — Dogma Zero)
+### Estado atual (honesto — Dogma Zero) — atualizado em 2026-09-17
 
-Hoje `src/mcp/urion-mcp-server.ts` é um **stub**: uma classe
-(`UrionMcpGuardServer.checkCodeSafety/explainRisk`) que roda as mesmas 5 regex.
-Não é um servidor MCP real (não há transporte stdio nem registro de tools via SDK
-do MCP), então ainda **não** conecta de verdade no Cursor/Claude. A lógica existe;
-o "servidor" não. Além disso, `VIBE_GUARD_RULES` está duplicada em 4 arquivos —
-precisa virar fonte única antes de escalar.
+**Superado.** O servidor MCP real existe: `src/mcp/server.ts`
+(`createUrionMcpServer`, via SDK `@modelcontextprotocol/sdk`) + `src/mcp/index.ts`
+(boot com `StdioServerTransport`), com as tools `urion_security_check` e
+`urion_explain_risk` registradas e retorno estruturado (status/score/findings). Foi
+validado com o cliente MCP oficial via stdio — ver `docs/ide-setup.md`. A classe
+antiga `UrionMcpGuardServer` (que este parágrafo descrevia como "stub") virou
+código morto, referenciada só pelo próprio teste dela.
+
+`VIBE_GUARD_RULES` também já tem fonte única em
+`src/features/security-audit/domain/vibe-guard-rules.ts`, sincronizada para
+`.cursor/rules` via `scripts/sync-vibe-guard-rules.ts`.
+
+O gate de configuração (item 2 abaixo) também avançou: RLS ausente, rotas sem auth
+e segredos/`.env` versionados já são detectados via CLI `urion-checks`
+(`src/features/security-audit/presentation/checks-cli.ts`). O que falta é (a)
+expandir para o ruleset R1–R10 completo e (b) ligar esse gate ao
+`.husky/pre-commit` — hoje ele roda só sob demanda, não bloqueia commit
+automaticamente. Detalhe por item em `docs/01-product/roadmap.md` (Fase 2).
 
 ### Visão do que o MCP guard deve enforçar (evolução, não só regex)
 
 1. **Gate de geração (guardrails):** bloquear/avisar padrões inseguros na hora —
-   secrets, auth no cliente, SQLi, XSS, e comandos destrutivos de IA.
+   secrets, auth no cliente, SQLi, XSS, e comandos destrutivos de IA. ✅ Entregue
+   (advisory via MCP; sem bloqueio físico ainda).
 2. **Gate de configuração (o que hoje falta e é onde os apps morrem):** checar
    RLS/permissões (Supabase/Firebase), endpoints sem auth, `.env` versionado.
+   🟡 Detectores prontos via CLI; falta ligar ao pre-commit para virar bloqueio.
 3. **Gate de spec:** a IA consulta a spec/os testes reais via MCP e para de
-   alucinar; recusa gerar feature sem spec associada.
+   alucinar; recusa gerar feature sem spec associada. ❌ Não iniciado (Fase 3.3).
 4. **Gate de launch:** "pronto para o ar" só quando spec + testes + revisão passam.
+   ❌ Não iniciado (Fase 3.4).
 
-Sequência sugerida do núcleo: (1) transformar o stub num MCP server real com 1–2
-tools funcionando ponta a ponta no Cursor → (2) unificar as regras em fonte única →
-(3) adicionar o gate de configuração (RLS/auth), que é o maior diferencial de dor
-real → (4) gate de spec/launch.
+Sequência do núcleo, já percorrida até o passo (3): (1) MCP server real com tools
+ponta a ponta no Cursor → (2) fonte única das regras → (3) gate de configuração
+(RLS/auth/.env) como detector → próximo passo real é (3b) ligar esse gate ao
+pre-commit, depois (4) gate de spec/launch.
 
 ---
 
@@ -118,7 +133,7 @@ real → (4) gate de spec/launch.
   existe. Diferenciação obrigatória: prevenção em tempo real + governança + foco em
   config (RLS/auth), não só varredura pós-fato.
 - **GitHub Spec Kit / SDD:** valida a tese de "spec primeiro", mas é ferramenta de
-  dev. Podemos ser o SDD *para quem não é dev*, embutido no editor.
+  dev. Podemos ser o SDD _para quem não é dev_, embutido no editor.
 
 ---
 
@@ -126,8 +141,8 @@ real → (4) gate de spec/launch.
 
 1. **Zero overclaim.** Toda alegação no README/CLI/site tem que ser verdadeira e
    verificável. Nada de comando `fix` que não existe, selo que dispensa revisão, ou
-   estatística sem fonte. A confiança *é* o produto.
-2. **O selo nunca substitui a revisão** — ele *força* a revisão.
+   estatística sem fonte. A confiança _é_ o produto.
+2. **O selo nunca substitui a revisão** — ele _força_ a revisão.
 3. **Prevenção antes de detecção** em toda decisão de roadmap.
 4. **Fonte única de verdade** para regras e gates.
 
@@ -135,9 +150,12 @@ real → (4) gate de spec/launch.
 
 ## 8. O que precisa ser verdade para vencermos (riscos)
 
-- Um MCP guard real, conectável, que um maker instala em minutos. (hoje: não existe)
-- Cobrir a dor real (config/RLS/auth), não só regex. (hoje: não cobre)
-- Falsos positivos baixos o bastante para não irritar. (risco do regex atual)
+- Um MCP guard real, conectável, que um maker instala em minutos. (✅ existe desde
+  a Fase 1; falta confirmação de instalação por um usuário real fora do time)
+- Cobrir a dor real (config/RLS/auth), não só regex. (🟡 detectores existem via CLI
+  `urion-checks`; ainda não bloqueiam automaticamente no pre-commit)
+- Falsos positivos baixos o bastante para não irritar. (risco do regex atual — ainda
+  não medido com projetos reais de terceiros)
 - Validação com usuários reais: um não-dev entende a saída e age? (não testado; 1
   star, 0 uso comprovado)
 

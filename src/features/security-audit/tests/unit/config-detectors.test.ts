@@ -3,6 +3,10 @@ import { describe, it, expect } from 'vitest';
 import { detectMissingRls } from '../../application/detect-missing-rls';
 import { detectUnprotectedRoutes } from '../../application/detect-unprotected-routes';
 import { detectEnvLeaks } from '../../application/detect-env-leaks';
+import { detectUserIdFromClient } from '../../application/detect-userid-from-client';
+import { detectSwallowedErrors } from '../../application/detect-swallowed-errors';
+import { detectUnverifiedWebhook } from '../../application/detect-unverified-webhook';
+import { detectUnvalidatedWrite } from '../../application/detect-unvalidated-write';
 
 describe('detectMissingRls', () => {
   it('flag tabela sem RLS', () => {
@@ -76,5 +80,118 @@ describe('detectEnvLeaks', () => {
 
   it('ignora .env.example', () => {
     expect(detectEnvLeaks({ gitignore: '', envFiles: ['.env.example'] })).toHaveLength(0);
+  });
+});
+
+describe('detectUserIdFromClient (R2)', () => {
+  it('flag userId lido direto de req.body', () => {
+    const f = detectUserIdFromClient([
+      { path: 'r.ts', content: 'const userId = req.body.userId;' },
+    ]);
+    expect(f).toHaveLength(1);
+    expect(f[0].ruleId).toBe('USERID_FROM_CLIENT');
+  });
+
+  it('flag userId desestruturado de req.body', () => {
+    const f = detectUserIdFromClient([
+      { path: 'r.ts', content: 'const { userId, title } = req.body;' },
+    ]);
+    expect(f).toHaveLength(1);
+  });
+
+  it('nao flag userId vindo do usuario autenticado', () => {
+    expect(
+      detectUserIdFromClient([{ path: 'r.ts', content: 'const userId = req.user.id;' }])
+    ).toHaveLength(0);
+  });
+
+  it('nao flag userId em query/params (fora do escopo, uso normal de REST)', () => {
+    expect(
+      detectUserIdFromClient([{ path: 'r.ts', content: 'const id = req.query.userId;' }])
+    ).toHaveLength(0);
+  });
+});
+
+describe('detectSwallowedErrors (R6)', () => {
+  it('flag catch vazio com binding', () => {
+    const f = detectSwallowedErrors([{ path: 'r.ts', content: 'try { risky(); } catch (e) {}' }]);
+    expect(f).toHaveLength(1);
+    expect(f[0].ruleId).toBe('ERROR_SWALLOWED');
+  });
+
+  it('flag .catch(() => {}) de promise', () => {
+    const f = detectSwallowedErrors([{ path: 'r.ts', content: 'doAsync().catch(() => {});' }]);
+    expect(f).toHaveLength(1);
+  });
+
+  it('nao flag catch que trata o erro', () => {
+    expect(
+      detectSwallowedErrors([
+        { path: 'r.ts', content: 'try { risky(); } catch (e) { logger.error(e); }' },
+      ])
+    ).toHaveLength(0);
+  });
+});
+
+describe('detectUnverifiedWebhook (R9)', () => {
+  it('flag webhook de pagamento sem verificacao de assinatura', () => {
+    const f = detectUnverifiedWebhook([
+      {
+        path: 'r.ts',
+        content: "router.post('/webhooks/stripe', (req, res) => {\n  res.sendStatus(200);\n});",
+      },
+    ]);
+    expect(f).toHaveLength(1);
+    expect(f[0].ruleId).toBe('WEBHOOK_UNVERIFIED');
+  });
+
+  it('nao flag quando verifica a assinatura', () => {
+    expect(
+      detectUnverifiedWebhook([
+        {
+          path: 'r.ts',
+          content:
+            "router.post('/webhooks/stripe', (req, res) => {\n  stripe.webhooks.constructEvent(req.body, sig, secret);\n});",
+        },
+      ])
+    ).toHaveLength(0);
+  });
+
+  it('nao flag webhook sem relacao com pagamento', () => {
+    expect(
+      detectUnverifiedWebhook([
+        { path: 'r.ts', content: "router.post('/webhooks/github', handler);" },
+      ])
+    ).toHaveLength(0);
+  });
+});
+
+describe('detectUnvalidatedWrite (R7)', () => {
+  it('flag data: req.body direto no create', () => {
+    const f = detectUnvalidatedWrite([
+      { path: 'r.ts', content: 'await prisma.user.create({ data: req.body });' },
+    ]);
+    expect(f).toHaveLength(1);
+    expect(f[0].ruleId).toBe('BODY_UNVALIDATED_WRITE');
+  });
+
+  it('nao flag quando ha validacao no arquivo', () => {
+    expect(
+      detectUnvalidatedWrite([
+        {
+          path: 'r.ts',
+          content:
+            'const parsed = schema.parse(req.body);\nawait prisma.user.create({ data: req.body });',
+        },
+      ])
+    ).toHaveLength(0);
+  });
+
+  it('nao flag quando so campos especificos sao usados', () => {
+    expect(
+      detectUnvalidatedWrite([
+        { path: 'r.ts', content: 'await prisma.user.create({ data: { name: req.body.name } });' },
+      ])
+    ).toHaveLength(0);
   });
 });

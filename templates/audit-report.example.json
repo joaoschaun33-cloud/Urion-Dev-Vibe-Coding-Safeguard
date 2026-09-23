@@ -1,0 +1,29 @@
+{
+  "reviewer": "urion-auditor",
+  "model": "modelo-do-auditor",
+  "authorModel": "modelo-que-escreveu-o-codigo",
+  "contextIsolation": "fresh",
+  "reviewedAt": "2026-09-19T12:00:00Z",
+  "scope": "PR #12 (main..feature/login) — nao revisado: migrations",
+  "reviewedCommit": "abc1234",
+  "verdict": "REJECTED",
+  "findings": [
+    {
+      "severity": "HIGH",
+      "claim": "Rota /users retorna dados de usuarios sem autenticacao",
+      "file": "src/routes.ts",
+      "line": 12,
+      "evidence": "router.get('/users', handler)",
+      "status": "OPEN"
+    },
+    {
+      "severity": "MEDIUM",
+      "claim": "Erro de rede engolido silenciosamente no cliente de pagamento",
+      "file": "src/payments/client.ts",
+      "line": 48,
+      "evidence": "} catch (e) { /* ignore */ }",
+      "status": "RESOLVED",
+      "resolution": "Passou a logar e relancar o erro (commit def5678)"
+    }
+  ]
+}

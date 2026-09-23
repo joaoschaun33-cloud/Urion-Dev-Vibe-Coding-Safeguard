@@ -177,6 +177,16 @@ bloqueio físico (bloqueio via hooks vem em fase futura).
   (`SECRETS_HARDCODED`, `AUTH_CLIENT_SIDE`, `SQL_INJECTION`, `XSS_UNSANITIZED`,
   `RATE_LIMIT_MISSING`).
 
+- `urion_spec_gate({ feature, projectPath? })` → gate de spec: chame **antes de implementar**.
+  Retorna `SPEC_OK`, `NEEDS_SPEC` ou `INCOMPLETE_SPEC`; nos dois últimos a IA deve pedir/completar
+  a spec (`docs/01-product/` ou `docs/specs/`, com seção "Critérios de aceite") em vez de codar.
+
+- `urion_launch_gate({ projectPath? })` → gate de "pronto para launch": Grade A só com spec
+  concluída, cobertura real ≥ 80%, zero achado crítico e auditoria independente aprovada
+  (`.urion/audit/*.json`, ver `prompts/auditor.md`). Também via `npm run launch:gate`.
+
+> ⚠️ **Disponibilidade (Dogma Zero):** a última versão **publicada no npm é a 2.0.0**, que ainda não contém o `urion-mcp-server` nem `urion-checks`. Os comandos `npx` abaixo só funcionarão depois da próxima publicação. Até lá, use o build local (seção "Rodar localmente a partir deste repositório").
+
 ### Cursor
 
 Adicione ao seu `~/.cursor/mcp.json` (ou ao `.cursor/mcp.json` do projeto):

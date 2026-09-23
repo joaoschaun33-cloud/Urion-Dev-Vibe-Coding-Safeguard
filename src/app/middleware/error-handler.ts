@@ -10,12 +10,7 @@ import { logger } from '@/shared/infrastructure/logger';
  * Converte erros de dominio em RFC 7807 Problem Details.
  */
 
-export function errorHandler(
-  err: Error,
-  _req: Request,
-  res: Response,
-  _next: NextFunction,
-): void {
+export function errorHandler(err: Error, _req: Request, res: Response, _next: NextFunction): void {
   logger.error({
     event: 'REQUEST_ERROR',
     error: err.message,
@@ -36,9 +31,7 @@ export function errorHandler(
   }
 
   // Fallback: nunca exponha detalhes internos em producao
-  const message = process.env.NODE_ENV === 'production'
-    ? 'Erro interno do servidor'
-    : err.message;
+  const message = process.env.NODE_ENV === 'production' ? 'Erro interno do servidor' : err.message;
 
   res.status(500).json(ProblemDetails.internalError(message));
 }

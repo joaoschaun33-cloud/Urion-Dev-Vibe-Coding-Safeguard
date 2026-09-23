@@ -55,7 +55,7 @@ jobs:
         run: npm run lint
 
       - name: Run Unit Tests & Coverage Gate
-        run: npm run test
+        run: npm run test:coverage
 
       - name: Compile TypeScript & Build Production Asset
         run: npm run build
@@ -65,3 +65,6 @@ jobs:
 
       - name: Run Cursor Doctor Safeguard Audit
         run: node tools/cursor-doctor.js
+
+      - name: Run Urion Config Gate (RLS/auth/.env)
+        run: npm run checks -- --strict

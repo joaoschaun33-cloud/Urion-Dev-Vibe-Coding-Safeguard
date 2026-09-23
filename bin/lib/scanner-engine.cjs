@@ -8,7 +8,8 @@ const {
   colors, printHeader, printSuccess, printWarning, printError,
   animatedProgress, progressBar
 } = require('./ui-kit.cjs');
-const { computeEstimatedCoverage, deriveStatus } = require('./verdict.cjs');
+const { deriveStatus } = require('./verdict.cjs');
+const { readRealCoverage } = require('./coverage-reader.cjs');
 
 async function runScanner(projectPath) {
   printHeader('URION SCANNER — RAIO-X COMPLETO', projectPath);
@@ -44,10 +45,11 @@ async function runScanner(projectPath) {
 
   healthScore = Math.max(0, healthScore);
 
-  const estimatedCoverage = computeEstimatedCoverage(analysis.files);
+  const realCoverage = readRealCoverage(projectPath);
   const verdict = deriveStatus({
     healthScore,
-    estimatedCoveragePct: estimatedCoverage,
+    estimatedCoveragePct: realCoverage ? realCoverage.pct : 0,
+    coverageMeasured: Boolean(realCoverage),
     // Este scanner tecnico audita GOVERNANCA (presenca), nao roda o scan das 5 vulns.
     criticalCount: 0,
   });
@@ -65,7 +67,15 @@ async function runScanner(projectPath) {
   console.log(`   Total de Arquivos: ${colors.cyan}${analysis.files.total}${colors.reset}`);
   console.log(`   Arquivos de Codigo: ${colors.cyan}${analysis.files.codeFiles}${colors.reset}`);
   console.log(`   Arquivos de Teste: ${colors.cyan}${analysis.files.testFiles}${colors.reset}`);
-  console.log(`   Cobertura Estimada: ${colors.cyan}${estimatedCoverage}%${colors.reset}`);
+  if (realCoverage) {
+    console.log(
+      `   Cobertura Real: ${colors.cyan}${realCoverage.pct}%${colors.reset} ${colors.dim}(de ${realCoverage.source})${colors.reset}`
+    );
+  } else {
+    console.log(
+      `   Cobertura: ${colors.yellow}nao medida${colors.reset} ${colors.dim}(rode seus testes com --coverage para gerar coverage/coverage-summary.json)${colors.reset}`
+    );
+  }
 
   console.log(`\n${colors.bright}🏗️ Arquitetura & Stack:${colors.reset}`);
   console.log(`   Padrao: ${colors.cyan}${analysis.architecture}${colors.reset}`);
@@ -99,7 +109,7 @@ async function runScanner(projectPath) {
     console.log(`\n${colors.yellow}💡 Recomendacao: resolva os pontos de atencao acima para elevar o status.${colors.reset}\n`);
   }
 
-  return { healthScore, estimatedCoverage, verdict, status, analysis, issues };
+  return { healthScore, coverage: realCoverage, verdict, status, analysis, issues };
 }
 
 module.exports = { runScanner };

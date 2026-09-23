@@ -48,13 +48,27 @@ export class Todo {
   }
 
   // Getters
-  get id(): string { return this.props.id; }
-  get title(): string { return this.props.title; }
-  get description(): string | undefined { return this.props.description; }
-  get isCompleted(): boolean { return this.props.isCompleted; }
-  get priority(): TodoProps['priority'] { return this.props.priority; }
-  get createdAt(): Date { return this.props.createdAt; }
-  get updatedAt(): Date { return this.props.updatedAt; }
+  get id(): string {
+    return this.props.id;
+  }
+  get title(): string {
+    return this.props.title;
+  }
+  get description(): string | undefined {
+    return this.props.description;
+  }
+  get isCompleted(): boolean {
+    return this.props.isCompleted;
+  }
+  get priority(): TodoProps['priority'] {
+    return this.props.priority;
+  }
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+  get updatedAt(): Date {
+    return this.props.updatedAt;
+  }
 
   // Metodos de dominio (imutaveis)
   complete(): Todo {

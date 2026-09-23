@@ -14,12 +14,12 @@ AUTO-REVISAR → ENTREGAR RELATÓRIO) e o ciclo tático do vibe coding
 
 - 🌐 **Base (sempre disponível):** faz parte do template e funciona em qualquer clone do
   repositório — Node, Prisma, Zod, Pino, Vitest, ESLint, Prettier, Husky, Git.
-- 🤖 **Assistido (ambiente Claude/Cowork):** *skills* e *MCPs* que só existem quando o
+- 🤖 **Assistido (ambiente Claude/Cowork):** _skills_ e _MCPs_ que só existem quando o
   desenvolvimento é feito com Claude/Cowork **e** os plugins correspondentes estão
   instalados. **Não são garantidos num clone genérico.**
 
 > **Regra de honestidade (Dogma Zero):** se uma skill/MCP 🤖 não estiver disponível no
-> ambiente, use o *fallback* 🌐 equivalente e **declare a substituição**. Nunca invente
+> ambiente, use o _fallback_ 🌐 equivalente e **declare a substituição**. Nunca invente
 > skills, versões ou comandos que você não confirmou existir.
 
 ---
@@ -27,7 +27,7 @@ AUTO-REVISAR → ENTREGAR RELATÓRIO) e o ciclo tático do vibe coding
 ## Como a IA deve usar este catálogo
 
 1. **Identifique a fase atual** da tarefa.
-2. **Invoque a skill 🤖 indicada**; se indisponível, use o *fallback* 🌐 e declare.
+2. **Invoque a skill 🤖 indicada**; se indisponível, use o _fallback_ 🌐 e declare.
 3. **Nunca pule ESPECIFICAR e PLANEJAR** — o projeto é Spec-Driven (SDD). Código sem
    spec/plano aprovado é violação de processo.
 4. **Toda entrega termina com o Checklist de Honestidade** e o nível de certeza
@@ -37,17 +37,30 @@ AUTO-REVISAR → ENTREGAR RELATÓRIO) e o ciclo tático do vibe coding
 
 ## Núcleo do SDLC (fase → ferramenta)
 
-| Fase | 🤖 Skill recomendada | 🌐 Fallback base | Artefato / Local |
-|---|---|---|---|
-| Ideação de produto | `product-management:product-brainstorming` (+ `competitive-brief`, `synthesize-research`) | Discussão estruturada + pesquisa manual | `00-context/vision.md` |
-| **ESPECIFICAR** (SDD) | `product-management:write-spec`, `doc-coauthoring` | Preencher os templates de contexto | `00-context/prd.md`, `00-context/feature-spec.md`, `01-product/*` |
-| **PLANEJAR** / Arquitetura | `engineering:architecture` (ADR), `engineering:system-design` | ADR manual | `decisions-log.md` / ADRs |
-| Planejar entrega | `product-management:sprint-planning`, `product-management:roadmap-update` | Editar o roadmap à mão | `ROADMAP.md` |
-| **IMPLEMENTAR** | `andrej-karpathy-skills:karpathy-guidelines` + `prompts/feature-implementation.md`; MCP **github** | Seguir `.cursor/rules/*` + Git | `src/features/<feature>/*` (FSD) |
-| **AUTO-REVISAR** | `engineering:code-review`, `/security-review`, `codex:review` / `codex:adversarial-review` (2º modelo) | Revisão manual + `npm run lint` | Relatório de revisão |
-| Testes | `engineering:testing-strategy` | `npm test` (unit+cobertura) + `npm run test:integration:local` | `src/**/*.test.ts`, `*.integration.test.ts` |
-| Documentar | `engineering:documentation`, `doc-coauthoring`, `humanizer` | Escrever Markdown à mão | `docs/` |
-| **ENTREGAR** / Deploy | `engineering:deploy-checklist`, `engineering:incident-response` | Checklist manual | `docs/` / runbook |
+| Fase                       | 🤖 Skill recomendada                                                                                   | 🌐 Fallback base                                               | Artefato / Local                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Ideação de produto         | `product-management:product-brainstorming` (+ `competitive-brief`, `synthesize-research`)              | Discussão estruturada + pesquisa manual                        | `00-context/vision.md`                                            |
+| **ESPECIFICAR** (SDD)      | `product-management:write-spec`, `doc-coauthoring`                                                     | Preencher os templates de contexto                             | `00-context/prd.md`, `00-context/feature-spec.md`, `01-product/*` |
+| **PLANEJAR** / Arquitetura | `engineering:architecture` (ADR), `engineering:system-design`                                          | ADR manual                                                     | `decisions-log.md` / ADRs                                         |
+| Planejar entrega           | `product-management:sprint-planning`, `product-management:roadmap-update`                              | Editar o roadmap à mão                                         | `ROADMAP.md`                                                      |
+| **IMPLEMENTAR**            | `andrej-karpathy-skills:karpathy-guidelines` + `prompts/feature-implementation.md`; MCP **github**     | Seguir `.cursor/rules/*` + Git                                 | `src/features/<feature>/*` (FSD)                                  |
+| **AUTO-REVISAR**           | `engineering:code-review`, `/security-review`, `codex:review` / `codex:adversarial-review` (2º modelo) | Revisão manual + `npm run lint`                                | Relatório de revisão                                              |
+| Testes                     | `engineering:testing-strategy`                                                                         | `npm test` (unit+cobertura) + `npm run test:integration:local` | `src/**/*.test.ts`, `*.integration.test.ts`                       |
+| Documentar                 | `engineering:documentation`, `doc-coauthoring`, `humanizer`                                            | Escrever Markdown à mão                                        | `docs/`                                                           |
+| **ENTREGAR** / Deploy      | `engineering:deploy-checklist`, `engineering:incident-response`                                        | Checklist manual                                               | `docs/` / runbook                                                 |
+
+---
+
+## Gates de processo do Urion (spec → launch)
+
+| Momento              | Ferramenta                                  | Como                                                                                                                                                                         |
+| -------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Antes de implementar | `urion_spec_gate` (MCP)                     | Sem spec com critérios de aceite → NÃO implementar; pedir/completar a spec                                                                                                   |
+| Durante              | `urion-checks` (pre-commit/CI)              | R1–R9 + N+1; CRITICAL bloqueia o commit                                                                                                                                      |
+| Antes do launch      | Auditor em contexto fresco                  | Sessão/modelo novo segue `prompts/auditor.md` (subagente `.claude/agents/urion-auditor.md`) e grava `.urion/audit/*.json`; validar com `npm run audit:validate -- <arquivo>` |
+| Launch               | `urion_launch_gate` / `npm run launch:gate` | Grade A só com SPEC + TESTS + SECURITY + REVIEW                                                                                                                              |
+
+> Honestidade: o MCP é consultivo; o bloqueio real é CI/pre-commit. A independência do auditor é declarada por ele, não provada.
 
 ---
 

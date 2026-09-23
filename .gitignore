@@ -8,6 +8,7 @@ dist/
 build/
 .out/
 .next/
+pr-comment.md
 
 # Environment
 .env
@@ -15,7 +16,12 @@ build/
 .env.*.local
 
 # IDE
-.vscode/
+# settings.json e extensions.json sao config compartilhada do time (formatter,
+# lint on save, extensoes recomendadas) — cursor-doctor.js exige que existam.
+# So ignora o resto (ex.: launch.json com paths locais).
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
@@ -35,7 +41,8 @@ coverage/
 # Misc
 *.tgz
 *.tar.gz
-.urion/
+.urion/*
+!.urion/audit/
 
 # Vitest temp files
 vitest.config.ts.timestamp-*.mjs

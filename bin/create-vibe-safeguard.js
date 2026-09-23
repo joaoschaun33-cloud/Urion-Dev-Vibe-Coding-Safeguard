@@ -20,8 +20,6 @@ import os from 'node:os';
 
 // Caminho do arquivo de configuração do token
 const tokenConfigPath = path.join(os.homedir(), '.urion', 'config.json');
-// Caminho do arquivo de configuração do token
-const tokenConfigPath = path.join(os.homedir(), '.urion', 'config.json');
 
 /**
  * Lê o token armazenado ou pede ao usuário e salva.
@@ -37,7 +35,9 @@ async function getGitHubToken(rl) {
       const cfg = JSON.parse(fs.readFileSync(tokenConfigPath, 'utf8'));
       if (cfg.githubToken) return cfg.githubToken;
     }
-  } catch (_) {}
+  } catch (err) {
+    console.warn(`⚠️  Não foi possível ler o token salvo em ${tokenConfigPath}: ${err.message}`);
+  }
 
   // Se não houver, pede ao usuário
   console.log(`${colors.cyan}⚙️  Preciso do seu token de acesso pessoal do GitHub para publicar o blueprint.`);
@@ -69,7 +69,7 @@ const colors = {
 };
 
 // Função para publicar o blueprint no repositório público da Urion
-async function publishBlueprint(blueprintPath: string) {
+async function publishBlueprint(blueprintPath) {
   const token = process.env.URION_GITHUB_TOKEN;
   if (!token) {
     console.warn('⚠️  URION_GITHUB_TOKEN não definido. O blueprint não será enviado ao repositório público.');
@@ -94,7 +94,11 @@ async function publishBlueprint(blueprintPath: string) {
   } catch (err) {
     console.error('❌ Falha ao publicar o blueprint no repositório Urion Cases:', err);
   } finally {
-    try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch (_) {}
+    try {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    } catch (err) {
+      console.warn(`⚠️  Não foi possível remover o diretório temporário ${tmpDir}: ${err.message}`);
+    }
   }
 }
 
