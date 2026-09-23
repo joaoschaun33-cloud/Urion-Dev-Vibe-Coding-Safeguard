@@ -1,0 +1,44 @@
+{
+  "reviewer": "urion-auditor",
+  "model": "claude-sonnet-5",
+  "authorModel": "claude-sonnet-5 (Co-Authored-By nos commits do range revisado)",
+  "contextIsolation": "fresh",
+  "reviewedAt": "2026-09-23T03:20:00Z",
+  "scope": "git diff 743143c..a1738c7 (commit de merge do PR #17, 'feat/gates-cobertura-fase3'), 13 commits, 63 arquivos. Revisado com leitura integral do diff + leitura de arquivo completo para os modulos criticos (detectores novos em src/features/security-audit/application/detect-*.ts, tools MCP em src/mcp/tools.ts, src/mcp/launch-tool.ts, src/mcp/launch-gate-runner.ts, src/shared/domain/launch-gate.ts, src/shared/domain/audit-report.ts, o fix de vazamento de processo em src/shared/infrastructure/sandbox/code-sandbox.ts, bin/lib/coverage-reader.cjs, CI/.gitignore/husky). Comandos executados por mim (nao apenas lidos do historico): npm run lint (limpo), npm run test:coverage (39 arquivos, 214 testes, 100% passando, cobertura real 90.82% stmts/89.72% branch/92.75% funcs/90.82% lines - bate com os thresholds do vitest.config.ts de 90/89/92/90 e com a alegacao de '91%' do launch:gate), npx tsc --noEmit (0 erros), npm run build (build:mcp/build:checks/tsc OK), npm run checks -- --strict (Score 100/100, 0 achados - bate com a alegacao de '0 achados de seguranca'), npm run launch:gate (corretamente NOT_READY hoje por falta de relatorio de auditoria e por specs com criterios em aberto - nao e um 'sempre aprova', o que e evidencia a favor da corretude do gate). Tambem escrevi 2 scripts de verificacao empirica temporarios (deletados apos uso, nao commitados): um para confirmar que o fix de vazamento de processo no Windows realmente mata o processo neto (confirmado: nenhum processo 'node -e while(true)' sobrevive apos o timeout, via Get-CimInstance Win32_Process antes/depois), e outro para reproduzir um falso-negativo do detector WEBHOOK_UNVERIFIED (ver achado HIGH abaixo). NAO revisado: commit e64f84b (so specs de doc, conforme instrucao do solicitante), o app web/ (excluido do escopo dos detectores por design, ver achado MEDIUM sobre IGNORE_DIRS), CI real do GitHub Actions (so inspecionei o YAML e reproduzi os mesmos comandos localmente, no Windows - nao rodei em runner Linux). Correcao sobre o pedido original: a tarefa mencionava 'os detectores fazem execFileSync/execSync' em bin/lib/coverage-reader.cjs - isso NAO procede, esse arquivo so faz fs.readFileSync/fs.statSync, sem nenhuma execucao de processo; quem usa execFileSync e o proprio code-sandbox.ts (killWindowsProcessTree), de forma segura (array de args, sem shell).",
+  "reviewedCommit": "a1738c7",
+  "verdict": "REJECTED",
+  "findings": [
+    {
+      "severity": "HIGH",
+      "claim": "O detector novo WEBHOOK_UNVERIFIED (R9, severidade CRITICAL dentro do proprio detector) so reconhece uma rota se a variavel do router/app se chamar literalmente 'app' ou 'router' (regex \\b(?:app|router)\\.). Qualquer projeto que nomeie o router de forma descritiva - padrao extremamente comum em Express/FSD, ex.: 'paymentsRouter', 'webhookRouter', 'stripeRouter' - faz o detector nao reconhecer a chamada .post(...) e retornar zero achados, mesmo com um webhook de pagamento genuinamente sem verificacao de assinatura no corpo do handler. Reproduzi isso chamando detectUnverifiedWebhook diretamente com uma rota 'paymentsRouter.post(\"/webhook/stripe\", (req,res)=>{ const event = req.body; res.status(200).send(\"ok\"); })' sem nenhuma verificacao de assinatura: o detector retornou findings.length === 0. Os testes novos em config-detectors.test.ts so cobrem o caso com a variavel chamada exatamente 'router', nunca testam nomes de variavel alternativos - por isso o gap passou despercebido. Isso e uma falsa sensacao de seguranca justamente na categoria que a propria documentacao do projeto (docs/quando-usar-e-evitar.md) trata como a mais critica ('Pagamentos... webhook forjado = pagamento aprovado falso').",
+      "file": "src/features/security-audit/application/detect-unverified-webhook.ts",
+      "line": 8,
+      "evidence": "const ROUTE_RE = /\\b(?:app|router)\\.(?:get|post|put|patch)\\(\\s*[`'\"]([^`'\"]+)[`'\"]/i;",
+      "status": "OPEN"
+    },
+    {
+      "severity": "MEDIUM",
+      "claim": "O teste de regressao para o fix do vazamento de processo no Windows (motivo declarado do commit 255ec41) so verifica os campos do objeto de retorno (result.success/result.timedOut), nunca se o processo real do SO foi de fato encerrado. Comparei byte a byte com a versao do teste ANTES do fix (git show 743143c -- .../code-sandbox.test.ts): e identica. Como o codigo antigo (exec com a opcao nativa 'timeout') ja fazia o Node matar o cmd.exe e reportar error.killed=true/timedOut=true mesmo com o processo-neto vazando, esse teste passaria igualmente com o bug presente ou ausente - ele nao teria pego a regressao que motivou o proprio commit. Validei empiricamente (fora da suite, script descartado) que o fix ATUAL funciona de verdade (processo 'node -e while(true)' nao sobrevive), mas isso nao esta coberto por nenhuma asserção automatizada; uma futura regressao (ex.: reverter a condicao IS_WINDOWS) passaria no CI sem ser notada.",
+      "file": "src/shared/infrastructure/sandbox/tests/code-sandbox.test.ts",
+      "line": 19,
+      "evidence": "expect(result.timedOut).toBe(true);",
+      "status": "OPEN"
+    },
+    {
+      "severity": "MEDIUM",
+      "claim": "runConfigGate (usado por urion-checks e pelo launch:gate) ignora por completo qualquer diretorio chamado literalmente 'web' em QUALQUER projeto escaneado (nao so neste repositorio) - a lista IGNORE_DIRS mistura pastas de build (node_modules/dist/build/.next/coverage) com um nome de pasta de codigo-fonte generico. Isso e carregado sem alteracao do checks-cli.ts antigo (confirmei via git show 743143c) para o novo run-config-gate.ts criado neste PR, ou seja, o comportamento persiste no arquivo novo revisado aqui. Em monorepos comuns (ex.: apps/web, packages/web) ou em qualquer projeto de terceiro com uma pasta 'web/' contendo rotas de servidor, o Config Gate reporta silenciosamente 0 achados para todo esse codigo, sem aviso nenhum ao usuario de que a pasta foi pulada. Isso nao esta documentado em docs/quando-usar-e-evitar.md (que lista o que os gates NAO garantem, mas nao menciona essa exclusao especifica).",
+      "file": "src/features/security-audit/presentation/run-config-gate.ts",
+      "line": 26,
+      "evidence": "'web',",
+      "status": "OPEN"
+    },
+    {
+      "severity": "LOW",
+      "claim": "Achado incidental, fora da logica alterada por este diff (o commit 255ec41 so trocou os catches vazios ao redor desta funcao para console.warn, sem tocar nestas linhas): publishBlueprint() interpola token (via repoUrl) e o nome de arquivo do blueprint direto em strings de shell passadas a execSync, sem escape. Se o nome do arquivo de blueprint (controlado por quem roda 'npm run create:app' localmente) contiver caracteres de shell, ha injecao de comando local. Risco pratico baixo (ferramenta de CLI local, nao um servico exposto), mas e uma pratica insegura reconhecida (ver aviso de seguranca padrao contra child_process.exec com strings interpoladas) num arquivo que este PR tocou.",
+      "file": "bin/create-vibe-safeguard.js",
+      "line": 91,
+      "evidence": "execSync(`git -C \"${tmpDir}\" commit -m \"feat: add blueprint ${path.basename(blueprintPath)}\"`);",
+      "status": "OPEN"
+    }
+  ]
+}
