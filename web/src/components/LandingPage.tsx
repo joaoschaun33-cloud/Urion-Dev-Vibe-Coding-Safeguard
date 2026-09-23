@@ -12,7 +12,9 @@ import {
   ShieldAlert,
   FileCode2,
   Layers,
-  Terminal as TerminalIcon
+  Terminal as TerminalIcon,
+  Menu,
+  X as CloseIcon
 } from 'lucide-react';
 
 interface ProjectHealthReport {
@@ -40,9 +42,10 @@ interface LandingPageProps {
   onOpenDashboard?: () => void;
   latestReport?: ProjectHealthReport;
   specs?: SpecDocument[];
+  isLiveData?: boolean;
 }
 
-export function LandingPage({ onOpenDashboard: _onOpenDashboard, latestReport, specs = [] }: LandingPageProps) {
+export function LandingPage({ onOpenDashboard: _onOpenDashboard, latestReport, specs = [], isLiveData = false }: LandingPageProps) {
   const [termLines, setTermLines] = useState<string[]>([]);
   const [score, setScore] = useState(0);
   const [dashScore, setDashScore] = useState(0);
@@ -50,6 +53,7 @@ export function LandingPage({ onOpenDashboard: _onOpenDashboard, latestReport, s
   const [activeCliTab, setActiveCliTab] = useState<'doctor' | 'generate' | 'spec:lint' | 'dev:web'>('doctor');
   const [autoFixed, setAutoFixed] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Real Project Data fallbacks
   const realScore = latestReport?.score ?? 100;
@@ -69,24 +73,29 @@ export function LandingPage({ onOpenDashboard: _onOpenDashboard, latestReport, s
       '> Run: npx urion fix --auto',
     ];
     setTermLines([]);
-    lines.forEach((line, i) => {
+    const timeoutIds = lines.map((line, i) =>
       setTimeout(() => {
         setTermLines(prev => [...prev, line]);
-      }, i * 380);
-    });
+      }, i * 380)
+    );
+    return () => timeoutIds.forEach(clearTimeout);
   }, []);
 
   // 3. Hero Score counting animation
   useEffect(() => {
-    const t = setTimeout(() => {
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+    const timeoutId = setTimeout(() => {
       let c = 0;
-      const int = setInterval(() => {
+      intervalId = setInterval(() => {
         c += 2;
-        if (c >= 42) { setScore(42); clearInterval(int); }
+        if (c >= 42) { setScore(42); clearInterval(intervalId); }
         else setScore(c);
       }, 30);
     }, 1800);
-    return () => clearInterval(t);
+    return () => {
+      clearTimeout(timeoutId);
+      clearInterval(intervalId);
+    };
   }, []);
 
   // 4. Real Project Dashboard Score animation (PRINT 4)
@@ -102,11 +111,15 @@ export function LandingPage({ onOpenDashboard: _onOpenDashboard, latestReport, s
   }, [realScore, autoFixed]);
 
   const copyCmd = (cmd: string) => {
-    navigator.clipboard.writeText(cmd);
-    setCopied(cmd);
-    setToast(`Copiado: ${cmd}`);
+    navigator.clipboard.writeText(cmd).then(
+      () => {
+        setCopied(cmd);
+        setToast(`Copiado: ${cmd}`);
+        setTimeout(() => setCopied(null), 2000);
+      },
+      () => setToast('Não foi possível copiar. Selecione o comando manualmente.')
+    );
     setTimeout(() => setToast(null), 2500);
-    setTimeout(() => setCopied(null), 2000);
   };
 
   const showToast = (msg: string) => {
@@ -171,7 +184,7 @@ Checking specs coverage...
 
       {/* TOAST NOTIFICATION */}
       {toast && (
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] mono text-[12px] bg-white text-black px-4 py-2 rounded-full shadow-xl border border-black/10 flex items-center gap-2 max-w-[90vw] animate-bounce">
+        <div role="status" aria-live="polite" className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[100] mono text-[12px] bg-white text-black px-4 py-2 rounded-full shadow-xl border border-black/10 flex items-center gap-2 max-w-[90vw] animate-bounce">
           <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600" /> <span className="truncate">{toast}</span>
         </div>
       )}
@@ -180,7 +193,7 @@ Checking specs coverage...
       <div className="bg-gradient-to-r from-violet-900/40 via-purple-900/40 to-violet-900/40 border-b border-violet-500/20 py-2 text-center text-xs text-violet-300 font-medium">
         <span className="inline-flex items-center gap-1.5">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          <strong>Urion Dev Vibe Coding Safeguard v1.0</strong> — A primeira plataforma open source de governança de IA do Brasil.
+          <strong>Urion Dev Vibe Coding Safeguard v1.0</strong>, projeto open source brasileiro de governança de IA para times pequenos.
         </span>
       </div>
 
@@ -211,8 +224,28 @@ Checking specs coverage...
             >
               <svg className="w-4 h-4 fill-current inline-block" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg> <span>GitHub ⭐</span>
             </a>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(v => !v)}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-nav-menu"
+              aria-label={mobileMenuOpen ? 'Fechar menu de navegação' : 'Abrir menu de navegação'}
+              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-zinc-300 hover:text-white hover:border-white/20 transition"
+            >
+              {mobileMenuOpen ? <CloseIcon className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </button>
           </div>
         </div>
+        {mobileMenuOpen && (
+          <div id="mobile-nav-menu" className="lg:hidden border-t border-white/[0.06] bg-[#0A0A0B]/95 backdrop-blur-xl px-5 py-4 flex flex-col gap-4 text-[13px] text-zinc-300 mono">
+            <a href="#manifesto" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition">Manifesto</a>
+            <a href="#ciclo" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition">Ciclo de Frustração</a>
+            <a href="#pilares" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition">3 Pilares</a>
+            <a href="#dashboard-real" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition">Dashboard Real</a>
+            <a href="#badge" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Selo Urion</a>
+            <a href="#comunidade" onClick={() => setMobileMenuOpen(false)} className="hover:text-white transition">Comunidade</a>
+          </div>
+        )}
       </nav>
 
       {/* HERO SECTION */}
@@ -225,7 +258,7 @@ Checking specs coverage...
           <div className="relative">
             <div className="inline-flex items-center gap-2 rounded-full border border-[#EF4444]/30 bg-[#EF4444]/10 px-3 py-1 text-[11px] mono text-[#FF8A8A] mb-6">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#EF4444]" />
-              ALERTA: 85% dos projetos vibe-coded colapsam no Mês 2
+              ALERTA: a maioria dos projetos vibe-coded trava por volta do Mês 2
             </div>
 
             <h1 className="text-[36px] md:text-[56px] lg:text-[64px] font-bold leading-[0.95] tracking-[-0.04em] space-font">
@@ -241,12 +274,27 @@ Checking specs coverage...
               O Sistema Operacional Open Source para Vibe Coding que impõe <span className="text-white font-semibold">Honestidade Absoluta</span>, <span className="text-white font-semibold">FSD</span> e <span className="text-white font-semibold">Spec-Driven</span>. Seu sonho digital não vira código espaguete.
             </p>
 
+            <details className="group mt-4 max-w-[520px] rounded-[10px] border border-white/10 bg-white/[0.03] open:bg-white/[0.05] transition">
+              <summary className="cursor-pointer select-none px-4 py-2.5 text-[12px] mono text-zinc-400 hover:text-white flex items-center justify-between gap-2">
+                Não conhece os termos? Glossário rápido
+                <span className="text-zinc-600 transition-transform group-open:rotate-180">▾</span>
+              </summary>
+              <dl className="px-4 pb-4 text-[12px] leading-relaxed text-zinc-400 space-y-2">
+                <div><dt className="inline font-semibold text-zinc-200">Vibe coding: </dt><dd className="inline">programar delegando boa parte do código para um assistente de IA (Cursor, Copilot etc).</dd></div>
+                <div><dt className="inline font-semibold text-zinc-200">FSD: </dt><dd className="inline">Feature-Sliced Design — organizar as pastas do projeto para que cada funcionalidade fique isolada das outras.</dd></div>
+                <div><dt className="inline font-semibold text-zinc-200">SDD: </dt><dd className="inline">Spec-Driven Development — escrever a especificação antes do código e manter o código rastreável até ela.</dd></div>
+                <div><dt className="inline font-semibold text-zinc-200">Dogma Zero: </dt><dd className="inline">a regra de que a IA nunca pode afirmar algo (como "os testes passaram") sem provar com evidência.</dd></div>
+                <div><dt className="inline font-semibold text-zinc-200">MDC: </dt><dd className="inline">as regras de arquitetura e honestidade que o Urion aplica automaticamente no seu projeto.</dd></div>
+              </dl>
+            </details>
+
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <div className="group flex items-center gap-2 rounded-[12px] border border-white/10 bg-white/[0.04] pl-4 pr-2 py-2 glow hover:border-[#8B5CF6]/40 transition">
                 <span className="mono text-[13px] text-zinc-300">$ npx create-vibe-safeguard meu-app</span>
-                <button 
-                  onClick={() => copyCmd('npx create-vibe-safeguard meu-app')} 
-                  className="ml-2 flex h-7 w-7 items-center justify-center rounded-[8px] bg-white text-black hover:bg-zinc-100"
+                <button
+                  onClick={() => copyCmd('npx create-vibe-safeguard meu-app')}
+                  aria-label="Copiar comando de instalação"
+                  className="ml-2 flex h-11 w-11 items-center justify-center rounded-[8px] bg-white text-black hover:bg-zinc-100"
                 >
                   {copied === 'npx create-vibe-safeguard meu-app' ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
                 </button>
@@ -284,7 +332,7 @@ Checking specs coverage...
                 </div>
               </div>
 
-              <div className="p-5 mono text-[13px] leading-6 min-h-[280px]">
+              <div aria-hidden="true" className="p-5 mono text-[13px] leading-6 min-h-[280px]">
                 {termLines.map((l, i) => (
                   <div key={i} className={`${
                     l.includes('✗') ? 'text-[#FF8A8A]' : 
@@ -354,7 +402,7 @@ Checking specs coverage...
             </span>
             <br /><br />
             <span>
-              O **Urion Safeguard** nasce para devolver a soberania técnica para o desenvolvedor e o solopreneur. Não estamos aqui para impedir a IA de programar, mas para garantir que **ela siga dogmas inquebráveis de Clean Architecture e honestidade.**
+              O <strong>Urion Safeguard</strong> nasce para devolver a soberania técnica para o desenvolvedor e o solopreneur. Não estamos aqui para impedir a IA de programar, mas para garantir que <strong>ela siga dogmas inquebráveis de Clean Architecture e honestidade.</strong>
             </span>
           </p>
         </div>
@@ -368,7 +416,7 @@ Checking specs coverage...
               O Ciclo da <span className="text-[#EF4444]">Frustração</span><br/>que mata seu SaaS
             </h2>
             <p className="max-w-[380px] text-[14px] text-zinc-400 leading-relaxed">
-              Você já viveu isso. 92% dos solopreneurs repetem o loop até desistir. O Urion detecta o padrão no dia 1.
+              Você já viveu isso. Boa parte dos solopreneurs repete esse loop até desistir. O Urion detecta o padrão no dia 1.
             </p>
           </div>
 
@@ -435,7 +483,7 @@ Checking specs coverage...
                   className="text-left rounded-[12px] border border-[#EF4444]/20 bg-[#EF4444]/[0.06] p-3 hover:border-[#EF4444]/40 transition"
                 >
                   <div className="mono text-[10px] text-[#FF8A8A] mb-2">ANTES — SEM URION</div>
-                  <div className="mono text-[12px] text-zinc-400">AI: "✅ all tests passed"<br/><span className="text-zinc-600">→ na verdade, nunca rodou</span></div>
+                  <div className="mono text-[12px] text-zinc-400">AI: "✅ all tests passed"<br/><span className="text-zinc-500">→ na verdade, nunca rodou</span></div>
                 </button>
                 <button 
                   onClick={() => showToast('Com Urion: Bloqueio imediato por falta de log do Vitest!')} 
@@ -570,8 +618,10 @@ enforcement: BLOCK_PR
                 <Layers className="h-4 w-4 text-[#8B5CF6]" /> urion dashboard • {latestReport?.projectName || 'Urion-Dev-Vibe-Coding-Safeguard'}
               </div>
               <div className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-[#10B981] animate-ping" />
-                <span className="mono text-[11px] text-zinc-500">API Status: ONLINE (100% Real)</span>
+                <span className={`h-2 w-2 rounded-full ${isLiveData ? 'bg-[#10B981] animate-ping' : 'bg-amber-400'}`} />
+                <span className="mono text-[11px] text-zinc-500">
+                  {isLiveData ? 'API Status: ONLINE (dados ao vivo)' : 'Modo demonstração — rode `urion doctor` no seu projeto para ver dados reais aqui'}
+                </span>
               </div>
             </div>
 
@@ -629,7 +679,7 @@ enforcement: BLOCK_PR
               {/* CENTER REAL VIOLATIONS */}
               <div className="border-b lg:border-b-0 lg:border-r border-white/[0.06] p-5">
                 <div className="flex items-center justify-between mb-4">
-                  <span className="mono text-[11px] text-zinc-500">
+                  <span aria-live="polite" className="mono text-[11px] text-zinc-500">
                     {autoFixed ? 'VIOLATIONS • 0 open — 100% Clean ✓' : 'VIOLATIONS • 0 Critical Open'}
                   </span>
                   <button 
@@ -680,7 +730,9 @@ enforcement: BLOCK_PR
                   </div>
                 </div>
                 <div className="mt-4 rounded-[12px] bg-[#8B5CF6]/10 border border-[#8B5CF6]/20 p-3 mono text-[11px] text-[#C4B5FD]">
-                  💡 <b>Dados Reais:</b> Repositório oficial validado com 100% de integridade técnica.
+                  {isLiveData
+                    ? 'Dados extraídos da última auditoria registrada neste repositório.'
+                    : 'Exemplo ilustrativo — conecte a API para ver os dados reais do seu repositório.'}
                 </div>
               </div>
             </div>
@@ -691,7 +743,7 @@ enforcement: BLOCK_PR
       {/* CLI SHOWCASE */}
       <section id="cli" className="mx-auto max-w-[1280px] px-5 lg:px-8 py-16 lg:py-24">
         <div className="flex flex-col lg:flex-row justify-between gap-4 mb-6">
-          <h2 className="text-[26px] lg:text-[36px] font-bold tracking-tight space-font">CLI Showcase — Saída Real do Terminal</h2>
+          <h2 className="text-[26px] lg:text-[36px] font-bold tracking-tight space-font">CLI Showcase: saída real do terminal</h2>
           <div className="flex gap-1 rounded-full bg-white/[0.06] p-1 border border-white/10 w-fit">
             {(['doctor','generate','spec:lint','dev:web'] as const).map(tab=>(
               <button 
@@ -816,8 +868,8 @@ enforcement: BLOCK_PR
       <footer className="relative border-t border-white/[0.06] bg-[#0A0A0B] overflow-hidden">
         <div className="relative mx-auto max-w-[1280px] px-5 lg:px-8 py-16 text-center">
           <h2 className="text-[32px] lg:text-[54px] font-bold tracking-tight leading-[0.9] space-font">
-            Clone. Crie com IA.<br/>
-            <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">Proteja seu projeto.</span>
+            Clone o projeto e construa com IA<br/>
+            <span className="bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-transparent">sem perder o controle do código.</span>
           </h2>
           <p className="mt-4 mx-auto max-w-[520px] text-[14px] text-zinc-400">
             Sua visão merece um código limpo. O Urion Safeguard garante que você nunca precise jogar tudo fora.
@@ -826,9 +878,10 @@ enforcement: BLOCK_PR
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <div className="inline-flex items-center gap-2 rounded-[12px] border border-white/10 bg-white/[0.04] pl-4 pr-2 py-2 glow">
               <span className="mono text-[13px]">$ npx create-vibe-safeguard meu-app</span>
-              <button 
-                onClick={() => copyCmd('npx create-vibe-safeguard meu-app')} 
-                className="ml-2 h-7 w-7 grid place-items-center rounded-[8px] bg-white text-black"
+              <button
+                onClick={() => copyCmd('npx create-vibe-safeguard meu-app')}
+                aria-label="Copiar comando de instalação"
+                className="ml-2 h-11 w-11 grid place-items-center rounded-[8px] bg-white text-black"
               >
                 {copied === 'npx create-vibe-safeguard meu-app' ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
               </button>

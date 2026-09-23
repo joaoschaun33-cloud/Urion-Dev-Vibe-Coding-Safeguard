@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Check, Copy, ExternalLink, CheckCircle2 } from 'lucide-react';
 
 /**
@@ -71,10 +71,23 @@ export const UrionBadge: React.FC<UrionBadgeProps> = ({
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(getEmbedCode(selectedVariant));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    navigator.clipboard.writeText(getEmbedCode(selectedVariant)).then(
+      () => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      },
+      () => console.error('Não foi possível copiar o embed para a área de transferência.')
+    );
   };
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsModalOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isModalOpen]);
 
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-4xl mx-auto p-6 bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-800 shadow-2xl">
@@ -123,8 +136,10 @@ export const UrionBadge: React.FC<UrionBadgeProps> = ({
 
         {/* Renderização das Variações com Logo Urion */}
         {selectedVariant === 'shield' && (
-          <div
+          <button
+            type="button"
             onClick={() => setIsModalOpen(true)}
+            aria-label="Simular como esta badge aparece no site de um cliente"
             className="cursor-pointer group flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-violet-900/40 via-indigo-900/40 to-slate-900/60 hover:from-violet-900/60 hover:to-indigo-900/60 border border-violet-500/40 hover:border-violet-400 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
           >
             <UrionLogoMark size={20} className="group-hover:scale-110 transition-transform" />
@@ -132,41 +147,47 @@ export const UrionBadge: React.FC<UrionBadgeProps> = ({
             <span className="px-2 py-0.5 text-xs font-bold bg-violet-500 text-white rounded-md">
               100%
             </span>
-          </div>
+          </button>
         )}
 
         {selectedVariant === 'score' && (
-          <div
+          <button
+            type="button"
             onClick={() => setIsModalOpen(true)}
+            aria-label="Simular como esta badge aparece no site de um cliente"
             className="cursor-pointer group flex items-center gap-3 px-4 py-2 bg-emerald-950/40 hover:bg-emerald-950/60 border border-emerald-500/40 hover:border-emerald-400 rounded-xl shadow-lg transition-all duration-300"
           >
             <UrionLogoMark size={22} />
-            <div className="flex flex-col">
+            <div className="flex flex-col items-start">
               <span className="text-xs text-slate-400">URION VERIFIED SCORE</span>
               <span className="text-sm font-extrabold text-emerald-400">{score}/100 SAFEGUARD</span>
             </div>
-          </div>
+          </button>
         )}
 
         {selectedVariant === 'glass' && (
-          <div
+          <button
+            type="button"
             onClick={() => setIsModalOpen(true)}
+            aria-label="Simular como esta badge aparece no site de um cliente"
             className="cursor-pointer group flex items-center gap-3 px-5 py-2.5 bg-white/5 hover:bg-white/10 backdrop-blur-md border border-white/15 hover:border-white/30 rounded-2xl shadow-xl transition-all duration-300"
           >
             <UrionLogoMark size={18} />
             <span className="text-xs font-semibold text-slate-200">Urion Verified Project</span>
             <ExternalLink className="w-3.5 h-3.5 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
+          </button>
         )}
 
         {selectedVariant === 'minimal' && (
-          <div
+          <button
+            type="button"
             onClick={() => setIsModalOpen(true)}
+            aria-label="Simular como esta badge aparece no site de um cliente"
             className="cursor-pointer flex items-center gap-2.5 px-3 py-1.5 bg-slate-900 border border-slate-700 hover:border-slate-500 rounded-lg text-xs font-mono text-slate-300 transition-colors"
           >
             <UrionLogoMark size={16} />
             <span>urion-safe: {score}%</span>
-          </div>
+          </button>
         )}
 
         <span className="text-[11px] text-slate-500">
@@ -180,7 +201,7 @@ export const UrionBadge: React.FC<UrionBadgeProps> = ({
           <span>Código HTML / Embed para copiar:</span>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-3 py-1 bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition-colors font-medium text-xs"
+            className="flex items-center gap-1.5 px-3 py-2.5 bg-violet-600 hover:bg-violet-500 text-white rounded-lg transition-colors font-medium text-xs"
           >
             {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
             {copied ? 'Copiado!' : 'Copiar Embed'}

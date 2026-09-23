@@ -176,7 +176,7 @@ export function App() {
   };
 
   if (view === 'landing') {
-    return <LandingPage onOpenDashboard={() => setView('dashboard')} latestReport={latestReport} specs={specs} />;
+    return <LandingPage onOpenDashboard={() => setView('dashboard')} latestReport={latestReport} specs={specs} isLiveData={apiOnline === true && reports.length > 0} />;
   }
 
   return (
