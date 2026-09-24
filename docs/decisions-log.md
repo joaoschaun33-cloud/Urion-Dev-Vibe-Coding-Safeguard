@@ -317,6 +317,15 @@ já mata o processo real — o bug é específico do Windows).
    **Alternativas consideradas**: manter o gate `--strict` como está e só documentar — rejeitado como ordem de trabalho, mas a documentação já foi feita no README.
    **Limites**: rotulador único; amostra não aleatória; recall só parcial; lote não congelado (guardar o manifesto em local privado se quisermos remedir o mesmo conjunto).
 
+### 2026-09-24 — Correções 1 e 2 (`.env` e XSS) e a lição do "ganho" que só existia no corpus sintético
+
+**Status**: Aceita
+**Contexto**: Itens 1 e 2 da ordem de correção definida acima.
+**Decisão**: (1) `vibeguard` lê `.env` com lógica própria em vez de reaproveitar as regexes de código (que exigem aspas e acusariam chave pública como `VITE_*_PUBLIC_API_KEY`); em `.env` só a lógica própria vale. (2) O regex de XSS foi refeito: lookahead logo após `:` com o `\s*` dentro dele (fim do defeito de backtracking), exceções para sanitização/JSON-LD/`<style>`/literais e sinks novos (`innerHTML`, `document.write`, `insertAdjacentHTML`). (3) A lógica de `.env` existe em TS (domínio) e espelhada no CLI, com teste que roda as duas nas mesmas entradas para impedir divergência.
+**Consequências**: em 81 repositórios reais o `vibeguard` foi de 64% para 90% de precisão (por repositório, 63% → 81%) e passou a ver segredos em 8 arquivos `.env*` versionados. **Lição:** uma alternativa multilinha (`__html:` sozinho na linha) subia o recall de XSS no corpus sintético (30% → 80%) e no código real gerava 70 falsos alarmes (o `chart.tsx` padrão do shadcn/ui, presente em quase todo projeto Lovable). Só a remedição em repositórios reais pegou. Regra daqui em diante: **nenhuma correção de detector vale sem remedir nos repositórios reais**; o corpus sintético serve para regressão, não para declarar melhoria.
+**Descoberta lateral**: `ENV_NOT_IGNORED` não detecta 2 `.env.production` versionados porque trata `.env` no `.gitignore` como cobertura de `.env.production` (não é: o Git só ignora o nome exato). Fica para o item 4.
+**Limites**: rotulagem por uma pessoa; os 8 achados "incertos" ficaram fora da precisão; o número de recall de `.env` deixou de ser independente (o critério de "segredo" veio dos mesmos dados).
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões

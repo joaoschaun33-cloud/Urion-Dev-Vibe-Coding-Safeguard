@@ -31,19 +31,33 @@ e este projeto adere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html
   ESTÁ SEGURO E PRONTO PARA O AR" e de sugerir o selo Grade A. Agora diz que nenhum
   dos 5 padrões foi encontrado e que isso **não** prova segurança.
 
+### Fixed
+
+- `vibeguard` passa a **ler arquivos `.env`** (`.env`, `.env.local`, `.env.production`,
+  `nome.env`; ignora `.env.example`). Antes o filtro de extensão nunca casava com `.env`
+  e 0 de 6 arquivos com segredo real eram vistos. Lógica própria (`NOME=valor` sem
+  aspas; respeita `VITE_*`/`NEXT_PUBLIC_*`; ignora placeholders; URL de banco só com
+  credenciais) e o snippet do achado nunca carrega o valor. Também passa a varrer
+  `.mjs`/`.cjs` e a reconhecer tokens `sbp_` (Supabase).
+- `XSS_UNSANITIZED`: fim do falso alarme em código **sanitizado**
+  (`__html: DOMPurify.sanitize(x)` com o espaço que o Prettier gera; o `\s*` desfazia a
+  exceção por backtracking), em JSON-LD (`JSON.stringify`), CSS (`<style>`) e literais
+  estáticos; passa a cobrir `innerHTML`, `outerHTML`, `document.write` e
+  `insertAdjacentHTML` dinâmicos. Em 81 repositórios reais a precisão foi de 10% para
+  71%; o `vibeguard` inteiro, de 64% para 90% (por repositório, 63% → 81%).
+
 ### Known issues (medidos, ainda NÃO corrigidos)
 
-- `vibeguard` **nunca escaneia arquivos `.env`** (o filtro de extensão usa
-  `path.extname`, que devolve `""` para `.env`; só `nome.env` casaria).
-- `XSS_UNSANITIZED` acusa código **sanitizado** (`__html: DOMPurify.sanitize(x)`
-  com o espaço que o Prettier gera): o `\s*` desfaz a exceção por backtracking.
+- XSS multilinha (`dangerouslySetInnerHTML={{` + quebra + `__html: x`) não é detectado
+  pelo CLI (modo linha); o servidor MCP (trecho inteiro) detecta. Uma alternativa que
+  tentava cobrir isso gerou 70 falsos alarmes no `chart.tsx` do shadcn/ui e foi removida.
 - Falsos alarmes medidos em código real: `RLS_MISSING` analisa um arquivo SQL por
   vez (44% dos alertas tinham o RLS ativado em outra migração do mesmo repositório);
   `ENV_NOT_IGNORED` não olha o conteúdo do `.env` (17 de 23 só tinham variáveis
-  públicas); `ROUTE_NO_AUTH` não reconhece middlewares como `protect` nem auth
-  montada em `app.use(path, auth, router)`; `ERROR_SWALLOWED` acusa limpeza
-  inofensiva e código gerado/minificado; `XSS_UNSANITIZED` acusa JSON-LD e CSS
-  estático.
+  públicas) e considera `.env` no `.gitignore` como cobrindo `.env.production`;
+  `ROUTE_NO_AUTH` não reconhece middlewares como `protect` nem auth montada em
+  `app.use(path, auth, router)`; `ERROR_SWALLOWED` acusa limpeza inofensiva e código
+  gerado/minificado.
 - Detecção perdida em padrões comuns de apps gerados por IA (Next.js App Router,
   Fastify, Supabase, Drizzle/Mongoose, `.env.local` coberto só por `.env`, entre
   outros). Lista completa por caso em `benchmarks/RESULTS.md`.

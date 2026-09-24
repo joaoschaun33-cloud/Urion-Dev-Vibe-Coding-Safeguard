@@ -94,7 +94,7 @@
       "id": "sec-p09-dotenv-committed-quoted",
       "vibeguard": {
         "expected": ["SECRETS_HARDCODED"],
-        "fired": []
+        "fired": ["SECRETS_HARDCODED"]
       },
       "checks": {
         "expected": ["ENV_NOT_IGNORED"],
@@ -105,7 +105,7 @@
       "id": "sec-p10-dotenv-committed-unquoted",
       "vibeguard": {
         "expected": ["SECRETS_HARDCODED"],
-        "fired": []
+        "fired": ["SECRETS_HARDCODED"]
       },
       "checks": {
         "expected": ["ENV_NOT_IGNORED"],
@@ -633,7 +633,7 @@
       "id": "xss-p05-innerhtml-assign",
       "vibeguard": {
         "expected": ["XSS_UNSANITIZED"],
-        "fired": []
+        "fired": ["XSS_UNSANITIZED"]
       },
       "checks": {
         "expected": [],
@@ -644,7 +644,7 @@
       "id": "xss-p06-innerhtml-location-hash",
       "vibeguard": {
         "expected": ["XSS_UNSANITIZED"],
-        "fired": []
+        "fired": ["XSS_UNSANITIZED"]
       },
       "checks": {
         "expected": [],
@@ -666,7 +666,7 @@
       "id": "xss-p08-document-write",
       "vibeguard": {
         "expected": ["XSS_UNSANITIZED"],
-        "fired": []
+        "fired": ["XSS_UNSANITIZED"]
       },
       "checks": {
         "expected": [],
@@ -688,7 +688,7 @@
       "id": "xss-p10-insert-adjacent-html",
       "vibeguard": {
         "expected": ["XSS_UNSANITIZED"],
-        "fired": []
+        "fired": ["XSS_UNSANITIZED"]
       },
       "checks": {
         "expected": [],
@@ -699,7 +699,7 @@
       "id": "xss-n01-dompurify",
       "vibeguard": {
         "expected": [],
-        "fired": ["XSS_UNSANITIZED"]
+        "fired": []
       },
       "checks": {
         "expected": [],
@@ -710,7 +710,7 @@
       "id": "xss-n02-sanitize-html-lib",
       "vibeguard": {
         "expected": [],
-        "fired": ["XSS_UNSANITIZED"]
+        "fired": []
       },
       "checks": {
         "expected": [],
@@ -743,7 +743,7 @@
       "id": "xss-n05-static-html",
       "vibeguard": {
         "expected": [],
-        "fired": ["XSS_UNSANITIZED"]
+        "fired": []
       },
       "checks": {
         "expected": [],
@@ -754,7 +754,7 @@
       "id": "xss-n06-json-ld",
       "vibeguard": {
         "expected": [],
-        "fired": ["XSS_UNSANITIZED"]
+        "fired": []
       },
       "checks": {
         "expected": [],

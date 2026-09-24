@@ -14,12 +14,12 @@
 
 | Regra                | Casos vulneráveis | Detectou (TP) | Perdeu (FN) | Alarme falso (FP) |  Recall (IC 95%) | Precisão (IC 95%) |
 | -------------------- | ----------------: | ------------: | ----------: | ----------------: | ---------------: | ----------------: |
-| `SECRETS_HARDCODED`  |                11 |             6 |           5 |                 1 |     55% (28–79%) |      86% (49–97%) |
+| `SECRETS_HARDCODED`  |                11 |             8 |           3 |                 1 |     73% (43–90%) |      89% (56–98%) |
 | `AUTH_CLIENT_SIDE`   |                10 |             3 |           7 |                 1 |     30% (11–60%) |      75% (30–95%) |
 | `SQL_INJECTION`      |                10 |             6 |           4 |                 1 |     60% (31–83%) |      86% (49–97%) |
-| `XSS_UNSANITIZED`    |                10 |             3 |           7 |                 4 |     30% (11–60%) |      43% (16–75%) |
+| `XSS_UNSANITIZED`    |                10 |             7 |           3 |                 0 |     70% (40–89%) |    100% (65–100%) |
 | `RATE_LIMIT_MISSING` |                10 |             4 |           6 |                 2 |     40% (17–69%) |      67% (30–90%) |
-| **Total (micro)**    |            **51** |        **22** |      **29** |             **9** | **43% (31–57%)** |  **71% (53–84%)** |
+| **Total (micro)**    |            **51** |        **28** |      **23** |             **5** | **55% (41–68%)** |  **85% (69–93%)** |
 
 ### Erros por regra
 
@@ -28,8 +28,6 @@
 - **Perdeu** `sec-p06-jwt-signing-secret` — Segredo de assinatura de JWT hardcoded (permite forjar qualquer sessao). Nome JWT_SECRET.
 - **Perdeu** `sec-p07-supabase-service-role-literal` — Service role key do Supabase (ignora RLS) como literal, sem nome de variavel revelador.
 - **Perdeu** `sec-p08-database-url-with-credentials` — String de conexao com usuario e senha embutidos.
-- **Perdeu** `sec-p09-dotenv-committed-quoted` — Arquivo .env versionado (sem .gitignore) com chave Stripe live entre aspas.
-- **Perdeu** `sec-p10-dotenv-committed-unquoted` — Arquivo .env versionado (sem .gitignore), formato normal (sem aspas), com chave OpenAI.
 - **Alarme falso** `sec-n04-firebase-public-web-key` — apiKey do Firebase Web e publica por design (documentacao do Firebase): nao e segredo.
 
 #### `AUTH_CLIENT_SIDE`
@@ -54,16 +52,8 @@
 #### `XSS_UNSANITIZED`
 
 - **Perdeu** `xss-p04-multiline-object` — Mesmo padrao, com o objeto quebrado em varias linhas.
-- **Perdeu** `xss-p05-innerhtml-assign` — element.innerHTML = texto do usuario.
-- **Perdeu** `xss-p06-innerhtml-location-hash` — innerHTML recebendo location.hash (XSS refletido baseado em DOM).
 - **Perdeu** `xss-p07-jquery-html` — jQuery .html() com mensagem do servidor/usuario.
-- **Perdeu** `xss-p08-document-write` — document.write com parametro da URL.
 - **Perdeu** `xss-p09-javascript-href` — href com URL do usuario sem validar protocolo (javascript:).
-- **Perdeu** `xss-p10-insert-adjacent-html` — insertAdjacentHTML com texto de mensagem.
-- **Alarme falso** `xss-n01-dompurify` — Sanitizado com DOMPurify.
-- **Alarme falso** `xss-n02-sanitize-html-lib` — Sanitizado com sanitize-html.
-- **Alarme falso** `xss-n05-static-html` — HTML estatico escrito pelo desenvolvedor.
-- **Alarme falso** `xss-n06-json-ld` — JSON-LD via JSON.stringify de dados do proprio site (padrao de SEO do Next.js).
 
 #### `RATE_LIMIT_MISSING`
 

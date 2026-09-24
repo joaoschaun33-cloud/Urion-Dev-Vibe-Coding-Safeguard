@@ -79,6 +79,40 @@ chaves de API de terceiros.
 4. As regras mais úteis na amostra foram `AUTH_CLIENT_SIDE` (12/12) e `N_PLUS_ONE` (4/5) — mas, com
    poucos casos, nenhuma conclusão forte sobre elas.
 
+## Reteste após as correções 1 e 2 (2026-09-24, mesmos 81 repositórios)
+
+Correções: o `vibeguard` passou a ler `.env` (lógica própria, respeitando variáveis públicas) e o
+regex de XSS foi refeito (sem o backtracking, sem acusar JSON-LD/CSS/literais estáticos, com
+`innerHTML`, `document.write` e `insertAdjacentHTML`). Os achados **novos** foram rotulados à mão,
+com o mesmo rubrico.
+
+| Regra                                    | Antes (achados / precisão) | Depois (achados / precisão) | Por repositório: antes → depois |
+| ---------------------------------------- | -------------------------- | --------------------------- | ------------------------------- |
+| `SECRETS_HARDCODED`                      | 30 / 89%                   | 62 / **95%**                | 60% → **80%** (8/10)            |
+| `XSS_UNSANITIZED`                        | 20 / 10%                   | 18 / **71%**                | 20% → **71%** (5/7)             |
+| `AUTH_CLIENT_SIDE`, `RATE_LIMIT_MISSING` | inalteradas                | inalteradas                 | —                               |
+| **`vibeguard` total**                    | 67 / 64%                   | 97 / **90%**                | 63% → **81%** (21/26)           |
+
+(Precisão exclui os achados "incertos": 8 no total depois; ver rubrico.)
+
+- **`.env`:** o `vibeguard` passou a acusar segredos em 8 arquivos `.env*` versionados, incluindo 2
+  `.env.production` que **nem o `urion-checks` sinalizava** (o `.gitignore` deles continha `.env`, que
+  o detector trata como se cobrisse `.env.production`, mas o Git continua rastreando o arquivo).
+  **Atenção:** o recall de `.env` **não** é mais uma medição independente — o critério de "segredo"
+  foi derivado dos mesmos dados; use o 0% anterior só como prova do defeito, não o novo número como
+  garantia.
+- **XSS:** as regras novas acharam 14 casos (8 com dado interpolado sem escape em HTML injetado numa
+  janela de impressão, como nome de cliente ou e-mail de paciente; 4 incertos; 2 falsos).
+
+### Um erro meu, pego pela remedição
+
+Uma primeira versão do regex acusava também `__html:` sozinho numa linha (para pegar objetos JSX
+quebrados em várias linhas). Sem ver a linha anterior, ela disparou **70 vezes no `chart.tsx` padrão
+do shadcn/ui** (um `<style>` de CSS gerado de constantes, presente em quase todo projeto Lovable). Foi
+removida do modo linha; o modo MCP (que vê o trecho inteiro) continua cobrindo o caso. **No corpus
+sintético essa alternativa só parecia ganho** (recall de XSS 80%); no código real era 70 falsos
+alarmes. É por isso que o corpus sintético não basta como medida.
+
 ## Limites desta medição
 
 Rotulador único (viés); amostra pequena e enviesada; "relevante" não significa "explorável"; o

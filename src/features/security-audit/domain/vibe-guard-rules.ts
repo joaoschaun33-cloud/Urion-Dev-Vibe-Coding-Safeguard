@@ -42,13 +42,47 @@ const p4 = 'aws_access_' + 'k' + 'ey_id';
 const p5 = 'token';
 
 // Tokens de provedores conhecidos: alta confianca mesmo sem nome de variavel.
-const providerToken =
+export const PROVIDER_TOKEN_SOURCE =
   'sk_(?:live|test)_[A-Za-z0-9]{15,}' +
   '|sk-proj-[A-Za-z0-9_-]{8,}' +
   '|ghp_[A-Za-z0-9]{20,}' +
   '|gho_[A-Za-z0-9]{20,}' +
   '|xox[baprs]-[A-Za-z0-9-]{10,}' +
-  '|AKIA[A-Z0-9]{16}';
+  '|AKIA[A-Z0-9]{16}' +
+  '|sbp_[a-f0-9]{30,}';
+const providerToken = PROVIDER_TOKEN_SOURCE;
+
+// XSS: sinks de HTML com valor dinamico. Cada alternativa exclui o que a medicao em
+// repositorios reais mostrou ser inofensivo: sanitizacao, JSON.stringify (JSON-LD de
+// SEO), literais estaticos e <style>. O lookahead vem LOGO APOS o ":" / "=" com o
+// "\s*" DENTRO dele — com "\s*" antes do lookahead o regex "devolve" o espaco por
+// backtracking e o Prettier ("__html: DOMPurify...") derrubava a excecao.
+// Multilinha: no modo MCP (trecho inteiro) a 1a alternativa cobre `{{\n __html: x`, com o
+// guarda de <style>. No modo linha (CLI) NAO ha alternativa so para "__html:" numa linha
+// sozinha: em 81 repositorios reais 70 dos 86 disparos dela eram o chart.tsx do shadcn/ui
+// (<style> gerado de constantes), que a linha isolada nao consegue distinguir.
+const XSS_SAFE_VALUE =
+  '(?:DOMPurify|sanitize|JSON\\.stringify\\s*\\(|"[^"]*"\\s*[,}]|\'[^\']*\'\\s*[,}]|`[^`$]*`\\s*[,}])';
+const XSS_SAFE_ASSIGN =
+  '(?:DOMPurify|sanitize|"[^"]*"\\s*;?\\s*(?:$|\\n)|\'[^\']*\'\\s*;?\\s*(?:$|\\n)|`[^`$]*`\\s*;?\\s*(?:$|\\n))';
+const XSS_SAFE_ARG = '(?:DOMPurify|sanitize|"[^"]*"\\s*\\)|\'[^\']*\'\\s*\\)|`[^`$]*`\\s*\\))';
+const XSS_SINK = new RegExp(
+  '(?:' +
+    '(?<!<style\\b[^>]*)dangerouslySetInnerHTML\\s*=\\s*\\{\\s*\\{\\s*__html\\s*:(?!\\s*' +
+    XSS_SAFE_VALUE +
+    ')' +
+    '|\\.(?:inner|outer)HTML\\s*\\+?=(?!=)(?!\\s*' +
+    XSS_SAFE_ASSIGN +
+    ')' +
+    '|document\\.write(?:ln)?\\s*\\((?!\\s*' +
+    XSS_SAFE_ARG +
+    ')' +
+    '|insertAdjacentHTML\\s*\\([^,)]*,(?!\\s*' +
+    XSS_SAFE_ARG +
+    ')' +
+    ')',
+  'i'
+);
 
 const SECRET_KEY_PATTERN = new RegExp(
   '(?:' +
@@ -110,7 +144,7 @@ export const VIBE_GUARD_RULES = [
   {
     id: 'XSS_UNSANITIZED' as const,
     title: 'Exibição de Texto Sem Proteção (XSS)',
-    regex: /dangerouslySetInnerHTML\s*=\s*\{\s*\{\s*__html\s*:\s*(?!DOMPurify|sanitize)/i,
+    regex: XSS_SINK,
     severity: 'CRITICAL' as VibeGuardSeverity,
     descriptionLeiga:
       'O aplicativo está exibindo textos e links externos sem filtrar códigos maliciosos.',

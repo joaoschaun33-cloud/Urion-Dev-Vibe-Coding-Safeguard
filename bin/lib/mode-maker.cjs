@@ -13,7 +13,7 @@ function colorize(text, colorName) {
 // FONTE UNICA: as regras vem do arquivo gerado a partir do dominio TS
 // (src/features/security-audit/domain/vibe-guard-rules.ts). Regenere com
 // `npm run sync:rules:guard`. NAO redefina regras aqui (Dogma: fonte unica).
-const { VIBE_GUARD_RULES } = require('./vibe-guard-rules.generated.cjs');
+const { VIBE_GUARD_RULES, PROVIDER_TOKEN_SOURCE } = require('./vibe-guard-rules.generated.cjs');
 
 // Espelho de src/features/security-audit/domain/scan-filters.ts (reduz falso positivo).
 const TEST_OR_FIXTURE_RE =
@@ -21,13 +21,65 @@ const TEST_OR_FIXTURE_RE =
 const MOCK_VALUE_RE =
   /\b(?:mock|fake|dummy|example|exemplo|placeholder|changeme|your[_-]?(?:api[_-]?)?key|test[_-]?key|xxx+)/i;
 
+// ESPELHO de src/features/security-audit/domain/env-secrets.ts (segredos em .env, formato
+// NOME=valor sem aspas). Mantenha em sincronia: env-secrets.test.ts roda as duas versoes.
+const PROVIDER_TOKEN = new RegExp(PROVIDER_TOKEN_SOURCE);
+const ENV_PUBLIC_PREFIX = /^(?:VITE_|NEXT_PUBLIC_|REACT_APP_|PUBLIC_|EXPO_PUBLIC_|NUXT_PUBLIC_|GATSBY_)/;
+const ENV_PUBLIC_WORD = /(?:PUBLIC|PUBLISHABLE|ANON)/i;
+const ENV_SECRET_NAME =
+  /(?:SECRET|SERVICE_?ROLE|PRIVATE|PASSWORD|PASSWD|PWD|TOKEN|API_?KEY|ACCESS_?KEY|AUTH_?KEY|CREDENTIAL|SIGNING|ENCRYPTION)/i;
+const ENV_CONNECTION_NAME = /(?:DATABASE_URL|DB_URL|REDIS_URL|DSN|MONGO\w*|\w*_URI|\w*_URL)$/i;
+const ENV_CREDS_IN_URL = /^[a-z][a-z0-9+.-]*:\/\/[^/\s:@]+:[^@\s]+@/i;
+const ENV_PLACEHOLDER = /^(?:true|false|null|undefined|\d+|localhost.*|your[_-].*|<.*>|\$\{.*\}|change.?me|x{3,}|\*+|todo)$/i;
+const ENV_SAFE_SUFFIX = /\.(?:example|sample|template|dist|tpl)$/i;
+
+function isEnvFileName(name) {
+  const base = String(name).split(/[\\/]/).pop() || String(name);
+  if (ENV_SAFE_SUFFIX.test(base)) return false;
+  return /^\.env(?:\..+)?$/i.test(base) || /\.env$/i.test(base);
+}
+
+function cleanEnvValue(raw) {
+  let v = raw.trim();
+  const quote = v[0];
+  if (quote === '"' || quote === "'") {
+    const end = v.indexOf(quote, 1);
+    return end > 0 ? v.slice(1, end) : v.slice(1);
+  }
+  const hash = v.search(/\s#/);
+  if (hash >= 0) v = v.slice(0, hash);
+  return v.trim();
+}
+
+function findEnvSecrets(content) {
+  const hits = [];
+  content.split('\n').forEach((rawLine, index) => {
+    const line = rawLine.replace(/\r$/, '').trim();
+    if (!line || line.startsWith('#')) return;
+    const eq = line.indexOf('=');
+    if (eq <= 0) return;
+    const key = line.slice(0, eq).trim().replace(/^export\s+/, '');
+    if (!/^[A-Za-z_][A-Za-z0-9_.]*$/.test(key)) return;
+    const value = cleanEnvValue(line.slice(eq + 1));
+    if (!value || ENV_PLACEHOLDER.test(value) || MOCK_VALUE_RE.test(value)) return;
+
+    let secret = PROVIDER_TOKEN.test(value);
+    if (!secret && !ENV_PUBLIC_PREFIX.test(key) && !ENV_PUBLIC_WORD.test(key)) {
+      if (ENV_CONNECTION_NAME.test(key) && ENV_CREDS_IN_URL.test(value)) secret = true;
+      else if (ENV_SECRET_NAME.test(key) && value.length >= 8) secret = true;
+    }
+    if (secret) hits.push({ line: index + 1, key });
+  });
+  return hits;
+}
+
 // Varredura pura (sem console): e o que o comando `vibeguard` executa e o que o
 // benchmark (benchmarks/) mede — a mesma funcao, nao uma copia da logica.
 function scanProject(targetDir) {
   const issues = [];
   const unreadable = [];
   const ignoreDirs = new Set(['node_modules', '.git', 'dist', 'build', '.urion', '.next', 'coverage']);
-  const allowedExts = new Set(['.ts', '.tsx', '.js', '.jsx', '.json', '.env']);
+  const allowedExts = new Set(['.ts', '.tsx', '.js', '.jsx', '.json', '.mjs', '.cjs']);
   let scannedFiles = 0;
 
   function scan(currentDir) {
@@ -44,26 +96,32 @@ function scanProject(targetDir) {
       } else if (stat.isFile()) {
         const ext = path.extname(item).toLowerCase();
         const relForFilter = path.relative(targetDir, fullPath);
-        if (allowedExts.has(ext) && !TEST_OR_FIXTURE_RE.test(relForFilter)) {
+        const isEnv = isEnvFileName(item);
+        if ((allowedExts.has(ext) || isEnv) && !TEST_OR_FIXTURE_RE.test(relForFilter)) {
           scannedFiles++;
           try {
             const content = fs.readFileSync(fullPath, 'utf8');
             const lines = content.split('\n');
-            lines.forEach((line, index) => {
-              for (const rule of VIBE_GUARD_RULES) {
-                if (rule.regex.test(line)) {
-                  if (rule.id === 'SECRETS_HARDCODED' && MOCK_VALUE_RE.test(line)) {
-                    continue;
-                  }
-                  issues.push({
-                    rule,
-                    file: path.relative(targetDir, fullPath).replace(/\\/g, '/'),
-                    line: index + 1,
-                    snippet: line.trim(),
-                  });
-                }
+            const relFile = path.relative(targetDir, fullPath).replace(/\\/g, '/');
+            if (isEnv) {
+              // .env: so a logica propria (respeita variaveis publicas VITE_*/NEXT_PUBLIC_*).
+              // As regexes de codigo nao se aplicam: acusariam chave publica entre aspas.
+              const secretRule = VIBE_GUARD_RULES.find((r) => r.id === 'SECRETS_HARDCODED');
+              for (const hit of findEnvSecrets(content)) {
+                issues.push({ rule: secretRule, file: relFile, line: hit.line, snippet: `${hit.key}=***` });
               }
-            });
+            } else {
+              lines.forEach((line, index) => {
+                for (const rule of VIBE_GUARD_RULES) {
+                  if (rule.regex.test(line)) {
+                    if (rule.id === 'SECRETS_HARDCODED' && MOCK_VALUE_RE.test(line)) {
+                      continue;
+                    }
+                    issues.push({ rule, file: relFile, line: index + 1, snippet: line.trim() });
+                  }
+                }
+              });
+            }
           } catch (err) {
             unreadable.push(`Não foi possível ler "${fullPath}": ${err.message}`);
           }
@@ -125,4 +183,4 @@ function runModeMakerScanner(targetDir = process.cwd()) {
   return { score, criticals, warnings, issuesCount: issues.length };
 }
 
-module.exports = { runModeMakerScanner, scanProject, VIBE_GUARD_RULES };
+module.exports = { runModeMakerScanner, scanProject, findEnvSecrets, isEnvFileName, VIBE_GUARD_RULES };

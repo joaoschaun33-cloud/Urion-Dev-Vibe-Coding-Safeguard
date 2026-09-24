@@ -3,11 +3,13 @@
 // Fonte: src/features/security-audit/domain/vibe-guard-rules.ts
 // Regenere com: npm run sync:rules:guard
 
+const PROVIDER_TOKEN_SOURCE = "sk_(?:live|test)_[A-Za-z0-9]{15,}|sk-proj-[A-Za-z0-9_-]{8,}|ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[A-Z0-9]{16}|sbp_[a-f0-9]{30,}";
+
 const VIBE_GUARD_RULES = [
   {
     id: "SECRETS_HARDCODED",
     title: "Chave de API / Segredo Exposto no Código",
-    regex: new RegExp("(?:(?:api[_-]?key|secret[_-]?key|password|aws_access_key_id|token)\\s*[:=]\\s*[\"'](?:sk_(?:live|test)_[A-Za-z0-9]{15,}|sk-proj-[A-Za-z0-9_-]{8,}|ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[A-Z0-9]{16}|[A-Za-z0-9\\-_]{20,})[\"']|[\"'](?:sk_(?:live|test)_[A-Za-z0-9]{15,}|sk-proj-[A-Za-z0-9_-]{8,}|ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[A-Z0-9]{16})[\"'])", "i"),
+    regex: new RegExp("(?:(?:api[_-]?key|secret[_-]?key|password|aws_access_key_id|token)\\s*[:=]\\s*[\"'](?:sk_(?:live|test)_[A-Za-z0-9]{15,}|sk-proj-[A-Za-z0-9_-]{8,}|ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[A-Z0-9]{16}|sbp_[a-f0-9]{30,}|[A-Za-z0-9\\-_]{20,})[\"']|[\"'](?:sk_(?:live|test)_[A-Za-z0-9]{15,}|sk-proj-[A-Za-z0-9_-]{8,}|ghp_[A-Za-z0-9]{20,}|gho_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[A-Z0-9]{16}|sbp_[a-f0-9]{30,})[\"'])", "i"),
     severity: "CRITICAL",
     descriptionLeiga: "Sua chave de acesso secreta está visível diretamente no código do aplicativo.",
     riscoReal: "Qualquer pessoa que acessar seu site ou código pode roubar essa chave e usar seus serviços gerando cobranças no seu cartão.",
@@ -37,7 +39,7 @@ const VIBE_GUARD_RULES = [
   {
     id: "XSS_UNSANITIZED",
     title: "Exibição de Texto Sem Proteção (XSS)",
-    regex: new RegExp("dangerouslySetInnerHTML\\s*=\\s*\\{\\s*\\{\\s*__html\\s*:\\s*(?!DOMPurify|sanitize)", "i"),
+    regex: new RegExp("(?:(?<!<style\\b[^>]*)dangerouslySetInnerHTML\\s*=\\s*\\{\\s*\\{\\s*__html\\s*:(?!\\s*(?:DOMPurify|sanitize|JSON\\.stringify\\s*\\(|\"[^\"]*\"\\s*[,}]|'[^']*'\\s*[,}]|`[^`$]*`\\s*[,}]))|\\.(?:inner|outer)HTML\\s*\\+?=(?!=)(?!\\s*(?:DOMPurify|sanitize|\"[^\"]*\"\\s*;?\\s*(?:$|\\n)|'[^']*'\\s*;?\\s*(?:$|\\n)|`[^`$]*`\\s*;?\\s*(?:$|\\n)))|document\\.write(?:ln)?\\s*\\((?!\\s*(?:DOMPurify|sanitize|\"[^\"]*\"\\s*\\)|'[^']*'\\s*\\)|`[^`$]*`\\s*\\)))|insertAdjacentHTML\\s*\\([^,)]*,(?!\\s*(?:DOMPurify|sanitize|\"[^\"]*\"\\s*\\)|'[^']*'\\s*\\)|`[^`$]*`\\s*\\))))", "i"),
     severity: "CRITICAL",
     descriptionLeiga: "O aplicativo está exibindo textos e links externos sem filtrar códigos maliciosos.",
     riscoReal: "Um usuário mal intencionado pode enviar uma mensagem que assume o controle da tela dos outros usuários.",
@@ -56,4 +58,4 @@ const VIBE_GUARD_RULES = [
   },
 ];
 
-module.exports = { VIBE_GUARD_RULES };
+module.exports = { VIBE_GUARD_RULES, PROVIDER_TOKEN_SOURCE };

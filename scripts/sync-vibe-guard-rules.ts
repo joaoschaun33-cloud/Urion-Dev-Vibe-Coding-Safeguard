@@ -6,7 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { VIBE_GUARD_RULES } from '../src/features/security-audit/domain/vibe-guard-rules';
+import { VIBE_GUARD_RULES, PROVIDER_TOKEN_SOURCE } from '../src/features/security-audit/domain/vibe-guard-rules';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const outPath = path.resolve(here, '../bin/lib/vibe-guard-rules.generated.cjs');
@@ -32,11 +32,13 @@ const content = [
   '// Fonte: src/features/security-audit/domain/vibe-guard-rules.ts',
   '// Regenere com: npm run sync:rules:guard',
   '',
+  'const PROVIDER_TOKEN_SOURCE = ' + JSON.stringify(PROVIDER_TOKEN_SOURCE) + ';',
+  '',
   'const VIBE_GUARD_RULES = [',
   body,
   '];',
   '',
-  'module.exports = { VIBE_GUARD_RULES };',
+  'module.exports = { VIBE_GUARD_RULES, PROVIDER_TOKEN_SOURCE };',
   '',
 ].join('\n');
 
