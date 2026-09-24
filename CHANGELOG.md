@@ -7,6 +7,8 @@ e este projeto adere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+## [3.1.0] — 2026-09-24
+
 ### Added
 
 - **Benchmark dos detectores** (`npm run benchmark`, pasta `benchmarks/`): corpus
