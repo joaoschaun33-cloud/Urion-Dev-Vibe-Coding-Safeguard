@@ -4,7 +4,7 @@
 
 ## Como ler (e por que não confiar cegamente)
 
-- **Corpus sintético:** 195 mini-projetos (114 vulneráveis, 81 seguros), escritos pela própria equipe a partir de padrões reais de apps gerados por IA. **Quem escreveu o corpus conhece os detectores**: os números tendem a ser **otimistas**. O teste que vale é rodar em repositórios reais (passo 3 do plano).
+- **Corpus sintético:** 199 mini-projetos (114 vulneráveis, 85 seguros), escritos pela própria equipe a partir de padrões reais de apps gerados por IA. **Quem escreveu o corpus conhece os detectores**: os números tendem a ser **otimistas**. O teste que vale é rodar em repositórios reais (passo 3 do plano).
 - **Granularidade:** por _caso_ (a regra disparou neste projeto? sim/não), não por linha. Acertar a regra na linha errada conta como acerto.
 - **Intervalo de confiança (IC 95%, Wilson):** com poucos casos por regra, o intervalo é largo — e deve ser. Um "100%" com 8 casos ainda é compatível com ~68% na população.
 - **Falso positivo** = a regra disparou onde o gabarito diz que não deveria (inclusive disparos incidentais de outras regras).
@@ -14,12 +14,12 @@
 
 | Regra                | Casos vulneráveis | Detectou (TP) | Perdeu (FN) | Alarme falso (FP) |  Recall (IC 95%) | Precisão (IC 95%) |
 | -------------------- | ----------------: | ------------: | ----------: | ----------------: | ---------------: | ----------------: |
-| `SECRETS_HARDCODED`  |                11 |             8 |           3 |                 1 |     73% (43–90%) |      89% (56–98%) |
-| `AUTH_CLIENT_SIDE`   |                10 |             3 |           7 |                 1 |     30% (11–60%) |      75% (30–95%) |
+| `SECRETS_HARDCODED`  |                17 |            14 |           3 |                 1 |     82% (59–94%) |      93% (70–99%) |
+| `AUTH_CLIENT_SIDE`   |                10 |             7 |           3 |                 1 |     70% (40–89%) |      88% (53–98%) |
 | `SQL_INJECTION`      |                10 |             6 |           4 |                 1 |     60% (31–83%) |      86% (49–97%) |
 | `XSS_UNSANITIZED`    |                10 |             7 |           3 |                 0 |     70% (40–89%) |    100% (65–100%) |
 | `RATE_LIMIT_MISSING` |                10 |             4 |           6 |                 2 |     40% (17–69%) |      67% (30–90%) |
-| **Total (micro)**    |            **51** |        **28** |      **23** |             **5** | **55% (41–68%)** |  **85% (69–93%)** |
+| **Total (micro)**    |            **57** |        **38** |      **19** |             **5** | **67% (54–78%)** |  **88% (76–95%)** |
 
 ### Erros por regra
 
@@ -32,13 +32,9 @@
 
 #### `AUTH_CLIENT_SIDE`
 
-- **Perdeu** `auth-p04-access-token-snake` — access_token em localStorage (nome mais comum em OAuth).
-- **Perdeu** `auth-p05-authtoken` — authToken em localStorage.
 - **Perdeu** `auth-p06-constant-key` — Chave em constante (TOKEN_KEY) em localStorage.
 - **Perdeu** `auth-p07-property-assignment` — localStorage.token = ... (atribuicao direta).
-- **Perdeu** `auth-p08-client-cookie` — Cookie de sessao criado no navegador via document.cookie (nunca pode ser HttpOnly).
 - **Perdeu** `auth-p09-zustand-persist-token` — Store Zustand com persist (localStorage por padrao) guardando o token.
-- **Perdeu** `auth-p10-supabase-session-manual` — Sessao do Supabase serializada manualmente em localStorage.
 - **Alarme falso** `auth-n06-session-key-ui-state` — Chave chamada 'session' guardando apenas filtro de UI (nao credencial).
 
 #### `SQL_INJECTION`
@@ -70,34 +66,23 @@
 
 | Regra                    | Casos vulneráveis | Detectou (TP) | Perdeu (FN) | Alarme falso (FP) |  Recall (IC 95%) | Precisão (IC 95%) |
 | ------------------------ | ----------------: | ------------: | ----------: | ----------------: | ---------------: | ----------------: |
-| `RLS_MISSING`            |                 6 |             6 |           0 |                 1 |   100% (61–100%) |      86% (49–97%) |
-| `ROUTE_NO_AUTH`          |                10 |             7 |           3 |                 2 |     70% (40–89%) |      78% (45–94%) |
-| `ENV_NOT_IGNORED`        |                 8 |             7 |           1 |                 1 |     88% (53–98%) |      88% (53–98%) |
+| `RLS_MISSING`            |                 6 |             6 |           0 |                 0 |   100% (61–100%) |    100% (61–100%) |
+| `ROUTE_NO_AUTH`          |                10 |             7 |           3 |                 0 |     70% (40–89%) |    100% (65–100%) |
+| `ENV_NOT_IGNORED`        |                 8 |             8 |           0 |                 0 |   100% (68–100%) |    100% (68–100%) |
 | `USERID_FROM_CLIENT`     |                 8 |             2 |           6 |                 1 |      25% (7–59%) |      67% (21–94%) |
 | `ERROR_SWALLOWED`        |                 8 |             4 |           4 |                 0 |     50% (22–78%) |    100% (51–100%) |
 | `WEBHOOK_UNVERIFIED`     |                 8 |             5 |           3 |                 1 |     63% (31–86%) |      83% (44–97%) |
 | `BODY_UNVALIDATED_WRITE` |                 8 |             2 |           6 |                 1 |      25% (7–59%) |      67% (21–94%) |
 | `N_PLUS_ONE`             |                 9 |             6 |           3 |                 0 |     67% (35–88%) |    100% (61–100%) |
-| **Total (micro)**        |            **65** |        **39** |      **26** |             **7** | **60% (48–71%)** |  **85% (72–92%)** |
+| **Total (micro)**        |            **65** |        **40** |      **25** |             **3** | **62% (49–72%)** |  **93% (81–98%)** |
 
 ### Erros por regra
-
-#### `RLS_MISSING`
-
-- **Alarme falso** `rls-n04-prisma-backend-migration` — Migration do Prisma em app com backend proprio (acesso ao banco so pelo servidor; RLS nao e o modelo de seguranca).
 
 #### `ROUTE_NO_AUTH`
 
 - **Perdeu** `ra-p06-nextjs-admin-route` — Next.js App Router: GET /api/admin/users sem checagem de sessao.
 - **Perdeu** `ra-p07-fastify-users` — Fastify GET /api/users sem auth.
 - **Perdeu** `ra-p08-router-route-chain` — router.route("/users").get(...) sem auth.
-- **Alarme falso** `ra-n04-router-level-auth` — router.use(requireAuth) antes das rotas: todas protegidas.
-- **Alarme falso** `ra-n07-app-level-auth` — app.use("/api", authenticate) protege tudo abaixo.
-
-#### `ENV_NOT_IGNORED`
-
-- **Perdeu** `env-p03-dotenv-does-not-cover-local` — .gitignore ignora so ".env"; o arquivo .env.local continua rastreado pelo Git.
-- **Alarme falso** `env-n04-nested-gitignore` — Monorepo: .gitignore do proprio pacote cobre o .env dele.
 
 #### `USERID_FROM_CLIENT`
 

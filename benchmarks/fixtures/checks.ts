@@ -11,6 +11,13 @@ const P = (id: string, why: string, rules: ChecksRule[], files: Record<string, s
   expect: { checks: rules },
   files,
 });
+// .env versionado COM segredo: o config gate acusa o arquivo E o vibeguard acusa o segredo dentro.
+const E = (id: string, why: string, files: Record<string, string>): BenchCase => ({
+  id,
+  why,
+  expect: { checks: ['ENV_NOT_IGNORED'], vibeguard: ['SECRETS_HARDCODED'] },
+  files,
+});
 const S = (id: string, why: string, files: Record<string, string>): BenchCase => ({
   id,
   why,
@@ -19,24 +26,30 @@ const S = (id: string, why: string, files: Record<string, string>): BenchCase =>
 });
 
 const SQL = 'db/migrations/001_init.sql';
+// Layout real do Supabase CLI. Decisao de projeto medida em repositorios reais: o RLS so e o modelo
+// de seguranca quando ha evidencia de Supabase (pasta supabase/, dependencia @supabase/* ou
+// auth.uid() no SQL); 16% dos alertas de RLS vinham de projetos Postgres sem Supabase.
+const SB_SQL = 'supabase/migrations/20240101000000_init.sql';
+// Versionar .env so e vazamento se houver segredo dentro (17 de 23 alertas reais eram so VITE_*).
+const ENV_SECRET = 'JWT_SECRET=umsegredolongodemais12345';
 
 export const checksCases: BenchCase[] = [
   // ---------------------------------------------------------------- RLS_MISSING
   P('rls-p01-public-profiles', 'Tabela em schema public do Supabase sem RLS.', ['RLS_MISSING'], {
-    [SQL]: L('create table public.profiles (', '  id uuid primary key,', '  email text', ');'),
+    [SB_SQL]: L('create table public.profiles (', '  id uuid primary key,', '  email text', ');'),
   }),
-  P('rls-p02-plain-todos', 'Tabela sem RLS.', ['RLS_MISSING'], { [SQL]: 'create table todos (id serial primary key, title text, user_id uuid);' }),
+  P('rls-p02-plain-todos', 'Tabela sem RLS em projeto Supabase.', ['RLS_MISSING'], { [SB_SQL]: 'create table todos (id serial primary key, title text, user_id uuid);' }),
   P('rls-p03-one-of-two', 'Duas tabelas; so a primeira tem RLS.', ['RLS_MISSING'], {
-    [SQL]: L('create table public.a (id int);', 'alter table public.a enable row level security;', 'create table public.b (id int, secret text);'),
+    [SB_SQL]: L('create table public.a (id int);', 'alter table public.a enable row level security;', 'create table public.b (id int, secret text);'),
   }),
   P('rls-p04-policy-without-enable', 'Policies criadas mas RLS nunca habilitado (policies nao valem nada).', ['RLS_MISSING'], {
     [SQL]: L('create table public.notes (id int, owner uuid);', 'create policy "own" on public.notes for select using (auth.uid() = owner);'),
   }),
   P('rls-p05-if-not-exists', 'create table if not exists sem RLS.', ['RLS_MISSING'], {
-    [SQL]: 'create table if not exists public.messages (id bigint primary key, body text);',
+    [SB_SQL]: 'create table if not exists public.messages (id bigint primary key, body text);',
   }),
   P('rls-p06-quoted-schema-dump', 'Formato de dump do Supabase/pg_dump: CREATE TABLE "public"."orders", sem RLS.', ['RLS_MISSING'], {
-    [SQL]: 'CREATE TABLE "public"."orders" ("id" bigint NOT NULL, "user_id" uuid, "total" numeric);',
+    [SB_SQL]: 'CREATE TABLE "public"."orders" ("id" bigint NOT NULL, "user_id" uuid, "total" numeric);',
   }),
 
   S('rls-n01-enabled', 'Tabela com RLS habilitado.', { [SQL]: L('create table public.users (id int);', 'alter table users enable row level security;') }),
@@ -48,6 +61,16 @@ export const checksCases: BenchCase[] = [
     'prisma/migrations/0001_init/migration.sql': 'CREATE TABLE "User" ("id" TEXT NOT NULL, "email" TEXT NOT NULL, CONSTRAINT "User_pkey" PRIMARY KEY ("id"));',
   }),
   S('rls-n05-commented-create', 'create table apenas em comentario.', { [SQL]: L('-- create table public.ghost (id int);', 'select 1;') }),
+  S('rls-n06-plain-postgres-no-supabase', 'Postgres comum, sem nenhum sinal de Supabase (sem pasta supabase/, dependencia ou auth.uid()): RLS nao e o modelo de seguranca. Decisao de projeto: nao acusar.', {
+    [SQL]: 'create table todos (id serial primary key, title text, user_id uuid);',
+  }),
+  S('rls-n07-enabled-in-another-migration', 'RLS ativado em OUTRA migracao do mesmo projeto (44% dos alertas reais eram isso).', {
+    [SB_SQL]: 'create table public.tasks (id int, owner uuid);',
+    'supabase/migrations/20240102000000_rls.sql': 'alter table public.tasks enable row level security;',
+  }),
+  S('rls-n08-non-public-schema', 'Tabela em schema interno (private), nao exposto pela API do Supabase.', {
+    [SB_SQL]: 'create table private.audit_log (id int, payload jsonb);',
+  }),
 
   // ---------------------------------------------------------------- ROUTE_NO_AUTH
   P('ra-p01-users-by-id', 'GET /users/:id sem auth.', ['ROUTE_NO_AUTH'], { 'src/routes.ts': "router.get('/users/:id', async (req, res) => { res.json(await getUser(req.params.id)); });" }),
@@ -79,15 +102,15 @@ export const checksCases: BenchCase[] = [
   }),
 
   // ---------------------------------------------------------------- ENV_NOT_IGNORED
-  P('env-p01-no-gitignore', '.env sem nenhum .gitignore.', ['ENV_NOT_IGNORED'], { '.env': 'PORT=3000' }),
-  P('env-p02-gitignore-lacks-env', '.gitignore existe mas nao cobre .env.', ['ENV_NOT_IGNORED'], { '.env': 'PORT=3000', '.gitignore': 'node_modules\ndist\n' }),
-  P('env-p03-dotenv-does-not-cover-local', '.gitignore ignora so ".env"; o arquivo .env.local continua rastreado pelo Git.', ['ENV_NOT_IGNORED'], {
-    '.env.local': 'PORT=3000',
+  E('env-p01-no-gitignore', '.env COM SEGREDO e sem nenhum .gitignore.', { '.env': ENV_SECRET }),
+  E('env-p02-gitignore-lacks-env', '.env com segredo; .gitignore existe mas nao cobre .env.', { '.env': ENV_SECRET, '.gitignore': 'node_modules\ndist\n' }),
+  E('env-p03-dotenv-does-not-cover-local', '.gitignore ignora so ".env"; o arquivo .env.local (com segredo) continua rastreado pelo Git.', {
+    '.env.local': ENV_SECRET,
     '.gitignore': '.env\nnode_modules\n',
   }),
-  P('env-p04-production-file', '.env.production versionado.', ['ENV_NOT_IGNORED'], { '.env.production': 'PORT=80', '.gitignore': 'node_modules\n' }),
-  P('env-p05-subdir-env', 'server/.env sem cobertura no .gitignore da raiz.', ['ENV_NOT_IGNORED'], { 'server/.env': 'PORT=3000', '.gitignore': 'node_modules\n' }),
-  P('env-p06-envrc-only', '.gitignore so cobre .envrc, nao .env.', ['ENV_NOT_IGNORED'], { '.env': 'PORT=3000', '.gitignore': '.envrc\n' }),
+  E('env-p04-production-file', '.env.production com segredo versionado.', { '.env.production': ENV_SECRET, '.gitignore': 'node_modules\n' }),
+  E('env-p05-subdir-env', 'server/.env com segredo sem cobertura no .gitignore da raiz.', { 'server/.env': ENV_SECRET, '.gitignore': 'node_modules\n' }),
+  E('env-p06-envrc-only', '.env com segredo; .gitignore so cobre .envrc, nao .env.', { '.env': ENV_SECRET, '.gitignore': '.envrc\n' }),
 
   S('env-n01-wildcard', '.env* no .gitignore.', { '.env': 'PORT=3000', '.env.local': 'PORT=3001', '.gitignore': '.env*\n' }),
   S('env-n02-dotenv-only', 'Apenas .env, coberto.', { '.env': 'PORT=3000', '.gitignore': '.env\nnode_modules\n' }),
@@ -97,6 +120,9 @@ export const checksCases: BenchCase[] = [
     'apps/api/.gitignore': '.env\n',
   }),
   S('env-n05-no-env-files', 'Projeto sem nenhum .env.', { 'src/index.ts': 'export {};', '.gitignore': 'node_modules\n' }),
+  S('env-n06-public-vars-only', '.env versionado que so tem variaveis publicas do framework (VITE_*): nao vaza segredo.', {
+    '.env': L('VITE_SUPABASE_URL=https://abc.supabase.co', 'VITE_SUPABASE_PUBLISHABLE_KEY=abcdefghijklmnopqrstuvwxyz0123456789'),
+  }),
 
   // ---------------------------------------------------------------- USERID_FROM_CLIENT
   P('uid-p01-body-userid', 'userId lido de req.body.', ['USERID_FROM_CLIENT'], { 'src/todos.ts': "export const h = async (req: any, res: any) => { const userId = req.body.userId; res.json(await list(userId)); };" }),

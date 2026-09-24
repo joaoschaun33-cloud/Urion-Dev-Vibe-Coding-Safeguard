@@ -84,6 +84,15 @@ const XSS_SINK = new RegExp(
   'i'
 );
 
+const AUTH_STORAGE = new RegExp(
+  '(?:localStorage|sessionStorage)\\.setItem\\(\\s*["\'](?![^"\']*tokeniz)' +
+    '(?:[^"\']*(?:token|jwt|bearer|credential)[^"\']*|auth|session)["\']' +
+    '|(?:localStorage|sessionStorage)(?:\\.|\\[\\s*["\'])(?:token|jwt|authToken|accessToken|access_token|refreshToken|refresh_token)\\b["\']?\\s*\\]?\\s*=(?!=)' +
+    // cookie com VALOR (session=abc); "token=; expires=1970" e logout (apaga o cookie), nao credencial
+    '|document\\.cookie\\s*=\\s*[^;\\n]*(?:token|jwt|session)[^;=\\n]*=\\s*[^;\\s]',
+  'i'
+);
+
 const SECRET_KEY_PATTERN = new RegExp(
   '(?:' +
     // 1) chave nomeada (api_key/secret/token/...) = valor (inclui valor generico 20+)
@@ -117,8 +126,11 @@ export const VIBE_GUARD_RULES = [
   {
     id: 'AUTH_CLIENT_SIDE' as const,
     title: 'Autenticação Armazenada Insegura no Navegador',
-    regex:
-      /(?:localStorage|sessionStorage)\.setItem\(\s*["'](?:token|jwt|auth|accessToken|session)["']/i,
+    // Chave com token/jwt/bearer/credential no nome (access_token, authToken, spotify_token...),
+    // ou exatamente auth/session; atribuicao direta (localStorage.token = x) e cookie criado no
+    // navegador (nunca pode ser HttpOnly). Exclui "tokenizer..." (configuracao de UI). Em 81
+    // repositorios reais a regra antiga so achava 6 de 11 projetos com token em web storage.
+    regex: AUTH_STORAGE,
     severity: 'CRITICAL' as VibeGuardSeverity,
     descriptionLeiga: 'O login do usuário está sendo salvo na memória aberta do navegador.',
     riscoReal:

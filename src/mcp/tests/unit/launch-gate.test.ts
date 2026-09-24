@@ -177,7 +177,7 @@ describe('runConfigGate', () => {
   it('reporta achados e pontuacao de um projeto real em disco', () => {
     const root = makeProject({
       files: {
-        '.env': 'X=1\n',
+        '.env': 'JWT_SECRET=umsegredolongodemais12345\n',
         '.gitignore': 'node_modules\n',
         'src/svc.ts':
           'for (const id of ids) {\n  await prisma.user.findUnique({ where: { id } });\n}\n',
@@ -188,6 +188,16 @@ describe('runConfigGate', () => {
     expect(rules).toEqual(['ENV_NOT_IGNORED', 'N_PLUS_ONE']);
     expect(r.criticalCount).toBe(1);
     expect(r.score).toBe(75);
+  });
+
+  it('.env versionavel so com variaveis publicas nao e achado (nao vaza segredo)', () => {
+    const root = makeProject({
+      files: {
+        '.env': 'VITE_SUPABASE_PUBLISHABLE_KEY=abcdefghijklmnopqrstuvwxyz0123456789\n',
+        '.gitignore': 'node_modules\n',
+      },
+    });
+    expect(runConfigGate(root).findings).toEqual([]);
   });
 
   it('ignora node_modules, arquivos de teste e bundles gigantes', () => {

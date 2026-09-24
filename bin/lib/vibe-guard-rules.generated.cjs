@@ -19,7 +19,7 @@ const VIBE_GUARD_RULES = [
   {
     id: "AUTH_CLIENT_SIDE",
     title: "Autenticação Armazenada Insegura no Navegador",
-    regex: new RegExp("(?:localStorage|sessionStorage)\\.setItem\\(\\s*[\"'](?:token|jwt|auth|accessToken|session)[\"']", "i"),
+    regex: new RegExp("(?:localStorage|sessionStorage)\\.setItem\\(\\s*[\"'](?![^\"']*tokeniz)(?:[^\"']*(?:token|jwt|bearer|credential)[^\"']*|auth|session)[\"']|(?:localStorage|sessionStorage)(?:\\.|\\[\\s*[\"'])(?:token|jwt|authToken|accessToken|access_token|refreshToken|refresh_token)\\b[\"']?\\s*\\]?\\s*=(?!=)|document\\.cookie\\s*=\\s*[^;\\n]*(?:token|jwt|session)[^;=\\n]*=\\s*[^;\\s]", "i"),
     severity: "CRITICAL",
     descriptionLeiga: "O login do usuário está sendo salvo na memória aberta do navegador.",
     riscoReal: "Hackers podem injetar um script simples no seu site para roubar a conta de qualquer usuário conectado.",

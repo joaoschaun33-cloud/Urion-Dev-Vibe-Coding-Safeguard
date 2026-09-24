@@ -68,8 +68,11 @@ describe('o medidor exercita os motores de verdade', () => {
   });
 
   it('detecta tabela sem RLS pelo motor checks', () => {
-    const r = runEnginesOnFiles({ 'db/m.sql': 'create table public.t (id int);' });
+    // Layout do Supabase CLI: o detector so acusa RLS quando ha evidencia de Supabase.
+    const r = runEnginesOnFiles({ 'supabase/migrations/1_init.sql': 'create table public.t (id int);' });
     expect([...r.checks]).toContain('RLS_MISSING');
+    const plain = runEnginesOnFiles({ 'db/m.sql': 'create table public.t (id int);' });
+    expect([...plain.checks]).not.toContain('RLS_MISSING');
   });
 
   it('o mesmo segredo sob "fixtures/" e IGNORADO — por isso o corpus e checado acima', () => {

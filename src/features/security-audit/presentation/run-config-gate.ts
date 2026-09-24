@@ -4,7 +4,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { detectMissingRls } from '../application/detect-missing-rls';
+import { detectMissingRls, looksLikeSupabaseProject } from '../application/detect-missing-rls';
 import { detectUnprotectedRoutes } from '../application/detect-unprotected-routes';
 import { detectEnvLeaks } from '../application/detect-env-leaks';
 import { detectUserIdFromClient } from '../application/detect-userid-from-client';
@@ -24,6 +24,12 @@ const IGNORE_DIRS = new Set([
   '.next',
   'coverage',
   'web',
+  // Codigo gerado/vendorizado: nao e o codigo do projeto (ex.: bundle do service worker do PWA).
+  'dev-dist',
+  'vendor',
+  'public',
+  '.output',
+  'storybook-static',
 ]);
 
 interface FileEntry {
@@ -45,11 +51,26 @@ function safeRead(p: string): string {
 // terceiro empacotada, nao pro codigo do projeto) — melhor nao escanear do
 // que gerar achado enganoso.
 const MAX_CODE_FILE_BYTES = 200 * 1024;
+const MAX_SMALL_FILE_BYTES = 100 * 1024;
 
-function walk(root: string): { code: FileEntry[]; sql: FileEntry[]; envFiles: string[] } {
+interface Walked {
+  code: FileEntry[];
+  sql: FileEntry[];
+  envFiles: string[];
+  envContents: Record<string, string>;
+  gitignores: Record<string, string>;
+  manifests: string[];
+  hasSupabaseDir: boolean;
+}
+
+function walk(root: string): Walked {
   const code: FileEntry[] = [];
   const sql: FileEntry[] = [];
   const envFiles: string[] = [];
+  const envContents: Record<string, string> = {};
+  const gitignores: Record<string, string> = {};
+  const manifests: string[] = [];
+  let hasSupabaseDir = false;
 
   const rec = (dir: string): void => {
     let list: string[] = [];
@@ -67,6 +88,9 @@ function walk(root: string): { code: FileEntry[]; sql: FileEntry[]; envFiles: st
         continue;
       }
       if (stat.isDirectory()) {
+        if (item === 'supabase') {
+          hasSupabaseDir = true;
+        }
         if (!IGNORE_DIRS.has(item)) {
           rec(full);
         }
@@ -76,6 +100,14 @@ function walk(root: string): { code: FileEntry[]; sql: FileEntry[]; envFiles: st
       const ext = path.extname(item).toLowerCase();
       if (/^\.env(\.|$)/.test(item)) {
         envFiles.push(rel);
+        if (stat.size <= MAX_SMALL_FILE_BYTES) {
+          envContents[rel] = safeRead(full);
+        }
+      } else if (item === '.gitignore') {
+        const dirRel = path.posix.dirname(rel);
+        gitignores[dirRel === '.' ? '' : dirRel] = safeRead(full);
+      } else if (item === 'package.json' && stat.size <= MAX_SMALL_FILE_BYTES) {
+        manifests.push(safeRead(full));
       } else if (ext === '.sql') {
         sql.push({ path: rel, content: safeRead(full) });
       } else if (
@@ -89,7 +121,7 @@ function walk(root: string): { code: FileEntry[]; sql: FileEntry[]; envFiles: st
   };
 
   rec(root);
-  return { code, sql, envFiles };
+  return { code, sql, envFiles, envContents, gitignores, manifests, hasSupabaseDir };
 }
 
 export interface ConfigGateResult {
@@ -99,13 +131,13 @@ export interface ConfigGateResult {
 }
 
 export function runConfigGate(root: string): ConfigGateResult {
-  const { code, sql, envFiles } = walk(root);
-  const gitignore = safeRead(path.join(root, '.gitignore'));
+  const { code, sql, envFiles, envContents, gitignores, manifests, hasSupabaseDir } = walk(root);
+  const supabaseProject = looksLikeSupabaseProject({ manifests, hasSupabaseDir, sqlFiles: sql });
 
   const findings: Finding[] = [
-    ...detectMissingRls(sql),
+    ...detectMissingRls(sql, { supabaseProject }),
     ...detectUnprotectedRoutes(code),
-    ...detectEnvLeaks({ gitignore, envFiles }),
+    ...detectEnvLeaks({ gitignore: '', gitignores, envFiles, contents: envContents }),
     ...detectUserIdFromClient(code),
     ...detectSwallowedErrors(code),
     ...detectUnverifiedWebhook(code),

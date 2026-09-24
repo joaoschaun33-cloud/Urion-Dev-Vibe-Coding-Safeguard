@@ -1,6 +1,6 @@
 {
   "version": "3.0.0",
-  "cases": 195,
+  "cases": 199,
   "perCase": [
     {
       "id": "sec-p01-stripe-live-in-server",
@@ -259,7 +259,7 @@
       "id": "auth-p04-access-token-snake",
       "vibeguard": {
         "expected": ["AUTH_CLIENT_SIDE"],
-        "fired": []
+        "fired": ["AUTH_CLIENT_SIDE"]
       },
       "checks": {
         "expected": [],
@@ -270,7 +270,7 @@
       "id": "auth-p05-authtoken",
       "vibeguard": {
         "expected": ["AUTH_CLIENT_SIDE"],
-        "fired": []
+        "fired": ["AUTH_CLIENT_SIDE"]
       },
       "checks": {
         "expected": [],
@@ -303,7 +303,7 @@
       "id": "auth-p08-client-cookie",
       "vibeguard": {
         "expected": ["AUTH_CLIENT_SIDE"],
-        "fired": []
+        "fired": ["AUTH_CLIENT_SIDE"]
       },
       "checks": {
         "expected": [],
@@ -325,7 +325,7 @@
       "id": "auth-p10-supabase-session-manual",
       "vibeguard": {
         "expected": ["AUTH_CLIENT_SIDE"],
-        "fired": []
+        "fired": ["AUTH_CLIENT_SIDE"]
       },
       "checks": {
         "expected": [],
@@ -1044,11 +1044,44 @@
       },
       "checks": {
         "expected": [],
-        "fired": ["RLS_MISSING"]
+        "fired": []
       }
     },
     {
       "id": "rls-n05-commented-create",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rls-n06-plain-postgres-no-supabase",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rls-n07-enabled-in-another-migration",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rls-n08-non-public-schema",
       "vibeguard": {
         "expected": [],
         "fired": []
@@ -1209,7 +1242,7 @@
       },
       "checks": {
         "expected": [],
-        "fired": ["ROUTE_NO_AUTH"]
+        "fired": []
       }
     },
     {
@@ -1242,7 +1275,7 @@
       },
       "checks": {
         "expected": [],
-        "fired": ["ROUTE_NO_AUTH"]
+        "fired": []
       }
     },
     {
@@ -1259,8 +1292,8 @@
     {
       "id": "env-p01-no-gitignore",
       "vibeguard": {
-        "expected": [],
-        "fired": []
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
       },
       "checks": {
         "expected": ["ENV_NOT_IGNORED"],
@@ -1270,8 +1303,8 @@
     {
       "id": "env-p02-gitignore-lacks-env",
       "vibeguard": {
-        "expected": [],
-        "fired": []
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
       },
       "checks": {
         "expected": ["ENV_NOT_IGNORED"],
@@ -1281,19 +1314,19 @@
     {
       "id": "env-p03-dotenv-does-not-cover-local",
       "vibeguard": {
-        "expected": [],
-        "fired": []
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
       },
       "checks": {
         "expected": ["ENV_NOT_IGNORED"],
-        "fired": []
+        "fired": ["ENV_NOT_IGNORED"]
       }
     },
     {
       "id": "env-p04-production-file",
       "vibeguard": {
-        "expected": [],
-        "fired": []
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
       },
       "checks": {
         "expected": ["ENV_NOT_IGNORED"],
@@ -1303,8 +1336,8 @@
     {
       "id": "env-p05-subdir-env",
       "vibeguard": {
-        "expected": [],
-        "fired": []
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
       },
       "checks": {
         "expected": ["ENV_NOT_IGNORED"],
@@ -1314,8 +1347,8 @@
     {
       "id": "env-p06-envrc-only",
       "vibeguard": {
-        "expected": [],
-        "fired": []
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
       },
       "checks": {
         "expected": ["ENV_NOT_IGNORED"],
@@ -1363,11 +1396,22 @@
       },
       "checks": {
         "expected": [],
-        "fired": ["ENV_NOT_IGNORED"]
+        "fired": []
       }
     },
     {
       "id": "env-n05-no-env-files",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "env-n06-public-vars-only",
       "vibeguard": {
         "expected": [],
         "fired": []
