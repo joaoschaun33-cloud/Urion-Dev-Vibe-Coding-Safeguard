@@ -47,6 +47,8 @@
     "setup": "bash first-time.sh",
     "postinstall": "prisma generate",
     "prepare": "husky || exit 0",
+    "benchmark": "tsx benchmarks/run.ts",
+    "benchmark:typecheck": "tsc -p benchmarks/tsconfig.json",
     "pack:tool": "npm run sync:rules:guard && npm run build:mcp && npm run build:checks && node scripts/build-npm-package.mjs",
     "publish:tool": "npm run pack:tool && npm publish ./.npm-package --access public",
     "test:integration:local": "node scripts/with-embedded-postgres.mjs",

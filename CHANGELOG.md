@@ -7,6 +7,34 @@ e este projeto adere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+### Added
+
+- **Benchmark dos detectores** (`npm run benchmark`, pasta `benchmarks/`): corpus
+  sintético de 195 mini-projetos (vulneráveis e seguros) rodado contra os dois
+  motores reais (`vibeguard` e `urion-checks`), com recall, precisão e intervalo
+  de confiança de Wilson por regra em `benchmarks/RESULTS.md`. Linha de base
+  (corpus sintético, portanto otimista): `vibeguard` acha 43% dos casos
+  vulneráveis (IC 31–57%), precisão 71%; `urion-checks` acha 60% (IC 48–71%),
+  precisão 85%.
+- `scanProject()` exportada de `bin/lib/mode-maker.cjs` (a varredura pura que o
+  comando `vibeguard` executa), para o benchmark medir o mesmo código do usuário.
+
+### Changed
+
+- `vibeguard`: quando o scan não encontra nada, deixa de dizer "SEU APLICATIVO
+  ESTÁ SEGURO E PRONTO PARA O AR" e de sugerir o selo Grade A. Agora diz que nenhum
+  dos 5 padrões foi encontrado e que isso **não** prova segurança.
+
+### Known issues (medidos, ainda NÃO corrigidos)
+
+- `vibeguard` **nunca escaneia arquivos `.env`** (o filtro de extensão usa
+  `path.extname`, que devolve `""` para `.env`; só `nome.env` casaria).
+- `XSS_UNSANITIZED` acusa código **sanitizado** (`__html: DOMPurify.sanitize(x)`
+  com o espaço que o Prettier gera): o `\s*` desfaz a exceção por backtracking.
+- Detecção perdida em padrões comuns de apps gerados por IA (Next.js App Router,
+  Fastify, Supabase, Drizzle/Mongoose, `.env.local` coberto só por `.env`, entre
+  outros). Lista completa por caso em `benchmarks/RESULTS.md`.
+
 ## [3.0.0] — 2026-09-23
 
 > Separação entre a **ferramenta** (CLI + MCP + gates) e o **template de referência**,

@@ -1,0 +1,2151 @@
+{
+  "version": "3.0.0",
+  "cases": 195,
+  "perCase": [
+    {
+      "id": "sec-p01-stripe-live-in-server",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-p02-openai-key-in-client",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-p03-aws-access-key",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-p04-github-token",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-p05-hardcoded-db-password",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-p06-jwt-signing-secret",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-p07-supabase-service-role-literal",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-p08-database-url-with-credentials",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-p09-dotenv-committed-quoted",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ENV_NOT_IGNORED"],
+        "fired": ["ENV_NOT_IGNORED"]
+      }
+    },
+    {
+      "id": "sec-p10-dotenv-committed-unquoted",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ENV_NOT_IGNORED"],
+        "fired": ["ENV_NOT_IGNORED"]
+      }
+    },
+    {
+      "id": "sec-p11-google-server-key",
+      "vibeguard": {
+        "expected": ["SECRETS_HARDCODED"],
+        "fired": ["SECRETS_HARDCODED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-n01-env-var",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-n02-vite-env",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-n03-placeholder",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-n04-firebase-public-web-key",
+      "vibeguard": {
+        "expected": [],
+        "fired": ["SECRETS_HARDCODED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-n05-stripe-publishable",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-n06-fake-secret-in-test",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-n07-short-token-type",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-n08-env-example",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sec-n09-password-input-ui",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-p01-localstorage-token",
+      "vibeguard": {
+        "expected": ["AUTH_CLIENT_SIDE"],
+        "fired": ["AUTH_CLIENT_SIDE"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-p02-sessionstorage-jwt",
+      "vibeguard": {
+        "expected": ["AUTH_CLIENT_SIDE"],
+        "fired": ["AUTH_CLIENT_SIDE"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-p03-accesstoken-camel",
+      "vibeguard": {
+        "expected": ["AUTH_CLIENT_SIDE"],
+        "fired": ["AUTH_CLIENT_SIDE"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-p04-access-token-snake",
+      "vibeguard": {
+        "expected": ["AUTH_CLIENT_SIDE"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-p05-authtoken",
+      "vibeguard": {
+        "expected": ["AUTH_CLIENT_SIDE"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-p06-constant-key",
+      "vibeguard": {
+        "expected": ["AUTH_CLIENT_SIDE"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-p07-property-assignment",
+      "vibeguard": {
+        "expected": ["AUTH_CLIENT_SIDE"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-p08-client-cookie",
+      "vibeguard": {
+        "expected": ["AUTH_CLIENT_SIDE"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-p09-zustand-persist-token",
+      "vibeguard": {
+        "expected": ["AUTH_CLIENT_SIDE"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-p10-supabase-session-manual",
+      "vibeguard": {
+        "expected": ["AUTH_CLIENT_SIDE"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-n01-theme",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-n02-language",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-n03-httponly-cookie-server",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-n04-cart-id",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-n05-tokenizer-setting",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "auth-n06-session-key-ui-state",
+      "vibeguard": {
+        "expected": [],
+        "fired": ["AUTH_CLIENT_SIDE"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-p01-template-interp",
+      "vibeguard": {
+        "expected": ["SQL_INJECTION"],
+        "fired": ["SQL_INJECTION"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-p02-string-concat",
+      "vibeguard": {
+        "expected": ["SQL_INJECTION"],
+        "fired": ["SQL_INJECTION"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-p03-delete-execute",
+      "vibeguard": {
+        "expected": ["SQL_INJECTION"],
+        "fired": ["SQL_INJECTION"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-p04-insert-interp",
+      "vibeguard": {
+        "expected": ["SQL_INJECTION"],
+        "fired": ["SQL_INJECTION"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-p05-multiline-template",
+      "vibeguard": {
+        "expected": ["SQL_INJECTION"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-p06-prisma-queryrawunsafe",
+      "vibeguard": {
+        "expected": ["SQL_INJECTION"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-p07-knex-raw",
+      "vibeguard": {
+        "expected": ["SQL_INJECTION"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-p08-sqlite-all-like",
+      "vibeguard": {
+        "expected": ["SQL_INJECTION"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-p09-sequelize-update",
+      "vibeguard": {
+        "expected": ["SQL_INJECTION"],
+        "fired": ["SQL_INJECTION"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-p10-mysql-callback-concat",
+      "vibeguard": {
+        "expected": ["SQL_INJECTION"],
+        "fired": ["SQL_INJECTION"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-n01-parameterized",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-n02-prisma-tagged-template",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-n03-orm",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-n04-static",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-n05-constant-identifier",
+      "vibeguard": {
+        "expected": [],
+        "fired": ["SQL_INJECTION"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-n06-template-no-interp",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "sql-n07-supabase-client",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-p01-dangerously-post-content",
+      "vibeguard": {
+        "expected": ["XSS_UNSANITIZED"],
+        "fired": ["XSS_UNSANITIZED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-p02-marked-output",
+      "vibeguard": {
+        "expected": ["XSS_UNSANITIZED"],
+        "fired": ["XSS_UNSANITIZED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-p03-props-html",
+      "vibeguard": {
+        "expected": ["XSS_UNSANITIZED"],
+        "fired": ["XSS_UNSANITIZED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-p04-multiline-object",
+      "vibeguard": {
+        "expected": ["XSS_UNSANITIZED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-p05-innerhtml-assign",
+      "vibeguard": {
+        "expected": ["XSS_UNSANITIZED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-p06-innerhtml-location-hash",
+      "vibeguard": {
+        "expected": ["XSS_UNSANITIZED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-p07-jquery-html",
+      "vibeguard": {
+        "expected": ["XSS_UNSANITIZED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-p08-document-write",
+      "vibeguard": {
+        "expected": ["XSS_UNSANITIZED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-p09-javascript-href",
+      "vibeguard": {
+        "expected": ["XSS_UNSANITIZED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-p10-insert-adjacent-html",
+      "vibeguard": {
+        "expected": ["XSS_UNSANITIZED"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-n01-dompurify",
+      "vibeguard": {
+        "expected": [],
+        "fired": ["XSS_UNSANITIZED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-n02-sanitize-html-lib",
+      "vibeguard": {
+        "expected": [],
+        "fired": ["XSS_UNSANITIZED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-n03-textcontent",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-n04-react-text-child",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-n05-static-html",
+      "vibeguard": {
+        "expected": [],
+        "fired": ["XSS_UNSANITIZED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "xss-n06-json-ld",
+      "vibeguard": {
+        "expected": [],
+        "fired": ["XSS_UNSANITIZED"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-p01-app-login",
+      "vibeguard": {
+        "expected": ["RATE_LIMIT_MISSING"],
+        "fired": ["RATE_LIMIT_MISSING"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-p02-signup-with-validate",
+      "vibeguard": {
+        "expected": ["RATE_LIMIT_MISSING"],
+        "fired": ["RATE_LIMIT_MISSING"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-p03-named-router-login",
+      "vibeguard": {
+        "expected": ["RATE_LIMIT_MISSING"],
+        "fired": ["RATE_LIMIT_MISSING"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-p04-forgot-password",
+      "vibeguard": {
+        "expected": ["RATE_LIMIT_MISSING"],
+        "fired": ["RATE_LIMIT_MISSING"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-p05-prefixed-path",
+      "vibeguard": {
+        "expected": ["RATE_LIMIT_MISSING"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-p06-nextjs-route-handler",
+      "vibeguard": {
+        "expected": ["RATE_LIMIT_MISSING"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-p07-fastify-login",
+      "vibeguard": {
+        "expected": ["RATE_LIMIT_MISSING"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-p08-versioned-register",
+      "vibeguard": {
+        "expected": ["RATE_LIMIT_MISSING"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-p09-router-route-chain",
+      "vibeguard": {
+        "expected": ["RATE_LIMIT_MISSING"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-p10-reset-password",
+      "vibeguard": {
+        "expected": ["RATE_LIMIT_MISSING"],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-n01-limiter-var",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-n02-inline-ratelimit",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-n03-loginlimiter-var",
+      "vibeguard": {
+        "expected": [],
+        "fired": ["RATE_LIMIT_MISSING"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-n04-global-limiter",
+      "vibeguard": {
+        "expected": [],
+        "fired": ["RATE_LIMIT_MISSING"]
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-n05-non-auth-route",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rl-n06-get-login-page",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rls-p01-public-profiles",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["RLS_MISSING"],
+        "fired": ["RLS_MISSING"]
+      }
+    },
+    {
+      "id": "rls-p02-plain-todos",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["RLS_MISSING"],
+        "fired": ["RLS_MISSING"]
+      }
+    },
+    {
+      "id": "rls-p03-one-of-two",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["RLS_MISSING"],
+        "fired": ["RLS_MISSING"]
+      }
+    },
+    {
+      "id": "rls-p04-policy-without-enable",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["RLS_MISSING"],
+        "fired": ["RLS_MISSING"]
+      }
+    },
+    {
+      "id": "rls-p05-if-not-exists",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["RLS_MISSING"],
+        "fired": ["RLS_MISSING"]
+      }
+    },
+    {
+      "id": "rls-p06-quoted-schema-dump",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["RLS_MISSING"],
+        "fired": ["RLS_MISSING"]
+      }
+    },
+    {
+      "id": "rls-n01-enabled",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rls-n02-uppercase-schema-qualified",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rls-n03-temp-table",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "rls-n04-prisma-backend-migration",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": ["RLS_MISSING"]
+      }
+    },
+    {
+      "id": "rls-n05-commented-create",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "ra-p01-users-by-id",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ROUTE_NO_AUTH"],
+        "fired": ["ROUTE_NO_AUTH"]
+      }
+    },
+    {
+      "id": "ra-p02-admin-delete",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ROUTE_NO_AUTH"],
+        "fired": ["ROUTE_NO_AUTH"]
+      }
+    },
+    {
+      "id": "ra-p03-orders-post",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ROUTE_NO_AUTH"],
+        "fired": ["ROUTE_NO_AUTH"]
+      }
+    },
+    {
+      "id": "ra-p04-profile",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ROUTE_NO_AUTH"],
+        "fired": ["ROUTE_NO_AUTH"]
+      }
+    },
+    {
+      "id": "ra-p05-settings-put",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ROUTE_NO_AUTH"],
+        "fired": ["ROUTE_NO_AUTH"]
+      }
+    },
+    {
+      "id": "ra-p06-nextjs-admin-route",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ROUTE_NO_AUTH"],
+        "fired": []
+      }
+    },
+    {
+      "id": "ra-p07-fastify-users",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ROUTE_NO_AUTH"],
+        "fired": []
+      }
+    },
+    {
+      "id": "ra-p08-router-route-chain",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ROUTE_NO_AUTH"],
+        "fired": []
+      }
+    },
+    {
+      "id": "ra-p09-billing-invoices",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ROUTE_NO_AUTH"],
+        "fired": ["ROUTE_NO_AUTH"]
+      }
+    },
+    {
+      "id": "ra-p10-role-escalation",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ROUTE_NO_AUTH"],
+        "fired": ["ROUTE_NO_AUTH"]
+      }
+    },
+    {
+      "id": "ra-n01-require-auth",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "ra-n02-auth-middleware",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "ra-n03-health",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "ra-n04-router-level-auth",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": ["ROUTE_NO_AUTH"]
+      }
+    },
+    {
+      "id": "ra-n05-public-optout",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "ra-n06-public-catalog",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "ra-n07-app-level-auth",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": ["ROUTE_NO_AUTH"]
+      }
+    },
+    {
+      "id": "ra-n08-passport",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "env-p01-no-gitignore",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ENV_NOT_IGNORED"],
+        "fired": ["ENV_NOT_IGNORED"]
+      }
+    },
+    {
+      "id": "env-p02-gitignore-lacks-env",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ENV_NOT_IGNORED"],
+        "fired": ["ENV_NOT_IGNORED"]
+      }
+    },
+    {
+      "id": "env-p03-dotenv-does-not-cover-local",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ENV_NOT_IGNORED"],
+        "fired": []
+      }
+    },
+    {
+      "id": "env-p04-production-file",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ENV_NOT_IGNORED"],
+        "fired": ["ENV_NOT_IGNORED"]
+      }
+    },
+    {
+      "id": "env-p05-subdir-env",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ENV_NOT_IGNORED"],
+        "fired": ["ENV_NOT_IGNORED"]
+      }
+    },
+    {
+      "id": "env-p06-envrc-only",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ENV_NOT_IGNORED"],
+        "fired": ["ENV_NOT_IGNORED"]
+      }
+    },
+    {
+      "id": "env-n01-wildcard",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "env-n02-dotenv-only",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "env-n03-example-only",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "env-n04-nested-gitignore",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": ["ENV_NOT_IGNORED"]
+      }
+    },
+    {
+      "id": "env-n05-no-env-files",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-p01-body-userid",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["USERID_FROM_CLIENT"],
+        "fired": ["USERID_FROM_CLIENT"]
+      }
+    },
+    {
+      "id": "uid-p02-destructured",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["USERID_FROM_CLIENT"],
+        "fired": ["USERID_FROM_CLIENT"]
+      }
+    },
+    {
+      "id": "uid-p03-snake-case",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["USERID_FROM_CLIENT"],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-p04-nextjs-request-json",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["USERID_FROM_CLIENT"],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-p05-supabase-insert-body",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["USERID_FROM_CLIENT"],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-p06-owner-id",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["USERID_FROM_CLIENT"],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-p07-uid",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["USERID_FROM_CLIENT"],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-p08-zod-input-userid",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["USERID_FROM_CLIENT"],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-n01-req-user",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-n02-session",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-n03-clerk-auth",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-n04-admin-assigns",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": ["USERID_FROM_CLIENT"]
+      }
+    },
+    {
+      "id": "uid-n05-body-no-userid",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "uid-n06-params-with-ownership",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "err-p01-empty-catch",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ERROR_SWALLOWED"],
+        "fired": ["ERROR_SWALLOWED"]
+      }
+    },
+    {
+      "id": "err-p02-promise-catch-noop",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ERROR_SWALLOWED"],
+        "fired": ["ERROR_SWALLOWED"]
+      }
+    },
+    {
+      "id": "err-p03-catch-no-binding",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ERROR_SWALLOWED"],
+        "fired": ["ERROR_SWALLOWED"]
+      }
+    },
+    {
+      "id": "err-p04-comment-ignore",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ERROR_SWALLOWED"],
+        "fired": []
+      }
+    },
+    {
+      "id": "err-p05-catch-null",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ERROR_SWALLOWED"],
+        "fired": []
+      }
+    },
+    {
+      "id": "err-p06-swallow-then-ok",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ERROR_SWALLOWED"],
+        "fired": ["ERROR_SWALLOWED"]
+      }
+    },
+    {
+      "id": "err-p07-empty-return",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ERROR_SWALLOWED"],
+        "fired": []
+      }
+    },
+    {
+      "id": "err-p08-todo-only",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["ERROR_SWALLOWED"],
+        "fired": []
+      }
+    },
+    {
+      "id": "err-n01-logger",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "err-n02-rethrow",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "err-n03-respond-500",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "err-n04-named-handler",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "err-n05-documented-best-effort",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "err-n06-warn-handler",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "wh-p01-stripe-router",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["WEBHOOK_UNVERIFIED"],
+        "fired": ["WEBHOOK_UNVERIFIED"]
+      }
+    },
+    {
+      "id": "wh-p02-paypal-app",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["WEBHOOK_UNVERIFIED"],
+        "fired": ["WEBHOOK_UNVERIFIED"]
+      }
+    },
+    {
+      "id": "wh-p03-mercadopago-named-router",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["WEBHOOK_UNVERIFIED"],
+        "fired": ["WEBHOOK_UNVERIFIED"]
+      }
+    },
+    {
+      "id": "wh-p04-checkout-webhook",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["WEBHOOK_UNVERIFIED"],
+        "fired": ["WEBHOOK_UNVERIFIED"]
+      }
+    },
+    {
+      "id": "wh-p05-nextjs-route",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["WEBHOOK_UNVERIFIED"],
+        "fired": []
+      }
+    },
+    {
+      "id": "wh-p06-express-json-first",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["WEBHOOK_UNVERIFIED"],
+        "fired": ["WEBHOOK_UNVERIFIED"]
+      }
+    },
+    {
+      "id": "wh-p07-pagseguro-hooks-path",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["WEBHOOK_UNVERIFIED"],
+        "fired": []
+      }
+    },
+    {
+      "id": "wh-p08-fastify-stripe",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["WEBHOOK_UNVERIFIED"],
+        "fired": []
+      }
+    },
+    {
+      "id": "wh-n01-construct-event",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "wh-n02-verify-helper",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "wh-n03-github-webhook",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "wh-n04-router-level-verification",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": ["WEBHOOK_UNVERIFIED"]
+      }
+    },
+    {
+      "id": "wh-n05-signature-header-inline",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "wh-n06-non-webhook-payment-route",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "bw-p01-prisma-create-body",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["BODY_UNVALIDATED_WRITE"],
+        "fired": ["BODY_UNVALIDATED_WRITE"]
+      }
+    },
+    {
+      "id": "bw-p02-prisma-update-body",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["BODY_UNVALIDATED_WRITE"],
+        "fired": ["BODY_UNVALIDATED_WRITE"]
+      }
+    },
+    {
+      "id": "bw-p03-mongoose-create",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["BODY_UNVALIDATED_WRITE"],
+        "fired": []
+      }
+    },
+    {
+      "id": "bw-p04-supabase-insert-body",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["BODY_UNVALIDATED_WRITE"],
+        "fired": []
+      }
+    },
+    {
+      "id": "bw-p05-mongo-insertone",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["BODY_UNVALIDATED_WRITE"],
+        "fired": []
+      }
+    },
+    {
+      "id": "bw-p06-spread-body",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["BODY_UNVALIDATED_WRITE"],
+        "fired": []
+      }
+    },
+    {
+      "id": "bw-p07-nextjs-json-body",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["BODY_UNVALIDATED_WRITE"],
+        "fired": []
+      }
+    },
+    {
+      "id": "bw-p08-mongoose-find-update",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["BODY_UNVALIDATED_WRITE"],
+        "fired": []
+      }
+    },
+    {
+      "id": "bw-n01-parse-first",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "bw-n02-picked-fields",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "bw-n03-validate-middleware",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": ["BODY_UNVALIDATED_WRITE"]
+      }
+    },
+    {
+      "id": "bw-n04-safeparse",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "bw-n05-no-writes",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "np-p01-for-of-findunique",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["N_PLUS_ONE"],
+        "fired": ["N_PLUS_ONE"]
+      }
+    },
+    {
+      "id": "np-p02-map-async-query",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["N_PLUS_ONE"],
+        "fired": ["N_PLUS_ONE"]
+      }
+    },
+    {
+      "id": "np-p03-promise-all-repo",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["N_PLUS_ONE"],
+        "fired": ["N_PLUS_ONE"]
+      }
+    },
+    {
+      "id": "np-p04-foreach-findone",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["N_PLUS_ONE"],
+        "fired": ["N_PLUS_ONE"]
+      }
+    },
+    {
+      "id": "np-p05-while-loop-query",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["N_PLUS_ONE"],
+        "fired": ["N_PLUS_ONE"]
+      }
+    },
+    {
+      "id": "np-p06-supabase-in-map",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["N_PLUS_ONE"],
+        "fired": []
+      }
+    },
+    {
+      "id": "np-p07-typeorm-findoneby",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["N_PLUS_ONE"],
+        "fired": ["N_PLUS_ONE"]
+      }
+    },
+    {
+      "id": "np-p08-drizzle-select-in-loop",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["N_PLUS_ONE"],
+        "fired": []
+      }
+    },
+    {
+      "id": "np-p09-mongoose-find-in-loop",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": ["N_PLUS_ONE"],
+        "fired": []
+      }
+    },
+    {
+      "id": "np-n01-batch-in",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "np-n02-pure-loop",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "np-n03-writes-in-loop",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "np-n04-single-query",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "np-n05-optout",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    },
+    {
+      "id": "np-n06-in-memory-cache-get",
+      "vibeguard": {
+        "expected": [],
+        "fired": []
+      },
+      "checks": {
+        "expected": [],
+        "fired": []
+      }
+    }
+  ]
+}

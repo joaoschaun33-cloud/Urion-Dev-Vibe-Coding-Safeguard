@@ -21,14 +21,11 @@ const TEST_OR_FIXTURE_RE =
 const MOCK_VALUE_RE =
   /\b(?:mock|fake|dummy|example|exemplo|placeholder|changeme|your[_-]?(?:api[_-]?)?key|test[_-]?key|xxx+)/i;
 
-function runModeMakerScanner(targetDir = process.cwd()) {
-  console.log(ui.box('🛡️ URION VIBEGUARD v2.0 — MODO MAKER', [
-    'Diagnóstico em Linguagem Simples para Criadores (No-Code / Low-Code)',
-    'Análise das 5 Vulnerabilidades Críticas de Aplicativos Gerados por IA'
-  ], 75));
-  console.log(colorize('\n🔍 Escaneando vulnerabilidades que ameaçam seu aplicativo...\n', 'yellow'));
-
+// Varredura pura (sem console): e o que o comando `vibeguard` executa e o que o
+// benchmark (benchmarks/) mede — a mesma funcao, nao uma copia da logica.
+function scanProject(targetDir) {
   const issues = [];
+  const unreadable = [];
   const ignoreDirs = new Set(['node_modules', '.git', 'dist', 'build', '.urion', '.next', 'coverage']);
   const allowedExts = new Set(['.ts', '.tsx', '.js', '.jsx', '.json', '.env']);
   let scannedFiles = 0;
@@ -68,7 +65,7 @@ function runModeMakerScanner(targetDir = process.cwd()) {
               }
             });
           } catch (err) {
-            console.warn(`⚠️  Não foi possível ler "${fullPath}": ${err.message}`);
+            unreadable.push(`Não foi possível ler "${fullPath}": ${err.message}`);
           }
         }
       }
@@ -76,6 +73,18 @@ function runModeMakerScanner(targetDir = process.cwd()) {
   }
 
   scan(targetDir);
+  return { issues, scannedFiles, unreadable };
+}
+
+function runModeMakerScanner(targetDir = process.cwd()) {
+  console.log(ui.box('🛡️ URION VIBEGUARD v2.0 — MODO MAKER', [
+    'Diagnóstico em Linguagem Simples para Criadores (No-Code / Low-Code)',
+    'Análise das 5 Vulnerabilidades Críticas de Aplicativos Gerados por IA'
+  ], 75));
+  console.log(colorize('\n🔍 Escaneando vulnerabilidades que ameaçam seu aplicativo...\n', 'yellow'));
+
+  const { issues, scannedFiles, unreadable } = scanProject(targetDir);
+  unreadable.forEach((msg) => console.warn(`⚠️  ${msg}`));
 
   const criticals = issues.filter(i => i.rule.severity === 'CRITICAL').length;
   const warnings = issues.filter(i => i.rule.severity === 'WARNING').length;
@@ -87,8 +96,10 @@ function runModeMakerScanner(targetDir = process.cwd()) {
   console.log(ui.progressBar('Score', score, 30));
 
   if (score >= 90 && criticals === 0) {
-    console.log(colorize('\n✅ SEU APLICATIVO ESTÁ SEGURO E PRONTO PARA O AR!', 'green'));
-    console.log(colorize('🏆 Elegível ao Selo Público: [Urion Verified Security Grade A]\n', 'cyan'));
+    console.log(colorize('\n✅ Nenhum dos 5 padrões de risco que este scanner procura foi encontrado.', 'green'));
+    console.log(colorize('⚠️  Isso NÃO prova que o app é seguro: a análise usa regras simples e, em testes internos,', 'yellow'));
+    console.log(colorize('   deixa passar boa parte dos casos vulneráveis. Antes de lançar (principalmente com', 'yellow'));
+    console.log(colorize('   pagamentos ou dados pessoais), peça uma revisão humana. Detalhes: benchmarks/RESULTS.md\n', 'yellow'));
   } else if (score >= 70) {
     console.log(colorize('\n🟡 ATENÇÃO: Seu app funciona, mas exige pequenos ajustes antes do lançamento.', 'yellow'));
   } else {
@@ -114,4 +125,4 @@ function runModeMakerScanner(targetDir = process.cwd()) {
   return { score, criticals, warnings, issuesCount: issues.length };
 }
 
-module.exports = { runModeMakerScanner, VIBE_GUARD_RULES };
+module.exports = { runModeMakerScanner, scanProject, VIBE_GUARD_RULES };

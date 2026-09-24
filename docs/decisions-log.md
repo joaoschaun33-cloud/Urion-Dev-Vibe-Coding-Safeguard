@@ -291,6 +291,15 @@ já mata o processo real — o bug é específico do Windows).
 **Alternativas consideradas**: monorepo com workspaces (`packages/cli`) — é o destino natural, mas mover `bin/` e `src/mcp` quebra testes, CI, smoke tests e `cursor-doctor` de uma vez; adiado até o produto estar validado. Separar o template em outro repositório — idem.
 **Dívidas conhecidas e NÃO resolvidas aqui**: (a) `bin/create-vibe-safeguard.js` (fora do pacote, mas no repositório) guarda um token do GitHub em texto puro em `~/.urion/config.json` e o embute numa URL de clone dentro de `execSync` com string interpolada (o token pode aparecer em erros/lista de processos); publica em `github.com/urion/cases`, organização que não sabemos se controlamos. Precisa de reescrita ou remoção antes de ser reexposto. (b) O `blueprint` do template (`src/features/blueprint-hub`) ainda existe como API de exemplo; não é chamado pelo CLI. (c) Validação em repositórios reais e medição de precisão/recall dos detectores continuam pendentes (passos 2-4 do plano).
 
+### 2026-09-24 — Medir antes de melhorar: benchmark dos detectores como linha de base
+
+**Status**: Aceita
+**Contexto**: A pergunta "o projeto ajuda a resolver problemas reais?" não tinha resposta em números. A detecção é por regex/heurística e nunca havia sido medida contra código vulnerável/seguro conhecido.
+**Decisão**: (1) Criar `benchmarks/` com um corpus sintético (195 casos, 13 regras, cada caso com `why`) e um executor que roda os **dois motores reais** (a função `scanProject` extraída do `mode-maker.cjs`, e `runConfigGate`), reportando recall/precisão com IC de Wilson. (2) Congelar os números **antes** de qualquer correção de detector: correções entram depois, com o ganho medido contra esta linha de base (não por palpite). (3) Trocar a mensagem do `vibeguard` que afirmava "seguro e pronto para o ar" por uma que não promete o que a medição não sustenta.
+**Consequências**: `RESULTS.md` é a fonte dos números que podemos citar. O corpus foi escrito por quem conhece os detectores, então os números são **otimistas**; eles achavam defeitos concretos (ver "Known issues" no CHANGELOG) e servem de detector de regressão, não de estimativa em projetos reais. A revisão do próprio gabarito já pegou 3 erros meus (casos que legitimamente disparavam outra regra).
+**Alternativas consideradas**: medir só em repositórios reais — necessário, mas exige rotulagem manual e cuidado ético (não publicar vulnerabilidades de terceiros); é o passo seguinte, não substituto. Copiar as regexes no medidor — rejeitado (mediria uma cópia, não o produto).
+**Limites conhecidos do medidor**: granularidade por caso (não por linha); não cobre o MCP `urion_security_check` (que devolve `APPROVED` quando nada é achado — mesmo problema de promessa da mensagem do CLI, ainda a tratar), nem `launch:gate`, nem o auditor.
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões
