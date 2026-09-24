@@ -3,12 +3,24 @@
 import fs from 'fs';
 import path from 'path';
 import { VIBE_GUARD_RULES, VibeGuardIssue, VibeGuardReport } from '../domain/vibe-guard-rules';
-import { isTestOrFixturePath, looksLikeMockValue } from '../domain/scan-filters';
+import {
+  isFirebaseWebConfigLine,
+  isStaticMultilineTemplate,
+  isTestOrFixturePath,
+  looksGeneratedContent,
+  looksLikeMockValue,
+} from '../domain/scan-filters';
 import { findEnvSecrets, isEnvFileName } from '../domain/env-secrets';
+
+// Limitador de tentativas montado globalmente (app.use(limiter) / app.use('/api', rateLimit(...))):
+// protege as rotas de login que o regex por linha nao consegue ligar ao limitador.
+const GLOBAL_LIMITER_RE =
+  /\.use\(\s*(?:['"`][^'"`]*['"`]\s*,\s*)?[^)]*\b\w*(?:limiter|ratelimit)\w*/i;
 
 export class ScanVibeGuardUseCase {
   execute(targetDir: string): Promise<VibeGuardReport> {
-    const issues: VibeGuardIssue[] = [];
+    let issues: VibeGuardIssue[] = [];
+    const limiter = { found: false };
     const filesToScan = this.collectFiles(targetDir);
 
     for (const filePath of filesToScan) {
@@ -16,6 +28,9 @@ export class ScanVibeGuardUseCase {
         const content = fs.readFileSync(filePath, 'utf8');
         const lines = content.split('\n');
         const isEnv = isEnvFileName(path.basename(filePath));
+        // Bundle/minificado nao e o codigo do projeto: so procura segredo ali (achado de alta
+        // confianca), nunca XSS/SQL/etc. (ruido). Uma linha longa (SQL embutido) NAO pode esconder um token.
+        const generated = !isEnv && looksGeneratedContent(content);
         const relPath = path.relative(targetDir, filePath).replace(/\\/g, '/');
 
         const addIssue = (
@@ -52,10 +67,24 @@ export class ScanVibeGuardUseCase {
           }
         } else {
           lines.forEach((line, index) => {
+            if (GLOBAL_LIMITER_RE.test(line)) {
+              limiter.found = true;
+            }
             for (const rule of VIBE_GUARD_RULES) {
+              if (generated && rule.id !== 'SECRETS_HARDCODED') {
+                continue;
+              }
               if (rule.regex.test(line)) {
-                // Reduz falso positivo: ignora valores obviamente falsos (mock/exemplo).
-                if (rule.id === 'SECRETS_HARDCODED' && looksLikeMockValue(line)) {
+                // Reduz falso positivo: valores obviamente falsos (mock/exemplo) e a apiKey
+                // publica do Firebase Web.
+                if (
+                  rule.id === 'SECRETS_HARDCODED' &&
+                  (looksLikeMockValue(line) || isFirebaseWebConfigLine(lines, index))
+                ) {
+                  continue;
+                }
+                // Template de varias linhas sem ${dado} no corpo: HTML estatico, nao injecao.
+                if (rule.id === 'XSS_UNSANITIZED' && isStaticMultilineTemplate(lines, index)) {
                   continue;
                 }
                 addIssue(rule, index + 1, line.trim());
@@ -66,6 +95,10 @@ export class ScanVibeGuardUseCase {
       } catch {
         // Ignora erros de leitura de arquivos individuais
       }
+    }
+
+    if (limiter.found) {
+      issues = issues.filter((i) => i.ruleId !== 'RATE_LIMIT_MISSING');
     }
 
     const criticalCount = issues.filter((i) => i.severity === 'CRITICAL').length;
@@ -128,7 +161,8 @@ export class ScanVibeGuardUseCase {
         }
 
         if (stat.isDirectory()) {
-          if (!ignoreDirs.has(item)) {
+          // Pastas ocultas (.vite, .cache, .turbo...) sao cache/gerado, nao o codigo do projeto.
+          if (!ignoreDirs.has(item) && !item.startsWith('.')) {
             scan(fullPath);
           }
         } else if (stat.isFile()) {

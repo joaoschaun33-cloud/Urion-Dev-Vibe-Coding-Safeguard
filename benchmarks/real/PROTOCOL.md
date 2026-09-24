@@ -26,6 +26,21 @@ npx tsx benchmarks/real/scan.ts benchmarks/real/data/repos benchmarks/real/data/
 # 5. Rotulagem manual dos achados (rubrico abaixo)
 ```
 
+## Disciplina de lotes (contra sobreajuste)
+
+Corrigir um detector nos mesmos repositórios em que foi medido só prova que ele **decorou** esses
+repositórios. Regras:
+
+1. **Lote de calibração:** onde se mede e se corrige. Os números "depois" dele são otimistas.
+2. **Lote novo:** repositórios que nenhum detector nem o rotulador viram. A medição em código
+   **antes de qualquer correção** ("primeiro contato") é a única estimativa honesta de precisão em
+   projetos novos. Depois de corrigir com base nele, ele também vira lote de calibração.
+3. Para cada correção, comparar achado por achado (`antes` × `depois`) e conferir que **saíram só
+   falsos alarmes**; achado relevante que sumiu é perda de recall e precisa ser declarada.
+4. **Marcadores diferentes** por lote (ex.: `lovable-tagger` no `package.json`, `vite_react_shadcn_ts`,
+   `lovable.dev/projects` no README) e excluir repositórios já usados.
+5. Nunca reportar só o número calibrado. Reportar sempre o "primeiro contato" ao lado.
+
 ## Rubrico de rotulagem
 
 Um achado é **relevante** quando, olhando o código e o contexto, a falha descrita existe de fato:

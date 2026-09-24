@@ -14,12 +14,12 @@
 
 | Regra                | Casos vulneráveis | Detectou (TP) | Perdeu (FN) | Alarme falso (FP) |  Recall (IC 95%) | Precisão (IC 95%) |
 | -------------------- | ----------------: | ------------: | ----------: | ----------------: | ---------------: | ----------------: |
-| `SECRETS_HARDCODED`  |                17 |            14 |           3 |                 1 |     82% (59–94%) |      93% (70–99%) |
-| `AUTH_CLIENT_SIDE`   |                10 |             7 |           3 |                 1 |     70% (40–89%) |      88% (53–98%) |
+| `SECRETS_HARDCODED`  |                17 |            14 |           3 |                 0 |     82% (59–94%) |    100% (78–100%) |
+| `AUTH_CLIENT_SIDE`   |                10 |             8 |           2 |                 1 |     80% (49–94%) |      89% (56–98%) |
 | `SQL_INJECTION`      |                10 |             6 |           4 |                 1 |     60% (31–83%) |      86% (49–97%) |
 | `XSS_UNSANITIZED`    |                10 |             7 |           3 |                 0 |     70% (40–89%) |    100% (65–100%) |
-| `RATE_LIMIT_MISSING` |                10 |             4 |           6 |                 2 |     40% (17–69%) |      67% (30–90%) |
-| **Total (micro)**    |            **57** |        **38** |      **19** |             **5** | **67% (54–78%)** |  **88% (76–95%)** |
+| `RATE_LIMIT_MISSING` |                10 |             4 |           6 |                 1 |     40% (17–69%) |      80% (38–96%) |
+| **Total (micro)**    |            **57** |        **39** |      **18** |             **3** | **68% (56–79%)** |  **93% (81–98%)** |
 
 ### Erros por regra
 
@@ -28,11 +28,9 @@
 - **Perdeu** `sec-p06-jwt-signing-secret` — Segredo de assinatura de JWT hardcoded (permite forjar qualquer sessao). Nome JWT_SECRET.
 - **Perdeu** `sec-p07-supabase-service-role-literal` — Service role key do Supabase (ignora RLS) como literal, sem nome de variavel revelador.
 - **Perdeu** `sec-p08-database-url-with-credentials` — String de conexao com usuario e senha embutidos.
-- **Alarme falso** `sec-n04-firebase-public-web-key` — apiKey do Firebase Web e publica por design (documentacao do Firebase): nao e segredo.
 
 #### `AUTH_CLIENT_SIDE`
 
-- **Perdeu** `auth-p06-constant-key` — Chave em constante (TOKEN_KEY) em localStorage.
 - **Perdeu** `auth-p07-property-assignment` — localStorage.token = ... (atribuicao direta).
 - **Perdeu** `auth-p09-zustand-persist-token` — Store Zustand com persist (localStorage por padrao) guardando o token.
 - **Alarme falso** `auth-n06-session-key-ui-state` — Chave chamada 'session' guardando apenas filtro de UI (nao credencial).
@@ -60,7 +58,6 @@
 - **Perdeu** `rl-p09-router-route-chain` — router.route("/login").post(...) sem limitador.
 - **Perdeu** `rl-p10-reset-password` — Reset de senha sem limitador.
 - **Alarme falso** `rl-n03-loginlimiter-var` — Limitador com nome loginLimiter (nome muito comum).
-- **Alarme falso** `rl-n04-global-limiter` — Limitador global via app.use antes das rotas (protege /login).
 
 ## Motor 2 — `urion-checks` (R1–R9 + N+1)
 

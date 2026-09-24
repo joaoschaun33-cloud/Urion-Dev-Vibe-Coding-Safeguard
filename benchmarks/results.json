@@ -160,7 +160,7 @@
       "id": "sec-n04-firebase-public-web-key",
       "vibeguard": {
         "expected": [],
-        "fired": ["SECRETS_HARDCODED"]
+        "fired": []
       },
       "checks": {
         "expected": [],
@@ -281,7 +281,7 @@
       "id": "auth-p06-constant-key",
       "vibeguard": {
         "expected": ["AUTH_CLIENT_SIDE"],
-        "fired": []
+        "fired": ["AUTH_CLIENT_SIDE"]
       },
       "checks": {
         "expected": [],
@@ -908,7 +908,7 @@
       "id": "rl-n04-global-limiter",
       "vibeguard": {
         "expected": [],
-        "fired": ["RATE_LIMIT_MISSING"]
+        "fired": []
       },
       "checks": {
         "expected": [],

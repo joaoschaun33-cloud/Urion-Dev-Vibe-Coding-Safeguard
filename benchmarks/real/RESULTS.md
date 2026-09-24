@@ -113,6 +113,71 @@ removida do modo linha; o modo MCP (que vê o trecho inteiro) continua cobrindo 
 sintético essa alternativa só parecia ganho** (recall de XSS 80%); no código real era 70 falsos
 alarmes. É por isso que o corpus sintético não basta como medida.
 
+## Validação em lotes NOVOS (a prova de generalização)
+
+Depois das correções dos itens 1–7 (lote 1), rodamos os mesmos detectores em **dois lotes de
+repositórios que nunca tinham visto** (80 e 70 projetos Lovable, achados por outros marcadores:
+`vite_react_shadcn_ts` no `package.json` e `lovable.dev/projects` no README). Rotulamos tudo com o
+mesmo rubrico. **"Primeiro contato" é a estimativa honesta de como o produto se sai em projetos
+novos**; "final" é depois de corrigir as causas que aquele lote revelou (portanto **otimista**,
+porque foi calibrado nos mesmos dados).
+
+Precisão (dos achados, quantos eram relevantes; "incertos" fora da conta):
+
+| Lote                                            | `vibeguard` por achado (por repositório) | `urion-checks` por achado (por repositório) |
+| ----------------------------------------------- | ---------------------------------------: | ------------------------------------------: |
+| 1, linha de base (antes de qualquer correção)   |                                64% (63%) |                                   33% (40%) |
+| 1, final (calibrado nele)                       |                                95% (94%) |                                   96% (89%) |
+| **2, primeiro contato** (80 repositórios novos) |                            **48% (63%)** |                             77%\* (**60%**) |
+| 2, final                                        |                                90% (93%) |                                 99%\* (93%) |
+| **3, primeiro contato** (70 repositórios novos) |                            **55% (71%)** |                               **57% (71%)** |
+| 3, final                                        |                                95% (91%) |                                 100% (100%) |
+
+\* O lote 2 tem um único repositório grande e duplicado que responde por 120 dos 177
+achados do `urion-checks`; por achado o número é inflado, por repositório não.
+
+**Leitura honesta:** em projetos novos, a precisão esperada hoje é de **~55–70%** (a cada 10 alertas,
+3 a 4 não valem a pena), não os 90+% dos lotes calibrados. Cada lote novo revelou classes de falso
+alarme que os anteriores não tinham, então o número "final" de qualquer lote sempre subestima o
+próximo. Os falsos alarmes que sobram nos lotes finais são poucos, mas a lista de causas ainda não
+convergiu.
+
+### Falsos alarmes que só apareceram nos lotes novos (e o que foi feito)
+
+| Causa                                                                  | Achados | Correção                                                                                         |
+| ---------------------------------------------------------------------- | ------: | ------------------------------------------------------------------------------------------------ |
+| Código gerado commitado (`chunk-*.js`, cache `.vite/deps`)             |      15 | ignora pastas ocultas; arquivo "gerado" (linha > 1000 caracteres) só é varrido para **segredos** |
+| Template de várias linhas sem `${}` (GTM, CSS, widget)                 |       8 | o scanner olha o corpo do template; com `${dado}` continua acusando                              |
+| `script.innerHTML = JSON.stringify(cfg)` (widgets TradingView)         |       8 | `JSON.stringify` aceito em atribuição a `innerHTML`                                              |
+| Chave pública do Firebase Web (`apiKey` com `authDomain` ao lado)      |       5 | reconhece o objeto de configuração                                                               |
+| Script de migração (BEGIN/COMMIT/INSERT em laço) e scripts avulsos     |  10 + 5 | ignora `scripts/`, `migrations/`; query literal de escrita não é N+1                             |
+| Rota de admin com `adminAuth` (`userId` no corpo)                      |       2 | reconhece o guard na definição da rota                                                           |
+| RLS gerado por `EXECUTE format(...)` e a palavra `as` lida como tabela |       9 | não acusa RLS dinâmico; palavra reservada não é tabela                                           |
+| Limitador global (`app.use('/api', limiter)`)                          |       4 | suprime o alerta de rate limit se há limitador global                                            |
+| `ERROR_SWALLOWED` em áudio, limpeza de store, laço de tentativas       |  6 de 7 | só acusa quando há **evidência de I/O** (rede, banco, pagamento)                                 |
+
+**Custo de recall assumido:** a exigência de evidência de I/O em `ERROR_SWALLOWED` também removeu
+~9 achados que eu tinha rotulado como relevantes (por exemplo `fetchAuthor(...)` dentro de um
+`Promise.all`, que a lista de palavras não reconhece). É uma regra de baixa confiança por natureza
+(severidade `WARNING`, nunca bloqueia commit); preferimos poucos alertas com precisão razoável.
+Idem para XSS: um template de várias linhas cujo `${}` só aparece muitas linhas depois continua
+acusado, mas um XSS multilinha que o CLI (modo linha) não vê na primeira linha é perdido.
+
+### Recall em dados nunca vistos (oráculo independente, só para autenticação no navegador)
+
+Grep amplo e independente das regras, com revisão manual das linhas, comparado ao scanner:
+
+| Momento                                                         | Repositórios com o problema real | Acusados pelo scanner |
+| --------------------------------------------------------------- | -------------------------------: | --------------------: |
+| Lote 2, primeiro contato                                        |                               12 |           4 (**33%**) |
+| Lote 3, primeiro contato                                        |                               ~6 |          2 (**~33%**) |
+| Após ampliar a regra (lotes 2 e 3, calibrados nos mesmos dados) |                          12 e ~6 |                10 e 6 |
+
+Faltavam: chave em **constante** (`TOKEN_KEY`), **flag de login** no navegador
+(`isAuthenticated = "true"`, `admin_authenticated`) e `session_id`. O "100%" que a regra tinha no
+lote 1 era sobreajuste; o número após a ampliação, medido nos mesmos dados em que foi calibrada, é
+otimista.
+
 ## Limites desta medição
 
 Rotulador único (viés); amostra pequena e enviesada; "relevante" não significa "explorável"; o

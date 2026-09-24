@@ -61,10 +61,17 @@ const providerToken = PROVIDER_TOKEN_SOURCE;
 // guarda de <style>. No modo linha (CLI) NAO ha alternativa so para "__html:" numa linha
 // sozinha: em 81 repositorios reais 70 dos 86 disparos dela eram o chart.tsx do shadcn/ui
 // (<style> gerado de constantes), que a linha isolada nao consegue distinguir.
+// Template de varias linhas ABERTO na linha (innerHTML = `\n...`): o regex por linha nao ve o corpo, entao
+// dispara; quem decide se e estatico (GTM, CSS, widget) ou tem ${dado} e o scanner, com
+// isStaticMultilineTemplate() (scan-filters.ts). No modo MCP (trecho inteiro) o template fechado sem ${}
+// ja cai em `[^`$]*` abaixo.
 const XSS_SAFE_VALUE =
   '(?:DOMPurify|sanitize|JSON\\.stringify\\s*\\(|"[^"]*"\\s*[,}]|\'[^\']*\'\\s*[,}]|`[^`$]*`\\s*[,}])';
+// Copia de conteudo que ja esta no DOM (a.innerHTML = b.innerHTML) nao injeta dado novo.
+// JSON.stringify: script de widget embutido (TradingView etc.: script.innerHTML = JSON.stringify(cfg)).
+// Literal seguido de ; ) } , ou fim de linha: "el.innerHTML = ''; outra()" (limpar) nao e injecao.
 const XSS_SAFE_ASSIGN =
-  '(?:DOMPurify|sanitize|"[^"]*"\\s*;?\\s*(?:$|\\n)|\'[^\']*\'\\s*;?\\s*(?:$|\\n)|`[^`$]*`\\s*;?\\s*(?:$|\\n))';
+  '(?:DOMPurify|sanitize|JSON\\.stringify\\s*\\(|"[^"]*"\\s*(?:[;)},]|$|\\n)|\'[^\']*\'\\s*(?:[;)},]|$|\\n)|`[^`$]*`\\s*(?:[;)},]|$|\\n)|[\\w$.?\\[\\]()\'"-]*\\.innerHTML\\s*;?\\s*(?:$|\\n))';
 const XSS_SAFE_ARG = '(?:DOMPurify|sanitize|"[^"]*"\\s*\\)|\'[^\']*\'\\s*\\)|`[^`$]*`\\s*\\))';
 const XSS_SINK = new RegExp(
   '(?:' +
@@ -84,9 +91,15 @@ const XSS_SINK = new RegExp(
   'i'
 );
 
+// Alem de chave literal com token/jwt: (a) flag de login gravada no navegador (setItem('x_auth' |
+// 'isAuthenticated' | 'admin_authenticated', 'true')) — o "login" vira um valor que qualquer um edita
+// no DevTools; (b) chave em CONSTANTE (TOKEN_KEY, ACCESS_TOKEN_KEY, AUTH_STORAGE_KEY); (c) session_id.
+// Medido em dados NUNCA vistos: a regra so achava ~1/3 dos repositorios com o problema.
 const AUTH_STORAGE = new RegExp(
   '(?:localStorage|sessionStorage)\\.setItem\\(\\s*["\'](?![^"\']*tokeniz)' +
-    '(?:[^"\']*(?:token|jwt|bearer|credential)[^"\']*|auth|session)["\']' +
+    '(?:[^"\']*(?:token|jwt|bearer|credential)[^"\']*|auth|session|session[_-]?id)["\']' +
+    '|(?:localStorage|sessionStorage)\\.setItem\\(\\s*["\'][^"\']*(?:auth|logged|login|isadmin)[^"\']*["\']\\s*,\\s*["\']true["\']' +
+    '|(?:localStorage|sessionStorage)\\.setItem\\(\\s*[A-Z0-9_]*(?:TOKEN|AUTH|JWT|CREDENTIAL)[A-Z0-9_]*\\s*,' +
     '|(?:localStorage|sessionStorage)(?:\\.|\\[\\s*["\'])(?:token|jwt|authToken|accessToken|access_token|refreshToken|refresh_token)\\b["\']?\\s*\\]?\\s*=(?!=)' +
     // cookie com VALOR (session=abc); "token=; expires=1970" e logout (apaga o cookie), nao credencial
     '|document\\.cookie\\s*=\\s*[^;\\n]*(?:token|jwt|session)[^;=\\n]*=\\s*[^;\\s]',

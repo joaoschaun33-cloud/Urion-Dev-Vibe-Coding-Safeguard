@@ -326,6 +326,16 @@ já mata o processo real — o bug é específico do Windows).
 **Descoberta lateral**: `ENV_NOT_IGNORED` não detecta 2 `.env.production` versionados porque trata `.env` no `.gitignore` como cobertura de `.env.production` (não é: o Git só ignora o nome exato). Fica para o item 4.
 **Limites**: rotulagem por uma pessoa; os 8 achados "incertos" ficaram fora da precisão; o número de recall de `.env` deixou de ser independente (o critério de "segredo" veio dos mesmos dados).
 
+### 2026-09-24 — Itens 3–7 concluídos; validação em lotes novos mostra que a precisão em projetos novos é ~55–70%
+
+**Status**: Aceita
+**Contexto**: Itens 3–7 da ordem de correção (RLS, `.env`, rotas, `ERROR_SWALLOWED`, `AUTH_CLIENT_SIDE`) foram feitos e remedidos no lote de calibração (81 repositórios): `urion-checks` 33% → 96% e `vibeguard` 64% → 95% de precisão. Como corrigimos nos mesmos dados em que medimos, isso não prova generalização.
+**Decisão**: (1) Adotar a **disciplina de lotes** (`benchmarks/real/PROTOCOL.md`): sempre reportar o "primeiro contato" em repositórios nunca vistos ao lado do número calibrado. (2) Rodamos dois lotes novos (80 e 70 repositórios). Primeiro contato: `vibeguard` 48% e 55%, `urion-checks` 77%\* e 57% por achado (63–71% e 60–71% por repositório) — **essa faixa (~55–70%) é o que se deve esperar em projetos novos**. (3) Cada lote revelou causas de falso alarme novas (código gerado commitado, template estático, `JSON.stringify` em widget, `apiKey` pública do Firebase, script de migração, RLS dinâmico, limitador global) e foram corrigidas com teste, sempre conferindo que só saíam falsos alarmes.
+**Erros meus pegos pela medição (registrados por honestidade)**: (a) a alternativa multilinha de XSS que subia o recall no corpus sintético e gerava 70 falsos alarmes no `chart.tsx` do shadcn/ui; (b) ignorar arquivo inteiro por linha longa escondia 4 arquivos com um token real de gestão do Supabase — arquivos "gerados" agora ainda são varridos para segredos; (c) tratar `.json()` como inofensivo escondeu um `fetch(...).catch(() => {})` relevante; (d) rótulos meus errados (um logout best-effort marcado como relevante; um template com `${printContent}` marcado como estático) — a remedição os pegou; (e) escrevi aqui que `ERROR_SWALLOWED` era CRITICAL/gate; ele **sempre foi WARNING** e nunca bloqueou commit.
+**Consequências**: `ERROR_SWALLOWED` ficou conservadora de propósito (exige evidência de I/O) e perde catch vazios relevantes com I/O não reconhecido por palavra; `AUTH_CLIENT_SIDE` tinha recall de ~33% em dados novos antes da ampliação. Para as demais regras o **recall real continua desconhecido**: só temos precisão medida em código real.
+**Alternativas consideradas**: parar de calibrar e só documentar — rejeitada, mas o retorno é decrescente: o próximo lote deve revelar mais classes de falso alarme. Usar análise por AST em vez de regex — é o caminho para sair desse ciclo (o alvo do produto hoje é regra por linha); fica como decisão de produto, não de correção.
+**Limites**: rotulador único; \*lote 2 inflado por um repositório duplicado; números "final" são otimistas; todos os lotes são projetos Lovable (front-end + Supabase majoritariamente).
+
 ### [DATA] — [Próxima decisão]
 
 [Adicione novas decisões táticas aqui conforme o projeto evolui. Para decisões

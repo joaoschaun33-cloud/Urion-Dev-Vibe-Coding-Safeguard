@@ -10,6 +10,27 @@ import { type Finding } from '../domain/findings';
 const BODY_USERID_RE =
   /req\.body\.userId\b|(?:const|let|var)\s*\{[^}]*\buserId\b[^}]*\}\s*=\s*req\.body\b/;
 
+// Endpoint restrito a admin/autorizado (adminAuth, requireAdmin, isAdmin...): o userId no corpo e o
+// alvo de uma acao administrativa legitima, nao o usuario "logado". Olha a definicao da rota
+// (router.post('/x', adminAuth, ...)) que antecede a leitura do corpo. Medido: 2 de 2 alertas.
+const ROUTE_DEF_RE = /\b[\w$]*(?:router|app)\.(?:get|post|put|patch|delete)\(/gi;
+const ADMIN_GUARD_RE = /admin|isadmin|requirerole|authorize|hasrole|permission/i;
+
+function routeIsAdminGuarded(content: string, index: number): boolean {
+  const before = content.slice(Math.max(0, index - 1500), index);
+  let last: RegExpExecArray | null = null;
+  const re = new RegExp(ROUTE_DEF_RE);
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(before)) !== null) {
+    last = m;
+  }
+  if (!last) {
+    return false;
+  }
+  const defLine = before.slice(last.index).split('\n')[0] ?? '';
+  return ADMIN_GUARD_RE.test(defLine);
+}
+
 function lineOf(content: string, index: number): number {
   return content.slice(0, index).split('\n').length;
 }
@@ -24,6 +45,9 @@ export function detectUserIdFromClient(files: Array<{ path: string; content: str
     const re = new RegExp(BODY_USERID_RE, 'g');
     let m: RegExpExecArray | null;
     while ((m = re.exec(file.content)) !== null) {
+      if (routeIsAdminGuarded(file.content, m.index)) {
+        continue;
+      }
       findings.push({
         ruleId: 'USERID_FROM_CLIENT',
         severity: 'CRITICAL',

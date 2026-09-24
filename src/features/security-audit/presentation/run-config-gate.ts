@@ -91,7 +91,8 @@ function walk(root: string): Walked {
         if (item === 'supabase') {
           hasSupabaseDir = true;
         }
-        if (!IGNORE_DIRS.has(item)) {
+        // Pastas ocultas (.vite, .cache, .turbo...) sao cache/gerado, nao o codigo do projeto.
+        if (!IGNORE_DIRS.has(item) && !item.startsWith('.')) {
           rec(full);
         }
         continue;

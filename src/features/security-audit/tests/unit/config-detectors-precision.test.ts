@@ -251,7 +251,7 @@ describe('ERROR_SWALLOWED', () => {
   });
 
   it('ignora arquivo minificado/ofuscado (linha gigante)', () => {
-    const minified = `${'x'.repeat(900)};try{a()}catch(e){}`;
+    const minified = `${'x'.repeat(1100)};try{a()}catch(e){}`;
     expect(one(minified)).toBe(0);
   });
 });

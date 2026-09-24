@@ -19,7 +19,7 @@ const VIBE_GUARD_RULES = [
   {
     id: "AUTH_CLIENT_SIDE",
     title: "Autenticação Armazenada Insegura no Navegador",
-    regex: new RegExp("(?:localStorage|sessionStorage)\\.setItem\\(\\s*[\"'](?![^\"']*tokeniz)(?:[^\"']*(?:token|jwt|bearer|credential)[^\"']*|auth|session)[\"']|(?:localStorage|sessionStorage)(?:\\.|\\[\\s*[\"'])(?:token|jwt|authToken|accessToken|access_token|refreshToken|refresh_token)\\b[\"']?\\s*\\]?\\s*=(?!=)|document\\.cookie\\s*=\\s*[^;\\n]*(?:token|jwt|session)[^;=\\n]*=\\s*[^;\\s]", "i"),
+    regex: new RegExp("(?:localStorage|sessionStorage)\\.setItem\\(\\s*[\"'](?![^\"']*tokeniz)(?:[^\"']*(?:token|jwt|bearer|credential)[^\"']*|auth|session|session[_-]?id)[\"']|(?:localStorage|sessionStorage)\\.setItem\\(\\s*[\"'][^\"']*(?:auth|logged|login|isadmin)[^\"']*[\"']\\s*,\\s*[\"']true[\"']|(?:localStorage|sessionStorage)\\.setItem\\(\\s*[A-Z0-9_]*(?:TOKEN|AUTH|JWT|CREDENTIAL)[A-Z0-9_]*\\s*,|(?:localStorage|sessionStorage)(?:\\.|\\[\\s*[\"'])(?:token|jwt|authToken|accessToken|access_token|refreshToken|refresh_token)\\b[\"']?\\s*\\]?\\s*=(?!=)|document\\.cookie\\s*=\\s*[^;\\n]*(?:token|jwt|session)[^;=\\n]*=\\s*[^;\\s]", "i"),
     severity: "CRITICAL",
     descriptionLeiga: "O login do usuário está sendo salvo na memória aberta do navegador.",
     riscoReal: "Hackers podem injetar um script simples no seu site para roubar a conta de qualquer usuário conectado.",
@@ -39,7 +39,7 @@ const VIBE_GUARD_RULES = [
   {
     id: "XSS_UNSANITIZED",
     title: "Exibição de Texto Sem Proteção (XSS)",
-    regex: new RegExp("(?:(?<!<style\\b[^>]*)dangerouslySetInnerHTML\\s*=\\s*\\{\\s*\\{\\s*__html\\s*:(?!\\s*(?:DOMPurify|sanitize|JSON\\.stringify\\s*\\(|\"[^\"]*\"\\s*[,}]|'[^']*'\\s*[,}]|`[^`$]*`\\s*[,}]))|\\.(?:inner|outer)HTML\\s*\\+?=(?!=)(?!\\s*(?:DOMPurify|sanitize|\"[^\"]*\"\\s*;?\\s*(?:$|\\n)|'[^']*'\\s*;?\\s*(?:$|\\n)|`[^`$]*`\\s*;?\\s*(?:$|\\n)))|document\\.write(?:ln)?\\s*\\((?!\\s*(?:DOMPurify|sanitize|\"[^\"]*\"\\s*\\)|'[^']*'\\s*\\)|`[^`$]*`\\s*\\)))|insertAdjacentHTML\\s*\\([^,)]*,(?!\\s*(?:DOMPurify|sanitize|\"[^\"]*\"\\s*\\)|'[^']*'\\s*\\)|`[^`$]*`\\s*\\))))", "i"),
+    regex: new RegExp("(?:(?<!<style\\b[^>]*)dangerouslySetInnerHTML\\s*=\\s*\\{\\s*\\{\\s*__html\\s*:(?!\\s*(?:DOMPurify|sanitize|JSON\\.stringify\\s*\\(|\"[^\"]*\"\\s*[,}]|'[^']*'\\s*[,}]|`[^`$]*`\\s*[,}]))|\\.(?:inner|outer)HTML\\s*\\+?=(?!=)(?!\\s*(?:DOMPurify|sanitize|JSON\\.stringify\\s*\\(|\"[^\"]*\"\\s*(?:[;)},]|$|\\n)|'[^']*'\\s*(?:[;)},]|$|\\n)|`[^`$]*`\\s*(?:[;)},]|$|\\n)|[\\w$.?\\[\\]()'\"-]*\\.innerHTML\\s*;?\\s*(?:$|\\n)))|document\\.write(?:ln)?\\s*\\((?!\\s*(?:DOMPurify|sanitize|\"[^\"]*\"\\s*\\)|'[^']*'\\s*\\)|`[^`$]*`\\s*\\)))|insertAdjacentHTML\\s*\\([^,)]*,(?!\\s*(?:DOMPurify|sanitize|\"[^\"]*\"\\s*\\)|'[^']*'\\s*\\)|`[^`$]*`\\s*\\))))", "i"),
     severity: "CRITICAL",
     descriptionLeiga: "O aplicativo está exibindo textos e links externos sem filtrar códigos maliciosos.",
     riscoReal: "Um usuário mal intencionado pode enviar uma mensagem que assume o controle da tela dos outros usuários.",

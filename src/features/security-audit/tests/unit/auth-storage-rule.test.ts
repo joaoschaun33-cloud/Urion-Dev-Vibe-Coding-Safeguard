@@ -20,6 +20,14 @@ describe('AUTH_CLIENT_SIDE — deve acusar credencial em web storage / cookie de
     "localStorage['token'] = t;",
     'document.cookie = "session=" + t + "; path=/";',
     'document.cookie = `token=${t}; path=/`;',
+    // Achados em dados NUNCA vistos (o regex antigo perdia ~2/3): flag de login, chave em constante, session_id.
+    'localStorage.setItem("gcet_admin_auth", "true");',
+    "sessionStorage.setItem('admin_authenticated', 'true');",
+    'localStorage.setItem("isAuthenticated", "true");',
+    'window.localStorage.setItem(ACCESS_TOKEN_KEY, nextToken);',
+    'localStorage.setItem(TOKEN_KEY, token);',
+    'localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(u));',
+    "sessionStorage.setItem('session_id', id);",
   ])('%s', (line) => {
     expect(re.test(line)).toBe(true);
   });
@@ -35,6 +43,13 @@ describe('AUTH_CLIENT_SIDE — NAO deve acusar preferencia de UI nem comparacao'
     'if (localStorage.token === x) {}',
     'document.cookie = "theme=dark"',
     "document.cookie = 'refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';",
+    "localStorage.setItem('cart_session_id', s)",
+    "sessionStorage.setItem('post_auth_redirect', p)",
+    "sessionStorage.setItem('hmrc_oauth_state', s)",
+    "localStorage.setItem('sliding_banner_dismissed_session', 'true')",
+    'localStorage.setItem(THEME_KEY, t)',
+    'localStorage.setItem(SESSIONS_KEY, JSON.stringify(s))',
+    "localStorage.setItem('authorName', n)",
   ])('%s', (line) => {
     expect(re.test(line)).toBe(false);
   });

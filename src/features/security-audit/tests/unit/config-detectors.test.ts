@@ -122,14 +122,28 @@ describe('detectUserIdFromClient (R2)', () => {
 
 describe('detectSwallowedErrors (R6)', () => {
   it('flag catch vazio com binding', () => {
-    const f = detectSwallowedErrors([{ path: 'r.ts', content: 'try { risky(); } catch (e) {}' }]);
+    const f = detectSwallowedErrors([
+      { path: 'r.ts', content: 'try { await gateway.charge(); } catch (e) {}' },
+    ]);
     expect(f).toHaveLength(1);
     expect(f[0].ruleId).toBe('ERROR_SWALLOWED');
   });
 
-  it('flag .catch(() => {}) de promise', () => {
-    const f = detectSwallowedErrors([{ path: 'r.ts', content: 'doAsync().catch(() => {});' }]);
+  it('flag .catch(() => {}) de promise que faz I/O', () => {
+    const f = detectSwallowedErrors([
+      { path: 'r.ts', content: 'api.fetch("/orders").catch(() => {});' },
+    ]);
     expect(f).toHaveLength(1);
+  });
+
+  it('escopo: catch vazio SEM I/O (chamada generica, audio, limpeza) nao e acusado', () => {
+    // Medido em 70 repositorios nunca vistos: 6 de 7 achados assim eram falso alarme.
+    expect(
+      detectSwallowedErrors([{ path: 'r.ts', content: 'try { risky(); } catch (e) {}' }])
+    ).toHaveLength(0);
+    expect(
+      detectSwallowedErrors([{ path: 'r.ts', content: 'doAsync().catch(() => {});' }])
+    ).toHaveLength(0);
   });
 
   it('nao flag catch que trata o erro', () => {

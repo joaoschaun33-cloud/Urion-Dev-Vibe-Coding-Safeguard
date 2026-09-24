@@ -46,21 +46,45 @@ e este projeto adere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html
   `insertAdjacentHTML` dinâmicos. Em 81 repositórios reais a precisão foi de 10% para
   71%; o `vibeguard` inteiro, de 64% para 90% (por repositório, 63% → 81%).
 
+- **`urion-checks` — falsos alarmes cortados** (cada mudança trava uma causa medida em repositórios
+  reais; testes em `config-detectors-precision.test.ts` e `generalization-fixes.test.ts`):
+  - `RLS_MISSING`: agrega `ENABLE/FORCE ROW LEVEL SECURITY` entre **todos** os SQL do projeto, só
+    acusa em projeto Supabase (pasta `supabase/`, dependência `@supabase/*` ou `auth.uid()`), ignora
+    schema não-`public`, RLS gerado por `EXECUTE format(...)` e palavras reservadas lidas como tabela.
+  - `ENV_NOT_IGNORED`: interpreta o `.gitignore` como o Git (`.env` **não** cobre `.env.production`),
+    lê `.gitignore` de subpastas e só acusa `.env` que contém segredo.
+  - `ROUTE_NO_AUTH`: reconhece `protect`/`authorize`/`jwt`, `router.use(auth)` no arquivo, auth
+    montada em outro arquivo (`app.use(path, auth, router)`), rotas públicas por natureza (login,
+    registro, callback); limitador de tentativas (`authLimiter`) não conta como autenticação.
+  - `ERROR_SWALLOWED`: só acusa catch vazio com **evidência de I/O** (rede, banco, pagamento) no
+    `try`/cadeia; ignora código gerado, pastas ocultas, `scripts/`, e limpeza/rotina inofensiva.
+  - `N_PLUS_ONE`: ignora `scripts/`/`migrations/` e query literal de escrita/transação.
+  - `USERID_FROM_CLIENT`: ignora rota com guard de admin.
+- **`vibeguard`** (5 regras): ignora pastas ocultas e arquivos gerados (linha > 1000 caracteres; ali
+  só procura segredo); ignora a `apiKey` pública do Firebase Web; suprime `RATE_LIMIT_MISSING` se há
+  limitador global; XSS aceita `JSON.stringify`, cópia `a.innerHTML = b.innerHTML`, literal no meio da
+  linha e template de várias linhas **sem** `${}` (decide olhando o corpo); `AUTH_CLIENT_SIDE` ampliada
+  (flag de login como `isAuthenticated = "true"`, chave em constante como `TOKEN_KEY`, `session_id`).
+- Resultado (ver `benchmarks/real/RESULTS.md`): em 81 repositórios reais, `urion-checks` de 33% para
+  96% de precisão e `vibeguard` de 64% para 95% — **calibrados nesses mesmos dados**. Em **dois lotes
+  novos** (150 repositórios nunca vistos), o "primeiro contato" foi de ~55–70% de precisão; a
+  estimativa honesta para projetos novos é essa faixa.
+
 ### Known issues (medidos, ainda NÃO corrigidos)
 
+- **Generalização:** cada lote novo revelou classes de falso alarme que os anteriores não tinham; a
+  lista de causas não convergiu. Recall em dados novos para `AUTH_CLIENT_SIDE` era ~33% antes da
+  ampliação; para as demais regras o recall real é desconhecido.
+- `ERROR_SWALLOWED` ficou conservadora de propósito: perde `catch` vazios relevantes cuja operação de
+  I/O não é reconhecida por palavra (ex.: `fetchAuthor(...)` dentro de `Promise.all`).
 - XSS multilinha (`dangerouslySetInnerHTML={{` + quebra + `__html: x`) não é detectado
   pelo CLI (modo linha); o servidor MCP (trecho inteiro) detecta. Uma alternativa que
   tentava cobrir isso gerou 70 falsos alarmes no `chart.tsx` do shadcn/ui e foi removida.
-- Falsos alarmes medidos em código real: `RLS_MISSING` analisa um arquivo SQL por
-  vez (44% dos alertas tinham o RLS ativado em outra migração do mesmo repositório);
-  `ENV_NOT_IGNORED` não olha o conteúdo do `.env` (17 de 23 só tinham variáveis
-  públicas) e considera `.env` no `.gitignore` como cobrindo `.env.production`;
-  `ROUTE_NO_AUTH` não reconhece middlewares como `protect` nem auth montada em
-  `app.use(path, auth, router)`; `ERROR_SWALLOWED` acusa limpeza inofensiva e código
-  gerado/minificado.
-- Detecção perdida em padrões comuns de apps gerados por IA (Next.js App Router,
-  Fastify, Supabase, Drizzle/Mongoose, `.env.local` coberto só por `.env`, entre
-  outros). Lista completa por caso em `benchmarks/RESULTS.md`.
+- Detecção perdida em padrões comuns de apps gerados por IA (Next.js App Router, Fastify,
+  Supabase, Drizzle/Mongoose, entre outros): o corpus sintético ainda mostra recall de 25–70%
+  em várias regras. Lista completa por caso em `benchmarks/RESULTS.md`.
+- O MCP `urion_security_check` ainda devolve `APPROVED` quando nada é achado (mesmo problema de
+  promessa que a mensagem do CLI já corrigida); mudar isso é mudança de API.
 
 ## [3.0.0] — 2026-09-23
 

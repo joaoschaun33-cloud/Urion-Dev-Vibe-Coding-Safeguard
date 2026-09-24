@@ -33,6 +33,18 @@ function lineOf(content: string, index: number): number {
   return content.slice(0, index).split('\n').length;
 }
 
+const RESERVED_WORDS = new Set([
+  'as',
+  'if',
+  'select',
+  'table',
+  'temp',
+  'temporary',
+  'unlogged',
+  'like',
+  'not',
+]);
+
 const SUPABASE_SQL_SIGNAL =
   /auth\.uid\s*\(|auth\.users|auth\.jwt\s*\(|service_role|supabase_|\bauthenticated\b.*\banon\b/i;
 
@@ -78,6 +90,12 @@ export function detectMissingRls(
     }
   }
 
+  // RLS habilitado por SQL dinamico (DO $$ ... EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL
+  // SECURITY') em laco): nao da para saber quais tabelas cobre — nao acusar (7 falsos no lote novo).
+  if (sqlFiles.some((f) => /execute[^;]{0,300}row\s+level\s+security/i.test(f.clean))) {
+    return [];
+  }
+
   const findings: Finding[] = [];
   const createRe = /create\s+(?!temp(?:orary)?\b)table\s+(?:if\s+not\s+exists\s+)?([\w."`]+)/gi;
   for (const file of sqlFiles) {
@@ -94,6 +112,10 @@ export function detectMissingRls(
         continue;
       }
       const table = lastSegment(raw);
+      // Palavra reservada lida como nome ("create table as select", texto em string): nao e tabela.
+      if (RESERVED_WORDS.has(table)) {
+        continue;
+      }
       if (!rlsTables.has(table)) {
         findings.push({
           ruleId: 'RLS_MISSING',

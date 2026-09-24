@@ -8,6 +8,7 @@
 // da consulta ou na linha anterior (ex.: loop pequeno e de tamanho fixo).
 
 import { type Finding } from '../domain/findings';
+import { isDevScriptPath } from '../domain/scan-filters';
 
 const LOOP_RE =
   /\bfor\s*(?:await\s*)?\(|\bwhile\s*\(|\.(?:map|forEach|flatMap|filter|reduce|some|every)\s*\(/g;
@@ -23,6 +24,10 @@ const READ_QUERY_RE = new RegExp(
 );
 
 const OPT_OUT_RE = /\/\/\s*N\+1-OK\b/i;
+// Query literal de ESCRITA/TRANSACAO (INSERT, BEGIN, COMMIT...) nao e leitura N+1. Medido: 10
+// achados num script de migracao (BEGIN/COMMIT/INSERT por arquivo) eram isso.
+const WRITE_QUERY_RE =
+  /^\s*['"`]\s*(?:insert|update|delete|begin|commit|rollback|create|alter|drop|truncate|savepoint|set)\b/i;
 
 // Substitui comentarios por espacos, preservando quebras de linha (numero de linha
 // continua correto). O `[^:]` antes de `//` evita cortar URLs (https://...).
@@ -82,7 +87,7 @@ export function detectNPlusOne(files: Array<{ path: string; content: string }>):
   const findings: Finding[] = [];
 
   for (const file of files) {
-    if (!/\.(?:m|c)?[jt]sx?$/.test(file.path)) {
+    if (!/\.(?:m|c)?[jt]sx?$/.test(file.path) || isDevScriptPath(file.path)) {
       continue;
     }
     const original = file.content.split('\n');
@@ -106,6 +111,12 @@ export function detectNPlusOne(files: Array<{ path: string; content: string }>):
           continue;
         }
         reported.add(absIdx);
+        // qm[0] termina no "(" da chamada; olha o primeiro argumento literal.
+        if (
+          WRITE_QUERY_RE.test(body.slice(qm.index + qm[0].length, qm.index + qm[0].length + 60))
+        ) {
+          continue;
+        }
         const line = lineOf(text, absIdx);
         const here = original[line - 1] ?? '';
         const prev = original[line - 2] ?? '';

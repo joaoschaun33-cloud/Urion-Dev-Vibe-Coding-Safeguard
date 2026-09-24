@@ -73,10 +73,40 @@ function findEnvSecrets(content) {
   return hits;
 }
 
+// ESPELHOS de src/features/security-audit/domain/scan-filters.ts e scan-vibe-guard.ts
+// (teste de paridade em scan-filters-mirror.test.ts).
+function looksGeneratedContent(content) {
+  return content.length > 200 * 1024 || content.split('\n').some((l) => l.length > 1000);
+}
+const FIREBASE_SIBLING = /\b(?:authDomain|messagingSenderId|storageBucket|measurementId|databaseURL|appId)\b/;
+function isFirebaseWebConfigLine(lines, index) {
+  const from = Math.max(0, index - 8);
+  const to = Math.min(lines.length, index + 9);
+  return /\bapiKey\b/.test(lines[index] || '') && lines.slice(from, to).some((l) => FIREBASE_SIBLING.test(l));
+}
+function isStaticMultilineTemplate(lines, index) {
+  const line = lines[index] || '';
+  const open = line.indexOf('`');
+  if (open < 0 || line.indexOf('`', open + 1) >= 0) return false;
+  let body = line.slice(open + 1);
+  for (let i = index + 1; i < Math.min(lines.length, index + 2000); i++) {
+    const next = lines[i] || '';
+    const close = next.indexOf('`');
+    if (close >= 0) {
+      body += `\n${next.slice(0, close)}`;
+      return !body.includes('${');
+    }
+    body += `\n${next}`;
+  }
+  return false;
+}
+const GLOBAL_LIMITER_RE = /\.use\(\s*(?:['"`][^'"`]*['"`]\s*,\s*)?[^)]*\b\w*(?:limiter|ratelimit)\w*/i;
+
 // Varredura pura (sem console): e o que o comando `vibeguard` executa e o que o
 // benchmark (benchmarks/) mede — a mesma funcao, nao uma copia da logica.
 function scanProject(targetDir) {
-  const issues = [];
+  let issues = [];
+  let hasGlobalLimiter = false;
   const unreadable = [];
   const ignoreDirs = new Set(['node_modules', '.git', 'dist', 'build', '.urion', '.next', 'coverage']);
   const allowedExts = new Set(['.ts', '.tsx', '.js', '.jsx', '.json', '.mjs', '.cjs']);
@@ -92,7 +122,8 @@ function scanProject(targetDir) {
       try { stat = fs.statSync(fullPath); } catch { continue; }
 
       if (stat.isDirectory()) {
-        if (!ignoreDirs.has(item)) scan(fullPath);
+        // Pastas ocultas (.vite, .cache, .turbo...) sao cache/gerado, nao o codigo do projeto.
+        if (!ignoreDirs.has(item) && !item.startsWith('.')) scan(fullPath);
       } else if (stat.isFile()) {
         const ext = path.extname(item).toLowerCase();
         const relForFilter = path.relative(targetDir, fullPath);
@@ -103,6 +134,8 @@ function scanProject(targetDir) {
             const content = fs.readFileSync(fullPath, 'utf8');
             const lines = content.split('\n');
             const relFile = path.relative(targetDir, fullPath).replace(/\\/g, '/');
+            // Bundle/minificado: so procura segredo ali (alta confianca), nunca XSS/SQL/etc. (ruido).
+            const generated = !isEnv && looksGeneratedContent(content);
             if (isEnv) {
               // .env: so a logica propria (respeita variaveis publicas VITE_*/NEXT_PUBLIC_*).
               // As regexes de codigo nao se aplicam: acusariam chave publica entre aspas.
@@ -112,11 +145,17 @@ function scanProject(targetDir) {
               }
             } else {
               lines.forEach((line, index) => {
+                if (GLOBAL_LIMITER_RE.test(line)) hasGlobalLimiter = true;
                 for (const rule of VIBE_GUARD_RULES) {
+                  if (generated && rule.id !== 'SECRETS_HARDCODED') continue;
                   if (rule.regex.test(line)) {
-                    if (rule.id === 'SECRETS_HARDCODED' && MOCK_VALUE_RE.test(line)) {
+                    if (
+                      rule.id === 'SECRETS_HARDCODED' &&
+                      (MOCK_VALUE_RE.test(line) || isFirebaseWebConfigLine(lines, index))
+                    ) {
                       continue;
                     }
+                    if (rule.id === 'XSS_UNSANITIZED' && isStaticMultilineTemplate(lines, index)) continue;
                     issues.push({ rule, file: relFile, line: index + 1, snippet: line.trim() });
                   }
                 }
@@ -131,6 +170,8 @@ function scanProject(targetDir) {
   }
 
   scan(targetDir);
+  // Limitador global (app.use(limiter)) protege as rotas de login que a regex por linha nao liga a ele.
+  if (hasGlobalLimiter) issues = issues.filter((i) => i.rule.id !== 'RATE_LIMIT_MISSING');
   return { issues, scannedFiles, unreadable };
 }
 
