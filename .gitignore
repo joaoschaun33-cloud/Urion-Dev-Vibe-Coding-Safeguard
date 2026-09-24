@@ -58,3 +58,6 @@ bin/urion-checks.mjs
 
 # Pacote npm da ferramenta (gerado por scripts/build-npm-package.mjs)
 .npm-package/
+
+# Dados brutos da medicao em repositorios reais (terceiros): nunca versionar
+benchmarks/real/data/

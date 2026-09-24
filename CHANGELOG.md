@@ -16,6 +16,12 @@ e este projeto adere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html
   (corpus sintético, portanto otimista): `vibeguard` acha 43% dos casos
   vulneráveis (IC 31–57%), precisão 71%; `urion-checks` acha 60% (IC 48–71%),
   precisão 85%.
+- **Medição em 81 repositórios públicos reais** (`benchmarks/real/`, protocolo e
+  resultados agregados; nenhum nome/caminho/segredo de terceiros é publicado).
+  Precisão medida: `urion-checks` 33% dos achados (40% por repositório),
+  `vibeguard` 64% (63%); `XSS_UNSANITIZED` só 10%. Recall parcial: `vibeguard`
+  acusou 6 de 11 repositórios com token em web storage e 0 de 6 arquivos `.env`
+  com segredo. Fez 26% dos repositórios terem ao menos um achado relevante.
 - `scanProject()` exportada de `bin/lib/mode-maker.cjs` (a varredura pura que o
   comando `vibeguard` executa), para o benchmark medir o mesmo código do usuário.
 
@@ -31,6 +37,13 @@ e este projeto adere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html
   `path.extname`, que devolve `""` para `.env`; só `nome.env` casaria).
 - `XSS_UNSANITIZED` acusa código **sanitizado** (`__html: DOMPurify.sanitize(x)`
   com o espaço que o Prettier gera): o `\s*` desfaz a exceção por backtracking.
+- Falsos alarmes medidos em código real: `RLS_MISSING` analisa um arquivo SQL por
+  vez (44% dos alertas tinham o RLS ativado em outra migração do mesmo repositório);
+  `ENV_NOT_IGNORED` não olha o conteúdo do `.env` (17 de 23 só tinham variáveis
+  públicas); `ROUTE_NO_AUTH` não reconhece middlewares como `protect` nem auth
+  montada em `app.use(path, auth, router)`; `ERROR_SWALLOWED` acusa limpeza
+  inofensiva e código gerado/minificado; `XSS_UNSANITIZED` acusa JSON-LD e CSS
+  estático.
 - Detecção perdida em padrões comuns de apps gerados por IA (Next.js App Router,
   Fastify, Supabase, Drizzle/Mongoose, `.env.local` coberto só por `.env`, entre
   outros). Lista completa por caso em `benchmarks/RESULTS.md`.

@@ -289,7 +289,7 @@ já mata o processo real — o bug é específico do Windows).
 **Decisão**: (1) O produto é a ferramenta (CLI + MCP + gates). (2) O pacote npm é gerado por `scripts/build-npm-package.mjs` com manifesto próprio (zero dependências) e a raiz é `private`, para ninguém publicar o template por engano. (3) `blueprint` fica 100% local. (4) O script de build reprova o pacote se algum arquivo importar dependência que não viaja com ele ou usar API de rede (fora do bundle do MCP, cujo SDK embute transports HTTP não usados). (5) Versão major (3.0.0), porque saem `main`, `dist` e o `bin/create-vibe-safeguard.js` do pacote.
 **Consequências**: instalação 1 pacote/1 s (antes 230/25 s); o template continua funcionando na raiz (o `Dockerfile` usa `npm ci --only=production` e depende das `dependencies` atuais, por isso não foi possível esvaziá-las no mesmo `package.json`). O pacote agora depende de um passo de build extra (`npm run publish:tool`).
 **Alternativas consideradas**: monorepo com workspaces (`packages/cli`) — é o destino natural, mas mover `bin/` e `src/mcp` quebra testes, CI, smoke tests e `cursor-doctor` de uma vez; adiado até o produto estar validado. Separar o template em outro repositório — idem.
-**Dívidas conhecidas e NÃO resolvidas aqui**: (a) `bin/create-vibe-safeguard.js` (fora do pacote, mas no repositório) guarda um token do GitHub em texto puro em `~/.urion/config.json` e o embute numa URL de clone dentro de `execSync` com string interpolada (o token pode aparecer em erros/lista de processos); publica em `github.com/urion/cases`, organização que não sabemos se controlamos. Precisa de reescrita ou remoção antes de ser reexposto. (b) O `blueprint` do template (`src/features/blueprint-hub`) ainda existe como API de exemplo; não é chamado pelo CLI. (c) Validação em repositórios reais e medição de precisão/recall dos detectores continuam pendentes (passos 2-4 do plano).
+**Dívidas conhecidas e NÃO resolvidas aqui**: (a) `bin/create-vibe-safeguard.js` (fora do pacote, mas no repositório) guarda um token do GitHub em texto puro em `~/.urion/config.json` e o embute numa URL de clone dentro de `execSync` com string interpolada (o token pode aparecer em erros/lista de processos); publica em `github.com/urion/cases`, organização que não sabemos se controlamos. Precisa de reescrita ou remoção antes de ser reexposto. (b) O `blueprint` do template (`src/features/blueprint-hub`) ainda existe como API de exemplo; não é chamado pelo CLI. (c) ~~Validação em repositórios reais pendente~~ — feita em 2026-09-24 (ver decisão abaixo); a correção dos detectores guiada por ela continua pendente.
 
 ### 2026-09-24 — Medir antes de melhorar: benchmark dos detectores como linha de base
 
@@ -299,6 +299,23 @@ já mata o processo real — o bug é específico do Windows).
 **Consequências**: `RESULTS.md` é a fonte dos números que podemos citar. O corpus foi escrito por quem conhece os detectores, então os números são **otimistas**; eles achavam defeitos concretos (ver "Known issues" no CHANGELOG) e servem de detector de regressão, não de estimativa em projetos reais. A revisão do próprio gabarito já pegou 3 erros meus (casos que legitimamente disparavam outra regra).
 **Alternativas consideradas**: medir só em repositórios reais — necessário, mas exige rotulagem manual e cuidado ético (não publicar vulnerabilidades de terceiros); é o passo seguinte, não substituto. Copiar as regexes no medidor — rejeitado (mediria uma cópia, não o produto).
 **Limites conhecidos do medidor**: granularidade por caso (não por linha); não cobre o MCP `urion_security_check` (que devolve `APPROVED` quando nada é achado — mesmo problema de promessa da mensagem do CLI, ainda a tratar), nem `launch:gate`, nem o auditor.
+
+### 2026-09-24 — Medição em 81 repositórios reais e ordem de correção guiada por ela
+
+**Status**: Aceita
+**Contexto**: O corpus sintético (195 casos) era otimista por construção. Para saber o que os usuários viveriam, rodamos os dois motores em 81 repositórios públicos de projetos Lovable e rotulamos os achados à mão (protocolo e resultados agregados em `benchmarks/real/`).
+**Decisão**: (1) Publicar **só contagens agregadas** — nenhum nome, caminho ou segredo de terceiros entra no Git; os dados brutos ficam em `benchmarks/real/data/` (ignorado). (2) Encontramos credenciais reais expostas em repositórios públicos; **não foram usadas nem copiadas**, e contatar donos é decisão humana, fora do produto. (3) Corrigir os detectores nesta ordem, por impacto medido, remedindo depois de cada item:
+
+1. `vibeguard` passar a ler `.env` (recall 0% em 6 arquivos com segredo real; é o vazamento mais grave da amostra).
+2. `XSS_UNSANITIZED`: consertar o backtracking do lookahead e não acusar JSON-LD (`JSON.stringify`) nem CSS estático (precisão 10%).
+3. `RLS_MISSING`: agregar `enable row level security` entre **todos** os SQL do repositório e só acusar em projeto Supabase (44% dos alertas eram RLS ativado em outra migração).
+4. `ENV_NOT_IGNORED`: só acusar `.env` com variável secreta preenchida (17 de 23 eram variáveis públicas).
+5. `ROUTE_NO_AUTH`: reconhecer `protect` e auth aplicada por `app.use(path, auth, router)`; ignorar rotas de login (5 de 6 eram falso alarme).
+6. `ERROR_SWALLOWED`: ignorar código gerado/minificado (`dev-dist`, bundles) e padrões de limpeza; baixar a severidade (25% de precisão como CRITICAL/gate é inaceitável).
+7. `AUTH_CLIENT_SIDE`: ampliar as chaves reconhecidas (recall ≤ 55% por repositório).
+   **Consequências**: até esses itens saírem, `urion-checks --strict` como gate de commit gera mais ruído que sinal em projetos reais (~2 de 3 alertas não relevantes); isso vale ser dito a quem o adotar. A precisão real do `urion-checks` (33–40%) contradiz os 85% do corpus sintético — o corpus não pode ser usado como estimativa de qualidade.
+   **Alternativas consideradas**: manter o gate `--strict` como está e só documentar — rejeitado como ordem de trabalho, mas a documentação já foi feita no README.
+   **Limites**: rotulador único; amostra não aleatória; recall só parcial; lote não congelado (guardar o manifesto em local privado se quisermos remedir o mesmo conjunto).
 
 ### [DATA] — [Próxima decisão]
 
