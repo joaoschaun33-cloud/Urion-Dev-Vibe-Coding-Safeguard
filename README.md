@@ -4,7 +4,8 @@
 
 [![npm version](https://img.shields.io/npm/v/urion-safeguard.svg?style=flat-square&color=cyan)](https://www.npmjs.com/package/urion-safeguard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-[![Urion Verified Grade A](https://img.shields.io/badge/Urion_Verified-Grade_A-brightgreen.svg?style=flat-square)](https://github.com/joaoschaun33-cloud/Urion-Dev-Vibe-Coding-Safeguard)
+
+> **Estado (honesto):** projeto jovem, **ainda não validado com usuários reais nem medido contra apps vulneráveis de verdade**. A detecção é por regras/heurísticas (regex) e tem falsos negativos. Este repositório **não** exibe o selo "Grade A" porque o próprio `npm run launch:gate` ainda o reprova.
 
 Ferramentas como **Cursor, Lovable, Bolt e v0** permitem criar aplicativos completos em minutos apenas com prompts. No entanto, pesquisas recentes mostram que **cerca de 45% do código gerado por IA introduz falhas de segurança conhecidas** ([Veracode, 2025](https://www.veracode.com/blog/ai-generated-code-security-risks/)) — como chaves de API expostas, logins desprotegidos e riscos de invasão de banco de dados.
 
@@ -14,11 +15,13 @@ O **Urion VibeGuard** é uma ferramenta ultraleve e sem fricção que analisa se
 
 ## 🚀 Uso Rápido em 3 Segundos (Zero Setup)
 
-Você **não** precisa instalar nada, não precisa de banco de dados e nem configurar servidores. Basta rodar o comando abaixo na pasta do seu projeto:
+Você **não** precisa de banco de dados nem de configurar servidores. Precisa apenas do **Node.js 20 ou superior**. Rode o comando abaixo na pasta do seu projeto:
 
 ```bash
 npx urion-safeguard vibeguard
 ```
+
+**Privacidade:** nada sai da sua máquina. Nenhum comando do CLI faz requisição de rede (o `npm run pack:tool` reprova o pacote se algum arquivo do CLI passar a usar rede, e há teste automatizado para o comando `blueprint`); o servidor MCP fala apenas por stdio. O pacote publicado no npm tem **zero dependências**.
 
 ### ⚡ O que acontece quando você roda?
 
@@ -59,7 +62,20 @@ Servidor MCP real (transporte stdio) que a IA consulta durante o trabalho. Ferra
 | `urion_spec_gate`      | Antes de implementar: existe spec com critérios de aceite? Se não, a IA deve pedir a spec                         |
 | `urion_launch_gate`    | "Pronto para o ar?" — Grade A só com spec concluída, cobertura real ≥ 80%, zero críticos e auditoria independente |
 
-> **Disponibilidade (honestidade):** estas ferramentas estão no repositório (versão 2.0.3), mas a última versão **publicada no npm é a 2.0.0**, que ainda não inclui o servidor MCP, o `urion-checks` nem os gates. Até a próxima publicação, use a partir do clone (`npm run build:mcp` e aponte o editor para `bin/urion-mcp-server.mjs`) — passo a passo em [`docs/ide-setup.md`](docs/ide-setup.md). O MCP é **consultivo**: o bloqueio de verdade vem do pre-commit/CI.
+Para registrar no editor (exemplo de configuração MCP):
+
+```json
+{
+  "mcpServers": {
+    "urion-vibeguard": {
+      "command": "npx",
+      "args": ["-y", "-p", "urion-safeguard", "urion-mcp-server"]
+    }
+  }
+}
+```
+
+> **O que foi e o que não foi testado (honestidade):** o servidor foi testado por instalação isolada do pacote e chamadas reais às 4 ferramentas via protocolo MCP. **Não** foi testado ainda dentro do Cursor ou do Claude Desktop. O MCP é **consultivo**: o bloqueio de verdade vem do pre-commit/CI. Detalhes em [`docs/ide-setup.md`](docs/ide-setup.md).
 
 ### 3. Gates de processo (no repositório)
 
@@ -83,15 +99,16 @@ O selo é **autodeclarado e sem verificação externa** — qualquer um pode col
 
 ---
 
-## 🏗️ Construindo um projeto do zero (não só protegendo um existente)
+## 🗂️ O que há neste repositório (duas coisas distintas)
 
-O `urion-safeguard` nasceu dentro de um repositório que usa, para si mesmo, uma
-metodologia completa de vibe coding profissional — arquitetura (Feature-Sliced
-Design), especificação antes de codar (SDD), ADRs, e o "Dogma Zero" de
-honestidade da IA. Se você quer começar um app do zero com essa mesma
-disciplina (não só escanear um já existente), clone este repositório como
-template e siga o [QUICKSTART.md](QUICKSTART.md) — a metodologia completa está
-documentada em [`docs/`](docs/).
+|                 | **A ferramenta** (o produto)                                                     | **O template de referência**                                                                                    |
+| --------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| O que é         | CLI `urion-safeguard`, servidor MCP e gates (`urion-checks`, `launch:gate`)      | App de exemplo (Express + Prisma + Todo) que aplica a metodologia: Feature-Sliced Design, SDD, ADRs, Dogma Zero |
+| Onde            | `bin/`, `src/mcp/`, `src/features/security-audit/`, `src/features/spec-manager/` | `src/app/`, demais `src/features/`, `prisma/`, `Dockerfile`, `web/`                                             |
+| Vai para o npm? | **Sim** (zero dependências, gerado por `npm run pack:tool`)                      | **Não** — use clonando o repositório                                                                            |
+| Para quem       | Quem quer proteger e governar um projeto vibe-coded que já existe                | Quem quer começar um app do zero com essa disciplina ([QUICKSTART.md](QUICKSTART.md))                           |
+
+A raiz do repositório é `private` de propósito: só o pacote gerado em `.npm-package/` é publicável (`npm run publish:tool`).
 
 ---
 

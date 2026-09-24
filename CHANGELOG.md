@@ -7,6 +7,49 @@ e este projeto adere a [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+## [3.0.0] — 2026-09-23
+
+> Separação entre a **ferramenta** (CLI + MCP + gates) e o **template de referência**,
+> mais uma correção de privacidade no comando `blueprint`. Justificativa em
+> `docs/decisions-log.md`.
+
+### Security
+
+- **`blueprint` não envia mais nada pela rede.** Até a 2.1.0 o comando enviava
+  metadados do projeto (stack, contagens de arquivos/testes/commits e nomes de
+  projeto/features reduzidos a hash SHA-256 truncado) para `api.urion.dev`, **sem
+  pedir consentimento**. Esse domínio não resolve (`ENOTFOUND` em 2026-09-23), então
+  o envio nunca funcionou e sempre caía no salvamento local; mas, se alguém
+  registrasse o domínio, passaria a receber esses dados de todo CLI instalado. O
+  comando agora só grava `.urion/blueprints/*.json` localmente. Teste de regressão
+  em `src/shared/infrastructure/tests/blueprint-local-only.test.ts`.
+- O `blueprint` também imprimia como fatos coisas que o código nunca verificava
+  ("Credenciais: zero detectadas", "Dados de negócio: removidos"). Removido. O hash
+  de nomes **não** é anonimização forte (nomes comuns são recuperáveis por
+  dicionário) e a saída agora diz isso.
+
+### Changed
+
+- **BREAKING — o pacote npm passa a conter só a ferramenta:** `bin/` (CLI, MCP,
+  `urion-checks`) + docs. Zero dependências (antes: 17, incluindo Express, Prisma,
+  BullMQ e ioredis; instalar levava ~25 s e 230 pacotes, agora 1 s e 1 pacote).
+  Saem do pacote: `main`/`dist` (era o servidor Express de demonstração),
+  `prisma/`, `bin/create-vibe-safeguard.js` e `bin/cli.js` (scaffolder do
+  template), `postinstall: prisma generate`.
+- O pacote é gerado por `npm run pack:tool` (manifesto próprio em
+  `.npm-package/`); o `package.json` da raiz é `private`. `npm run pack:tool` reprova
+  o pacote se algum arquivo importar dependência que não viaja com ele ou (fora do
+  bundle do MCP) usar API de rede.
+- README: removido o badge "Urion Verified: Grade A" do topo (este repositório
+  ainda é reprovado pelo próprio `launch:gate`); explicitado que o projeto não foi
+  validado com usuários reais nem medido contra apps vulneráveis; nota de
+  disponibilidade no npm corrigida.
+
+### Fixed
+
+- Projeto sem git: o `fatal: not a git repository` do próprio git vazava para a
+  tela do CLI.
+
 ## [2.1.0] — 2026-09-23
 
 > Roadmap Fase 3 (gates de processo) + limpeza de dívida de honestidade encontrada

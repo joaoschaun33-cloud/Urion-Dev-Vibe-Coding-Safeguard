@@ -55,3 +55,6 @@ tmp-mcp-smoke*.mjs
 
 # Bundle gerado do Config Gate (produzido por build:checks/prepublishOnly)
 bin/urion-checks.mjs
+
+# Pacote npm da ferramenta (gerado por scripts/build-npm-package.mjs)
+.npm-package/

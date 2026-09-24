@@ -8,7 +8,7 @@
  *   npx urion-safeguard          → Menu interativo (primeiro contato)
  *   npx urion-safeguard scanner  → Executar scanner direto (--mode=maker suportado)
  *   npx urion-safeguard vibeguard → Modo Maker VibeGuard (Linguagem simples)
- *   npx urion-safeguard blueprint → Executar blueprint automatico
+ *   npx urion-safeguard blueprint → Gerar blueprint local (nenhum dado e enviado pela rede)
  *   npx urion-safeguard rules    → Verificar regras
  * 
  * @author Joao Schaun
@@ -74,7 +74,7 @@ async function showMainMenu(rl, projectPath) {
         '',
         `   ${colors.green}[1] 🔍  SCANNER TÉCNICO${colors.reset}  → Raio-X completo do projeto`,
         `   ${colors.magenta}[2] 🛡️  VIBEGUARD (MAKER)${colors.reset} → Diagnóstico simples para não-devs`,
-        `   ${colors.cyan}[3] 📐 BLUEPRINT${colors.reset}        → Enviar caso de uso (automático)`,
+        `   ${colors.cyan}[3] 📐 BLUEPRINT${colors.reset}        → Gerar blueprint local (sem rede)`,
         `   ${colors.yellow}[4] 🔒 REGRAS${colors.reset}          → Verificar .cursor/rules/`,
         '',
         `   ${colors.red}[0] 🚪 SAIR${colors.reset}            → Encerrar sessão blindada`,

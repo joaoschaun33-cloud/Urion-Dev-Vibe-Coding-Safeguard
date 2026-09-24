@@ -1,18 +1,14 @@
 // bin/lib/blueprint-auto.cjs
-// Gera e envia blueprint automaticamente — zero intervencao do usuario
+// Gera um blueprint LOCAL (.urion/blueprints/). Nao faz nenhuma requisicao de rede.
 
 const fs = require('fs');
 const path = require('path');
-const https = require('https');
 const crypto = require('crypto');
 const { analyzeProject } = require('./project-detector.cjs');
 const {
-  colors, printHeader, printSuccess, printWarning, printError,
+  printHeader, printSuccess, printWarning,
   printStep, printSubStep, animatedProgress
 } = require('./ui-kit.cjs');
-
-const URION_API_HOST = 'api.urion.dev';
-const URION_API_PATH = '/v1/blueprints';
 
 function hashName(str, length = 8) {
   if (!str) return 'unknown';
@@ -62,52 +58,10 @@ function generateLocalBlueprint(analysis) {
   return filepath;
 }
 
-function sendToUrionHub(blueprintData) {
-  return new Promise((resolve, reject) => {
-    const data = JSON.stringify(blueprintData);
-
-    const options = {
-      hostname: URION_API_HOST,
-      port: 443,
-      path: URION_API_PATH,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(data),
-        'X-Urion-Client': 'urion-safeguard-cli/2.0',
-      },
-      timeout: 10000,
-    };
-
-    const req = https.request(options, (res) => {
-      let responseData = '';
-      res.on('data', chunk => responseData += chunk);
-      res.on('end', () => {
-        if (res.statusCode >= 200 && res.statusCode < 300) {
-          try {
-            const json = JSON.parse(responseData);
-            resolve({ success: true, id: json.id, url: json.url });
-          } catch {
-            resolve({ success: true, id: 'unknown', url: null });
-          }
-        } else {
-          reject(new Error(`HTTP ${res.statusCode}: ${responseData}`));
-        }
-      });
-    });
-
-    req.on('error', reject);
-    req.on('timeout', () => { req.destroy(); reject(new Error('Timeout')); });
-    req.write(data);
-    req.end();
-  });
-}
-
 async function runBlueprintAuto(projectPath) {
-  printHeader('MODO BLUEPRINT — AUTOMATICO', 'Zero cliques necessarios');
+  printHeader('MODO BLUEPRINT — LOCAL', 'Nada sai da sua maquina');
 
-  // Fase 1: Analise profunda
-  printStep(1, 4, 'Analise profunda do projeto');
+  printStep(1, 3, 'Analise do projeto');
   await animatedProgress('Escaneando arquivos...', 800, 8);
 
   const analysis = analyzeProject(projectPath);
@@ -116,55 +70,20 @@ async function runBlueprintAuto(projectPath) {
   printSubStep(`Stack: ${analysis.stack.framework || 'Vanilla'} + ${analysis.stack.database || 'No DB'} + ${analysis.stack.frontend || 'No Frontend'}`, 'done');
   printSubStep(`Features: ${analysis.features.length} modulos`, 'done');
   printSubStep(`Testes: ${analysis.files.testFiles} arquivos`, 'done');
-  printSubStep(`Total: ${analysis.files.total} arquivos auditados`, 'done');
+  printSubStep(`Total: ${analysis.files.total} arquivos analisados`, 'done');
 
-  // Fase 2: Anonimizacao
-  printStep(2, 4, 'Anonimizacao criptografica de dados (SHA-256)');
-  await animatedProgress('Ofuscando dados sensiveis...', 600, 6);
+  printStep(2, 3, 'Gerando blueprint local');
+  // Nomes do projeto e das features viram hash SHA-256 truncado. Isso NAO e
+  // anonimizacao forte: nomes comuns (ex.: "todo") sao recuperaveis por
+  // dicionario. Por isso o arquivo so e gravado localmente, nunca enviado.
+  const localPath = generateLocalBlueprint(analysis);
+  printSubStep('Nome do projeto e das features: substituidos por hash (nao e anonimizacao forte)', 'done');
 
-  const blueprintData = anonymizeProjectData(analysis);
-  printSubStep('Nomes de variaveis/modulos: ofuscados com SHA-256', 'done');
-  printSubStep('Credenciais: zero detectadas', 'done');
-  printSubStep('Dados de negocio: removidos', 'done');
-  printSubStep('Paths absolutos: removidos', 'done');
+  printStep(3, 3, 'Blueprint salvo');
+  printSuccess(`Arquivo local: ${localPath}`);
+  printWarning('Nenhum dado foi enviado pela rede. Revise o arquivo antes de compartilhar com qualquer pessoa.');
 
-  // Fase 3: Envio
-  printStep(3, 4, 'Enviando para Urion Hub');
-
-  let hubResult = null;
-  let localPath = null;
-
-  try {
-    await animatedProgress('Conectando a api.urion.dev...', 1000, 10);
-    hubResult = await sendToUrionHub(blueprintData);
-    printSubStep('Conectando a api.urion.dev/blueprints...', 'done');
-    printSubStep('Upload de metricas anonimas...', 'done');
-    printSubStep(`Registrando caso de uso #${hubResult.id}...`, 'done');
-  } catch (err) {
-    printSubStep('Conectando a api.urion.dev/blueprints...', 'error');
-    printWarning('API do Urion Hub indisponivel — salvando localmente');
-
-    localPath = generateLocalBlueprint(analysis);
-    printSuccess(`Blueprint salvo em: ${localPath}`);
-  }
-
-  // Fase 4: Confirmacao
-  printStep(4, 4, 'Blueprint confirmado!');
-
-  if (hubResult) {
-    printSuccess(`ID: urion-blueprint-#${hubResult.id}`);
-    if (hubResult.url) printSuccess(`URL: ${hubResult.url}`);
-    printSuccess('Contribuicao: +1 caso de uso para a comunidade');
-  } else {
-    printSuccess(`Local: ${localPath}`);
-    printWarning('Envie manualmente quando a API estiver online');
-  }
-
-  console.log(`\n${colors.bright}${colors.green}🎉 PRONTO! Voce nao precisou fazer NADA.${colors.reset}`);
-  console.log(`${colors.dim}   Sua stack foi mapeada e anonimizada automaticamente.${colors.reset}`);
-  console.log(`${colors.dim}   Isso ajuda a comunidade Urion a criar regras melhores.${colors.reset}\n`);
-
-  return hubResult || { localPath };
+  return { localPath };
 }
 
 module.exports = { runBlueprintAuto, anonymizeProjectData, generateLocalBlueprint, hashName };

@@ -110,9 +110,9 @@ function countFiles(projectPath) {
 
 function getGitInfo(projectPath) {
   try {
-    const remote = execSync('git remote get-url origin', { cwd: projectPath, encoding: 'utf8', timeout: 3000 }).trim();
-    const branch = execSync('git branch --show-current', { cwd: projectPath, encoding: 'utf8', timeout: 3000 }).trim();
-    const commits = execSync('git rev-list --count HEAD', { cwd: projectPath, encoding: 'utf8', timeout: 3000 }).trim();
+    const remote = execSync('git remote get-url origin', { cwd: projectPath, encoding: 'utf8', timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    const branch = execSync('git branch --show-current', { cwd: projectPath, encoding: 'utf8', timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    const commits = execSync('git rev-list --count HEAD', { cwd: projectPath, encoding: 'utf8', timeout: 3000, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
     return { remote, branch, commits: parseInt(commits) };
   } catch {
     return { remote: null, branch: 'main', commits: 0 };
