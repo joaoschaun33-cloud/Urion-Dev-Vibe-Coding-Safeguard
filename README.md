@@ -1,9 +1,8 @@
 # 🛡️ Urion VibeGuard
 
-[![Agensi Skill](https://img.shields.io/badge/Agensi.io-Get%20Agent%20Skill-00E599?style=flat-square&logo=databricks&logoColor=white)](https://www.agensi.io/)
-
 > **O Guarda-Costas Digital para Vibe Coders e Criadores No-Code / Low-Code.**
 
+[![Agensi Skill](https://img.shields.io/badge/Agensi.io-Get%20Agent%20Skill-00E599?style=flat-square&logo=databricks&logoColor=white)](https://www.agensi.io/)
 [![npm version](https://img.shields.io/npm/v/urion-safeguard.svg?style=flat-square&color=cyan)](https://www.npmjs.com/package/urion-safeguard)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
